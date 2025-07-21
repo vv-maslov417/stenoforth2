@@ -45,7 +45,6 @@ a u + 1- C@
 CASE
 ')' OF   0 ENDOF \ variable-addres  4 or 8 bytes
 '\' OF   1 ENDOF \ value-data fix-point
-\ '!' OF   1 ENDOF \ value-data fix-point
 ':' OF   2 ENDOF \ value-data-multi-threads fix-point
 '$' OF   4 ENDOF \ value-data float-point
 ';' OF   5 ENDOF \ value-data-multi-threads float-point
@@ -133,28 +132,16 @@ USER st-wr  0 st-wr !
        THEN
   THEN 0 st-wr !
 ;
-\ 0 VALUE rej
-\ m: rdv i| rej 0= IF [ sm >CS Pa 0 TO sm 1 TO rej ] THEN -4 c=t ldhere t=@ -4 pa |i ;
-\ 0 VALUE sm
-\ m: wrd1  i| ldhere @=t 0 t=c 4 pa |i ;
-\ m: wrd   i| ldhere @=t sm t=c 0 TO rej |i  ;
-\ m: % [ sm >CS Pa 0 TO sm ] ;
-
 
 \ variables are single threaded
 : NOTFOUND ( a u --  ) \ 2variable variable    "name)"
   ')' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere
   L{ ldhere LIT, RET, ldhere 2 CELLS + TO ldhere }L
 ;
-
 : NOTFOUND ( a u --  ) \ value   "name\"
   '\' { a u s } nf1-exit  1- headl  ldhere ALIGNED TO ldhere ldhere LIT, ` !
   L{  ldhere LIT, ` @ RET, ldhere LIT, ` ! RET, ldhere 1 CELLS + TO ldhere }L
 ;
-\ : NOTFOUND ( a u --  ) \ value   "name\"
-\   '!' { a u s } nf1-exit 1- headl  ldhere ALIGNED TO ldhere ` wrd sm 4 + TO sm
-\   L{ ` rdv RET, ` wrd1 RET, ldhere 1 CELLS + TO ldhere }L
-\ ;
 : NOTFOUND ( a u --  ) \ 2value  "name!d"
   '!d' { a u s } nf2-exit 2- headl ldhere ALIGNED TO ldhere ldhere LIT, ` 2!
   L{ ldhere LIT, ` 2@ RET, ldhere LIT, ` 2! RET, ldhere 2 CELLS + TO ldhere }L
@@ -173,7 +160,7 @@ USER st-wr  0 st-wr !
 : NOTFOUND ( a u --  ) \ value   "name;"
   ';' { a u s } nf1-exit 1- headl  ` FLOAT>DATA32 ` usn! ` DROP \ 5 ltyp !
   L{ ` DUP ` usn@ ` DATA>FLOAT32  RET,
-     ` FLOAT>DATA32 ` usn! ` DROP RET, \ uygvygvybvu
+     ` FLOAT>DATA32 ` usn! ` DROP RET, 
      udhere 1 CELLS + TO udhere }L
 ;
 \ arrays are single threaded
@@ -209,4 +196,4 @@ USER st-wr  0 st-wr !
 I: | NextWord 2DUP + 1- C@ '|' <> IF RECURSE EVALUATE ELSE 2DROP THEN  ;
 
 : .s CR DEPTH .SN CR S0 @ SP! ;
-: .sd DEPTH 0 DO I ROLL LOOP DEPTH 0 DO SWAP D. 2 +LOOP CR ;  \ ( 7utytuy7 )
+: .sd DEPTH 0 DO I ROLL LOOP DEPTH 0 DO SWAP D. 2 +LOOP CR ; 
