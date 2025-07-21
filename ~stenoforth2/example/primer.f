@@ -16,32 +16,31 @@
 \ fix point
 : sum-sq   DUP * SWAP DUP * + ;
 : sum-sq0  | x\ y\ | x x * y y * + ;
-: sum-sq1  \xy  x x * y y * + ;
-: sum-sq2  \12 [11*22+ ;
+: sum-sq1  \12 [11*22+ ;
+: sum-sq2  |2  [11*22+ ;
 
 \ float point
 : sum-sq3  FDUP F* FSWAP FDUP F* F+ ;
 : sum-sq4  f| dup  * swap dup * + |f ;
 : sum-sq5  | x$ y$ | f| x x * y y * + |f ;
-: sum-sq6  $xy f| x x * y y * + |f ;
-: sum-sq7  $12  {11*22+ ;
+: sum-sq6  $12 {11*22+ ;
+: sum-sq7  |$2 {11*22+ ;
 
 \ Площадь треугольника по Герону
 \ a b c -- S3
 
 \ fix point
-: S3   | x\ y\ z\ | x y z + + 2/ p!
+: S3   | x\ y\ z\ | x y z + + 2/ p\
        p x - p y - * p z - * p * sqrt ;
-: S31  \xyz x y z + + 2/ p\
-       p x - p y - * p z - * p * sqrt ;
-: S32  \123 [123++ 2/ \4 [41-42-*43-*4*q ;
+: S31  \123 [123++ 2/ \4 [41-42-*43-*4*q ;
+: S32  |3 [12+3+ 2/ \4 [41-42-*43-*4*q ;
 
 \ float point
 : S33  | x$ y$ z$ | f| x y z + + 2/ p$
        p x - p y - * p z - * p * sqrt |f ;
-: S34  $xyz f| x y z + + 2/ p$
-       p x - p y - * p z - * p * sqrt |f ;
-: S35  $123 {123++ 2e {/ $4 {41-42-*43-*4*q ;
+: S34  $123 {123++ 2e {/ $4 {41-42-*43-*4*q ;
+: S35  |$3 {123++ 2e {/ $4 {41-42-*43-*4*q ;
+
 
 \ стековые перестановки
 \ обычным образом
