@@ -275,7 +275,7 @@ MODULE: instructions
 : T=S  0xFE8B W, ;
 : T=c  0x7D8B W, C, ;
 
-: PaL ( offset -- )   0x8D C, 0xAD C, , ;
+: paL ( offset -- )   0x8D C, 0xAD C, , ;
 
 EXPORT
 m: g| {{   instructions ;
@@ -285,5 +285,5 @@ m: |i ] }}  ;
 ;MODULE
 
 \EOF  sum of squares
-: ssq i| *t 0 B=c B*B t+B 4 Pa |i ;
+: ssq i| *t 0 B=c B*B t+B 4 pa |i ;
 SEE ssq
