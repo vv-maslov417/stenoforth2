@@ -214,3 +214,39 @@ name1 - имя строки
 : name9 .... ;
 Формирование группы заканчиваеся по первому символу ':' без плюса
 
+Пример: Арифметические операции над группой чисел
+
+: IniGrAr
+gt[ NextWord number? if drop ]
+bo[ gt else 2drop exit then begin gt ]
+eo[ else 2drop state @ if lit, then exit then again ]
+;
+
++: (+ bo +  eo ; immediate
++: (- bo -  eo ; immediate
++: (* bo *  eo ; immediate
++: (/ bo /  eo ; immediate
+
+: foo
+(+ 56 44 -10 1 )
+(- 56 44 -10 1 )
+(* 20 3 -4 5 -6 )
+(/ 240 2 3 -2 5 )
+;
+
+foo .s
+
+лог
+91 21 7200 4294967292(-4)
+
+
+(+ 56 44 -10 1 )
+(- 56 44 -10 1 )
+(* 20 3 -4 5 -6 )
+(/ 240 2 3 -2 5 )  .s
+
+
+\EOF
+лог
+91 21 7200 4294967292(-4)
+
