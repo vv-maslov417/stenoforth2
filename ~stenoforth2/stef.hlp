@@ -100,7 +100,40 @@ z       d0<>     Z       d0=             ^       dxor
 пробел - переход в базовый контекст FORTH
 " - переход в контекст слов двойной разрядности с фиксированной точкой
 
-Еще пример:
+
+Набор символов контекста слов для работы с данными с плавающей точкой разрядности 64.
+Слова структур управления продублированы в этом контексте чтобы не переключать контекст
+при их использования.
+
+символ  слово    символ  слово    символ  слово
+a       FABS     A       AGAIN    @       F@
+b       FLOG2    B       BEGIN    !       F!
+c       FCOS     C       CASE     +       F+
+d       FDUP     D       ?DO      -       F-
+e       ELSE     E       ENDCASE  *       F*
+f       DS>F     F       D>F      /       F/
+g       FLOG     G       aDO      =       F=
+h       HERE                      #       F<>
+i       F1+      I       I        ?       IF
+j       F1-      J       J        <       F<
+k       FACOS    K                >       F>
+l       FLN      L       LOOP     ~       F~
+m       FMIN     M       FMAX     ^       F**
+n       FNEGATE  N       +LOOP    .       F.
+o       FDEPTH   O       FDEPTH   :       ->
+p       F**2     P       FPI      ;       EXIT
+q       FSQRT    Q       LEAVE
+r       FASIN    R       REPEAT
+s       FSIN     S       F>DS
+t       THEN     T       FTAN
+u       FATAN    U       UNTIL
+
+                 W       WHILE
+x       FDROP    X       EXP
+y       0        Y       1
+z       F0<>     Z       F0=
+
+Пример:
 Площадь треугольника по формуле Герона:
 : S3 \ a b c -- S
   0e |$4 {12+3+ 2e {/:441-42-*43-*4*q. ;
