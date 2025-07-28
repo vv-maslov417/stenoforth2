@@ -1,10 +1,5 @@
 \ stenoforth32
 
-\ position(1..n)  -- char
-m: pos>char  a 1- + C@ ;
-\ position char -- flag
-m: pos-char? swap pos>char = ;
-
 CREATE StrOut 255 ALLOT 0 VALUE dso
 : dso++ dso 1+ TO dso ;
 : $+  StrOut dso + C! dso++ ;
@@ -13,7 +8,12 @@ CREATE StrOut 255 ALLOT 0 VALUE dso
 : tt-xt ( any xt -- any ) STATE @ IF COMPILE, ELSE EXECUTE THEN ;
 I: $"  ( "ccc<quote>" -- |sd ) ['] S" EXECUTE  ['] s$+ tt-xt ;
 
-m: rec: 0 WARNING ! : NOTFOUND u\ a\ ;
+m: rec: \ a u
+   \ position(1..n)  -- char
+   pos>char[ a 1- + C@ ]
+   \ position char -- flag
+   pos-char?[ swap pos>char = ]
+   0 WARNING ! : NOTFOUND u\ a\ ;
 m: gen: 0= IF a u NOTFOUND EXIT THEN
    StrOut 255 ERASE 0 TO dso ;
 \ state @ ( false - execute  true - evaluate )
