@@ -1,3 +1,5 @@
+\ stenoforth32
+
 \ максимальный байт в массиве
 \ c-addr u -- n
 : MaxByte  \12 [1b1i2jGIbML ;

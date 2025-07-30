@@ -1,3 +1,5 @@
+\ stenofort32
+
 \ пересылка n одинарных чисел с фикс. точкой со стека в память данных
 : n>dh \ n -- a u
   cells ldhere \21 [12 spmove [2 spdrop [12d ldhere + TO ldhere

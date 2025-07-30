@@ -1,4 +1,5 @@
 \ stenoforth32
+
 \                              name             xt          typ
 \ dictionary structure: byte-0 bytes-lex byte-0 addr byte-0 byte-typ byte-0
 

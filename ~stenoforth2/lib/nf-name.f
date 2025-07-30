@@ -1,4 +1,5 @@
 \ stenoforth32
+
 \ Преобразователь лексем 's','ss','sss','ssss' [s-любой ascii char] в одинарное число
 : NOTFOUND { a u } \ -- n
   a C@ [CHAR] ' = a u + 1- C@ [CHAR] ' = AND u 3 6 1+ WITHIN AND 0= \ распознаватель
