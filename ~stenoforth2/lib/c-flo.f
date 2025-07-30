@@ -10,7 +10,7 @@ m: f DS>F ;
 m: g FLOG ;
 m: h HERE ;
 m: i F1+ ;
-m: j 1e F- ;
+m: j 1e F- ; \ F1-
 m: k FACOS ;
 m: l FLN ;
 m: m FMIN ;
@@ -22,8 +22,8 @@ m: r FASIN ;
 m: s FSIN ;
 m: t THEN ;
 m: u FATAN ;
-\ v
-\ w
+m: v 2e F/ ; \ F2/
+m: w 2e F* ; \ F2*
 m: x FDROP ;
 m: y $ -4 @P=A A^A $ -4 Pa ; \ 0
 m: z F0= INVERT ;    \ F0<>
@@ -74,7 +74,7 @@ m: |fs }} ;
 ;MODULE
 
 : NOTFOUND u\ a\ a C@ '{' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-` fs| a 1+ u 1- aDO I C@ 'v' <> IF I 1 EVALUATE 1 ELSE I 2 EVALUATE 2 THEN +LOOP ` |fs ;
+` fs| a 1+ u 1- aDO I 1 EVALUATE LOOP ` |fs ;
 
 MODULE: fvaluenames
 m: 1 Г$ ; m: 2 Д$ ; m: 3 Е$ ; m: 4 Ё$ ; m: 5 Ж$ ; m: 6 З$ ; m: 7 И$ ; m: 8 Й$ ; m: 9 К$ ;
@@ -85,7 +85,7 @@ m: |vf }} ;
 
 
 : NOTFOUND u\ a\ a C@ '$' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-  ` vf| a 1+ a 1+ u + 2- DO I 1- C@ 'v' <> IF I 1 EVALUATE -1 ELSE I 1- 2 EVALUATE -2 THEN +LOOP ` |vf ;
+  ` vf| a 1+ a 1+ u + 2- DO I 1 EVALUATE -1  +LOOP ` |vf ;
 
 MODULE: mfvaluenames
 m: 1 Г; ; m: 2 Д; ; m: 3 Е; ; m: 4 Ё; ; m: 5 Ж; ; m: 6 З; ; m: 7 И; ; m: 8 Й; ; m: 9 К; ;
@@ -95,7 +95,7 @@ m: |mvf }} ;
 ;MODULE
 
 : NOTFOUND u\ a\ a C@ ';' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-  ` mvf| a 1+ a 1+ u + 2- DO I 1- C@ 'v' <> IF I 1 EVALUATE -1 ELSE I 1- 2 EVALUATE -2 THEN +LOOP ` |mvf ;
+  ` mvf| a 1+ a 1+ u + 2- DO I 1 EVALUATE -1 +LOOP ` |mvf ;
 
 \ сокращенная запись стат. переменных с плав. точкой однопоточных и многопоточных
 m: |$2 $12 ; m: |$3 $123 ; m: |$4 $1234 ; m: |$5 $12345 ; m: |$6 $123456 ; m: |$7 $1234567 ; m: |$8 $12345678 ; m: |$9 $123456789 ;

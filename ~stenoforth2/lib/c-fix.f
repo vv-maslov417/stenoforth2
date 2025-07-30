@@ -22,7 +22,7 @@ m: r RSHIFT ;                       m: R REPEAT ;
 m: s I+ ;                           m: S SEARCH ;
 m: t THEN ;                         m: T TRUE ;
 m: u EVALUATE ;                     m: U UNTIL ;
-( v - префикс )                     m: V MOVE ;
+m: v 2* ;                           m: V MOVE ;
 m: w C! ;                           m: W WHILE ;
 m: x DROP ;                         m: X EXECUTE ;
 m: y $ -4 @P=A A^A $ -4 Pa ;        m: Y $ -4 @P=A $ 1 A=# $ -4 Pa ;
@@ -34,7 +34,7 @@ m: |s }} ;
 ;MODULE
 
 : NOTFOUND u\ a\ a C@ '[' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-` s| a 1+ u 1- aDO I C@ 'v' <> IF I 1 EVALUATE 1 ELSE I 2 EVALUATE 2 THEN +LOOP ` |s ;
+` s| a 1+ u 1- aDO I 1 EVALUATE LOOP ` |s ;
 
 MODULE: valuenames
 m: 1 а\ ; m: 2 б\ ; m: 3 в\ ; m: 4 г\ ; m: 5 д\ ; m: 6 е\ ; m: 7 ё\ ; m: 8 ж\ ; m: 9 з\ ;
@@ -44,7 +44,7 @@ m: |vs }} ;
 ;MODULE
 
 : NOTFOUND u\ a\ a C@ '\' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-  ` vs| a 1+ a 1+ u + 2- DO I 1- C@ 'v' <> IF I 1 EVALUATE -1 ELSE I 1- 2 EVALUATE -2 THEN +LOOP ` |vs ;
+  ` vs| a 1+ a 1+ u + 2- DO  I 1 EVALUATE -1  +LOOP ` |vs ;
 
 m: |2 \12 ; m: |3 \123 ; m: |4 \1234 ; m: |5 \12345 ; m: |6 \123456 ; m: |7 \1234567 ; m: |8 \12345678 ; m: |9 \123456789 ;
 
@@ -56,4 +56,4 @@ m: |mvs }} ;
 ;MODULE
 
 : NOTFOUND u\ a\ a C@ ':' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-  ` mvs| a 1+ a 1+ u + 2- DO I 1- C@ 'v' <> IF I 1 EVALUATE -1 ELSE I 1- 2 EVALUATE -2 THEN +LOOP ` |mvs ;
+  ` mvs| a 1+ a 1+ u + 2- DO I 1 EVALUATE -1 +LOOP ` |mvs ;

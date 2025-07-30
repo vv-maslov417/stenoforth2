@@ -77,7 +77,7 @@ m: |sd }} ;
 ;MODULE
 
 : NOTFOUND u\ a\ a C@ '"' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-` sd| a 1+ u 1- aDO I C@ 'v' <> IF I 1 EVALUATE 1 ELSE I 2 EVALUATE 2 THEN +LOOP ` |sd ;
+` sd| a 1+ u 1- aDO I 1 EVALUATE 1 LOOP ` |sd ;
 
 MODULE: dvaluenames
 m: 1 с!d ; m: 2 т!d ; m: 3 у!d ; m: 4 ф!d ; m: 5 х!d ; m: 6 ц!d ; m: 7 ч!d ; m: 8 ш!d ; m: 9 щ!d ;
@@ -87,7 +87,7 @@ m: |vd }} ;
 ;MODULE
 
 : NOTFOUND u\ a\ a W@ '!d' = u 2 > AND 0= IF a u NOTFOUND EXIT THEN
-  ` vd| a 2+ a 2+ u + 3 - DO I 1- C@ 'v' <> IF I 1 EVALUATE -1 ELSE I 1- 2 EVALUATE -2 THEN +LOOP ` |vd ;
+  ` vd| a 2+ a 2+ u + 3 - DO I 1 EVALUATE -1 +LOOP ` |vd ;
 
 \ сокращенная запись стат. переменных с фикс. точкой двойной разрядности однопоточных
 m: |d2 !d12 ; m: |d3 !d123 ; m: |d4 !d1234 ; m: |d5 !d12345 ; m: |:6 !d123456 ; m: |:7 !d1234567 ; m: |:8 !d12345678 ; m: |:9 !d123456789 ;
