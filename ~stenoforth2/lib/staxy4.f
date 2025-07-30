@@ -1,10 +1,6 @@
 \ stenoforth32
 
 \ staxy     1...5-->0...16      1\ ... 5\1234512345123451
-\ : a=b  0xC38B W,    ;  : a=c  0xC18B W,    ;  : a=d  0xC28B W,    ;  : a=s  0xC68B W,    ;  : p+   0x6D8D W, C, ;
-\ : a=@p 0x458B W, C, ;  : b=@p 0x5D8B W, C, ;  : c=@p 0x4D8B W, C, ;  : d=@p 0x558B W, C, ;  : s=@p 0x758B W, C, ;
-\ : @p=a 0x4589 W, C, ;  : @p=b 0x5D89 W, C, ;  : @p=c 0x4D89 W, C, ;  : @p=d 0x5589 W, C, ;  : @p=s 0x7589 W, C, ;
-
 : NOTFOUND u\ a\
 1 a + C@ '\' <> 0 a + C@ '1' '5' 1+ WITHIN 0= OR IF  a u NOTFOUND EXIT THEN  STATE @ 0= IF HERE here\ THEN
 0 b\ 0 e\ [ 17 ] SE] [ 17 ] 1TE] [ 17 ] 2TE] 0 3TE\ [ 17 ] 4TE] [ 17 ] 5TE]
@@ -15,21 +11,21 @@ u 2- emax\   a C@ '0' - bmax\
 @T(  + C@ )  !T(  + C! )  @SE(  SE @T )  !SE(  SE !T )
 SE 17 ERASE  1TE 17 ERASE  2TE 17 ERASE  4TE 17 ERASE 5TE 17 ERASE
 emax 0= bmax 1 = OR 0= IF emax 2+ 2 DO I a @T '0' - I 1- !SE LOOP THEN
-r1=CB(  @T DUP  IF 1- 4 * b=@p`   1 1 5TE !T ELSE DROP THEN  )
-r2=CB(  @T DUP  IF 1- 4 * c=@p`   2 2 5TE !T ELSE DROP THEN  )
-r3=CB(  @T DUP  IF 1- 4 * d=@p`   3 3 5TE !T ELSE DROP THEN  )
-r4=CB(  @T DUP  IF 1- 4 * s=@p`   4 4 5TE !T ELSE DROP THEN  )
-CE=TB(  @T DUP IF 16 SWAP 4 * - @p=a` ELSE DROP THEN )
+r1=CB(  @T DUP  IF 1- 4 * b=@p   1 1 5TE !T ELSE DROP THEN  )
+r2=CB(  @T DUP  IF 1- 4 * c=@p   2 2 5TE !T ELSE DROP THEN  )
+r3=CB(  @T DUP  IF 1- 4 * d=@p   3 3 5TE !T ELSE DROP THEN  )
+r4=CB(  @T DUP  IF 1- 4 * s=@p   4 4 5TE !T ELSE DROP THEN  )
+CE=TB(  @T DUP IF 16 SWAP 4 * - @p=a ELSE DROP THEN )
 TE=R|CB(
  CASE
-   1 OF  0 a=@p` ENDOF  2 OF  4 a=@p` ENDOF  3 OF 8 a=@p` ENDOF  4 OF 12 a=@p` ENDOF
-   5 OF    a=s`  ENDOF  6 OF    a=d`  ENDOF  7 OF    a=c` ENDOF  8 OF    a=b`  ENDOF
+   1 OF  0 a=@p ENDOF  2 OF  4 a=@p ENDOF  3 OF 8 a=@p ENDOF  4 OF 12 a=@p ENDOF
+   5 OF    a=s  ENDOF  6 OF    a=d  ENDOF  7 OF    a=c ENDOF  8 OF    a=b  ENDOF
  ENDCASE )
-CE=TE(  @T DUP IF 16 SWAP 4 * - @p=a` ELSE DROP THEN )
+CE=TE(  @T DUP IF 16 SWAP 4 * - @p=a ELSE DROP THEN )
 emax 0=
-IF   bmax 1 17 WITHIN IF bmax 1- 4 * a=@p` THEN \ ????? DROP
+IF   bmax 1 17 WITHIN IF bmax 1- 4 * a=@p THEN \ ????? DROP
 ELSE bmax 1 =
-     IF   emax 2 17 WITHIN IF emax 1- -4 * -4 DO I @p=a` -4 +LOOP THEN \ ????? DUP
+     IF   emax 2 17 WITHIN IF emax 1- -4 * -4 DO I @p=a -4 +LOOP THEN \ ????? DUP
      ELSE emax 1 >
           IF 1 -> b
              BEGIN  1 -> e
@@ -73,15 +69,14 @@ IF
 17 1 ?DO I 4TE CE=TE LOOP
 17 1 ?DO bmax 1- I - 4 * I @SE 1TE @T pr5\ pr5 0<> bmax pr5 - I 5TE @T <> AND
           IF bmax pr5 -
-               CASE 1 OF @p=b`  ENDOF 2 OF @p=c`  ENDOF  3 OF @p=d`   ENDOF  4 OF @p=s`   ENDOF
+               CASE 1 OF @p=b ENDOF 2 OF @p=c ENDOF 3 OF @p=d ENDOF 4 OF @p=s ENDOF
                     DROP
                ENDCASE
           ELSE DROP THEN
        LOOP
 THEN
-bmax emax - DUP 0<> IF 4 * p+` ELSE DROP THEN  STATE @ 0= IF RET, here EXECUTE THEN
+bmax emax - DUP 0<> IF 4 * p+ ELSE DROP THEN STATE @ 0= IF RET, here EXECUTE THEN
 ;
-
 
 : NOTFOUND u\ a\
 a C@ '1' '5' 1+ WITHIN a 1+ C@ '%' =  AND a 2+ C@ '[' <> AND 0= IF a u NOTFOUND EXIT THEN

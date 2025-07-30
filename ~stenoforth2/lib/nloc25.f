@@ -25,6 +25,7 @@ m: adr@ [ 0xC78B W, udhere 0xC081 W, , ] ;  \ mov eax edi  add eax udhere
 
 \ -- c-addr u
 : lvoc   alvoc lenlvoc ;  lvoc ERASE 1 lhere !
+
 \ c-addr u -- axtloc \ here u is 1 or 2 characters less than the original name with a type suffix of 1 or 2 characters
 : lname, { a u | axt -- axtloc }
   lhere @ TO axt
@@ -35,16 +36,19 @@ m: adr@ [ 0xC78B W, udhere 0xC081 W, , ] ;  \ mov eax edi  add eax udhere
 : }L  dpl DP @ xdpl @ - + TO dpl XHERE @ DP ! ;
 
 : init-lvoc  lvoc ERASE  alvoc lhere ! ;
+
 \ c-addr u --
 : headl  lname, dpl SWAP ! lhere @ 7 + lhere ! ;
-\ c-addr u s  -- c-addr u
 
+\ c-addr u s  -- c-addr u
 m: nf1-exit \ -ROT 2DUP + 1- C@ -ROT 2SWAP <> IF NOTFOUND EXIT THEN
 a u + 1- C@ s <>  IF a u NOTFOUND EXIT THEN a u
+a u 1- SFIND IF CR a u 1- TYPE SPACE ." <-- this name already exists" CR CR 2DROP THEN 2DROP
 a u + 1- C@
 CASE
 ')' OF   0 ENDOF \ variable-addres  4 or 8 bytes
 '\' OF   1 ENDOF \ value-data fix-point
+'!' OF   1 ENDOF \ value-data fix-point                \ experiment
 ':' OF   2 ENDOF \ value-data-multi-threads fix-point
 '$' OF   4 ENDOF \ value-data float-point
 ';' OF   5 ENDOF \ value-data-multi-threads float-point
@@ -54,13 +58,13 @@ CASE
 '{' OF   9 ENDOF \ closures
 ']' OF  10 ENDOF \ arrays-data fix-point
 '}' OF  11 ENDOF \ arrays-data float-point
-
 ENDCASE
 lhere @ u + 5 + DUP dtyp ! C! 0 lhere @ u + 6 + C!
 ;
 
 \ c-addr u ss -- c-addr u
 m: nf2-exit a u a u + 2- W@ s <> IF NOTFOUND EXIT THEN
+a u 2- SFIND IF a u 1- CR TYPE ." this name already exists" CR CR 2DROP THEN 2DROP
 \ -ROT 2DUP + 2- W@ -ROT 2SWAP <> IF NOTFOUND EXIT THEN
 a u + 2- W@
 CASE
@@ -138,9 +142,20 @@ USER st-wr  0 st-wr !
   ')' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere
   L{ ldhere LIT, RET, ldhere 2 CELLS + TO ldhere }L
 ;
+\ experiment opt
+0 VALUE smzp
+m: zpsv i| ldhere @=t smzp t=c  |i ;
+m: rdsv i| -4 c=t ldhere t=@ -4 pa |i ;
+m: ezpv i| smzp pa 0 TO smzp |i ;
+
 : NOTFOUND ( a u --  ) \ value   "name\"
   '\' { a u s } nf1-exit  1- headl  ldhere ALIGNED TO ldhere ldhere LIT, ` !
   L{  ldhere LIT, ` @ RET, ldhere LIT, ` ! RET, ldhere 1 CELLS + TO ldhere }L
+;
+\ experiment
+: NOTFOUND ( a u --  ) \ value   "name\"
+  '!' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere ` zpsv smzp 4 + TO smzp
+  L{ ` rdsv RET, ldhere LIT, ` ! RET, ldhere 1 CELLS + TO ldhere }L
 ;
 : NOTFOUND ( a u --  ) \ 2value  "name!d"
   '!d' { a u s } nf2-exit 2- headl ldhere ALIGNED TO ldhere ldhere LIT, ` 2!
@@ -160,7 +175,7 @@ USER st-wr  0 st-wr !
 : NOTFOUND ( a u --  ) \ value   "name;"
   ';' { a u s } nf1-exit 1- headl  ` FLOAT>DATA32 ` usn! ` DROP \ 5 ltyp !
   L{ ` DUP ` usn@ ` DATA>FLOAT32  RET,
-     ` FLOAT>DATA32 ` usn! ` DROP RET, 
+     ` FLOAT>DATA32 ` usn! ` DROP RET,
      udhere 1 CELLS + TO udhere }L
 ;
 \ arrays are single threaded
@@ -174,16 +189,7 @@ USER st-wr  0 st-wr !
   L{ ` DUP ` adr@ RET,
   udhere + TO udhere }L
 ;
-\ execution from the forth or if not there, then from the local dictionary
-: NOTFOUND ( c-addr u -- ) { a u | [ 16 ] arr }
- a u + 1- C@ '`' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
- a u 1- SFIND IF EXECUTE \ search in the current global dictionary
-              ELSE lvoc 2SWAP lsearch  \ search in local dictionary
-                   IF + 1+ @ EXECUTE
-                   ELSE TYPE SPACE ." not found " CR
-                   THEN
-              THEN
-;
+
 \ floating point number recognition  ( "1,0"  "-123,045" )
 : NOTFOUND  ( c-addr u -- ) { a u | sq sz pt [ 20 ] an }
   a u OVER + SWAP ?DO I C@ '0' ':' WITHIN IF sq 1+ TO sq THEN
@@ -193,7 +199,17 @@ USER st-wr  0 st-wr !
   a an u 2+  MOVE 'e' an u + C! '.' an pt + C! an u 1+ EVALUATE
 ;
 
-I: | NextWord 2DUP + 1- C@ '|' <> IF RECURSE EVALUATE ELSE 2DROP THEN  ;
+I: | NextWord 2DUP + 1- C@ '|' <> IF RECURSE EVALUATE ELSE 2DROP THEN ;
+
+\ experiment
+CREATE bufsv 128 ALLOT 0 VALUE ddp
+I: (: 0 TO ddp
+BEGIN NextWord 2DUP S" :)" COMPARE
+  IF   bufsv ddp + 2! ddp 8 + TO ddp 0
+  ELSE 2DROP 1
+  THEN
+UNTIL
+bufsv DUP ddp + 8 - DO I 2@ EVALUATE -8 +LOOP ` ezpv ;
 
 : .s CR DEPTH .SN CR S0 @ SP! ;
-: .sd DEPTH 0 DO I ROLL LOOP DEPTH 0 DO SWAP D. 2 +LOOP CR ; 
+: .sd DEPTH 0 DO I ROLL LOOP DEPTH 0 DO SWAP D. 2 +LOOP CR ;

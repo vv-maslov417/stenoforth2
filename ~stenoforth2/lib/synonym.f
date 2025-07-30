@@ -1,3 +1,5 @@
+\ stenoforth32
+
 : ENROLL-NAME \ ( xt d-newname -- ) \ basic factor
   \ see also: ~pinka/spf/compiler/native-wordlist.f
   SHEADER LAST-CFA @ ! ;

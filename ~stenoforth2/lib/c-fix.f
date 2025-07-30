@@ -42,20 +42,11 @@ EXPORT
 m: vs| {{ valuenames ;
 m: |vs }} ;
 ;MODULE
-\ MODULE: valuenames1
-\ m: 1 а! ; m: 2 б! ; m: 3 в! ; m: 4 г! ; m: 5 д! ; m: 6 е! ; m: 7 ё! ; m: 8 ж! ; m: 9 з! ;
-\ EXPORT
-\ m: vs1| {{ valuenames1 ;
-\ m: |vs1 }} ;
-\ ;MODULE
+
 : NOTFOUND u\ a\ a C@ '\' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
   ` vs| a 1+ a 1+ u + 2- DO I 1- C@ 'v' <> IF I 1 EVALUATE -1 ELSE I 1- 2 EVALUATE -2 THEN +LOOP ` |vs ;
 
-\ : NOTFOUND u! a! a C@ '!' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-\   ` vs1| a 1+ a 1+ u + 2- DO I 1- C@ 'v' <> IF I 1 EVALUATE -1 ELSE I 1- 2 EVALUATE -2 THEN +LOOP ` |vs1 ` % ;
-
 m: |2 \12 ; m: |3 \123 ; m: |4 \1234 ; m: |5 \12345 ; m: |6 \123456 ; m: |7 \1234567 ; m: |8 \12345678 ; m: |9 \123456789 ;
-\ m: 2| !12 ; m: 3| !123 ; m: 4| !1234 ; m: 5! !12345 ; m: 6| !123456 ; m: 7| !1234567 ; m: 8| !12345678 ; m: 9| !123456789 ;
 
 MODULE: mvaluenames
 m: 1 а: ; m: 2 б: ; m: 3 в: ; m: 4 г: ; m: 5 д: ; m: 6 е: ; m: 7 ё: ; m: 8 ж: ; m: 9 з: ;

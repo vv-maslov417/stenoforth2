@@ -76,6 +76,16 @@ MODULE: instructions
 : B=#    0xBB   C,  , ;
 : B=c*#  0x5D69 W, C, , ;
 
+: B+#    0xC381 W, , ;
+: C+#    0xC181 W, , ;
+: D+#    0xC281 W, , ;
+: S+#    0xC681 W, , ;
+
+: [B=t   0x4389 W, C, ;
+: [C=t   0x4189 W, C, ;
+: [D=t   0x4289 W, C, ;
+: [S=t   0x4689 W, C, ;
+
 : C=c    0x4D8B W, C, ;
 : C=t    0xC88B W,    ;
 : C=#    0xB9   C,  , ;
@@ -275,7 +285,7 @@ MODULE: instructions
 : T=S  0xFE8B W, ;
 : T=c  0x7D8B W, C, ;
 
-: paL ( offset -- )   0x8D C, 0xAD C, , ;
+: paL ( offset32 -- )   0x8D C, 0xAD C, , ;
 
 EXPORT
 m: g| {{   instructions ;

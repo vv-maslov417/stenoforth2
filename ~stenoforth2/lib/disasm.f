@@ -1636,8 +1636,6 @@ DUP FIND-REST-END ['] REST-AREA CATCH DROP ;
   again
 ;
 
-
-
 \ j*t -- " see "
 : .d decimal . hex ;
 : pairs-chars u\ a\ 0 dpo\ here bfo\ u 2* allot

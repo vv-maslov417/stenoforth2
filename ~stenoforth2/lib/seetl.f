@@ -1,4 +1,5 @@
 \ stenoforth32
+
 : SEET ' xt\ 0. tics!d 0. ns!d 0. mcs\ ms\ 0. t1!d 0. t2!d  0. pr1\ pr2\
 DAC=TSCP DUP A=D -> t1 A=C DUP -> pr1
 DAC=TSCP DUP A=D -> t2 A=C DUP -> pr2

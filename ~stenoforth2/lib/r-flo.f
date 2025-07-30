@@ -1,3 +1,5 @@
+\ stenoforth32
+
 : F1-  1e F- ;
 : F0<> F0= INVERT ;
 : F<>  F= INVERT ;

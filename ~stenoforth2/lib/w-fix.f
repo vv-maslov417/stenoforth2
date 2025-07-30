@@ -1,4 +1,5 @@
 \ stenoforth32
+
 \ перевод часто используемых имен слов в нижний регистр
 : 2LIT, SWAP LIT, LIT, ;
 SYNONYM c@                    C@
