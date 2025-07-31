@@ -1,22 +1,8 @@
-\ stenoforth32
-
-CREATE StrOut 255 ALLOT 0 VALUE dso
-: dso++ dso 1+ TO dso ;
-: $+  StrOut dso + C! dso++ ;
-: s$+ >R StrOut dso + R@ MOVE R> dso + TO dso ;
-: n$+ S>D (D.) s$+ BL $+ ;
-: tt-xt ( any xt -- any ) STATE @ IF COMPILE, ELSE EXECUTE THEN ;
-I: $"  ( "ccc<quote>" -- |sd ) ['] S" EXECUTE  ['] s$+ tt-xt ;
-
-\ position(1..n)  -- char
-m: pos>char  a 1- + C@ ;
-
-\ position char -- flag
-m: pos-char? swap pos>char = ;
-
-m: rec: 0 WARNING ! : NOTFOUND u\ a\ ;
-m: gen: 0= IF a u NOTFOUND EXIT THEN
-   StrOut 255 ERASE 0 TO dso ;
+m: rec: 0 WARNING ! : NOTFOUND u\ a\
+   p>c[ a 1- + C@ ]     \ pos -- char
+   pc?[ SWAP ps>ch = ]  \ pos char -- flag
+;
+m: gen: 0= IF a u NOTFOUND EXIT THEN  ;
 
 \ непоср.значение переменной name' на стек
 rec: a C@ ''' <> a u + 1- C@ ''' = AND

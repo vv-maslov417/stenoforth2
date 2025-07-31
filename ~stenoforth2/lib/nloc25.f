@@ -44,12 +44,11 @@ m: adr@ [ 0xC78B W, udhere 0xC081 W, , ] ;  \ mov eax edi  add eax udhere
 \ c-addr u s  -- c-addr u
 m: nf1-exit \ -ROT 2DUP + 1- C@ -ROT 2SWAP <> IF NOTFOUND EXIT THEN
 a u + 1- C@ s <>  IF a u NOTFOUND EXIT THEN a u
-a u 1- SFIND IF CR a u 1- TYPE SPACE ." <-- this name already exists" CR CR 2DROP THEN 2DROP
+a u 1- SFIND IF CR a u 1- TYPE SPACE ." <-- this name already exists" CR CR KEY DROP BYE 2DROP THEN 2DROP
 a u + 1- C@
 CASE
 ')' OF   0 ENDOF \ variable-addres  4 or 8 bytes
 '\' OF   1 ENDOF \ value-data fix-point
-'!' OF   1 ENDOF \ value-data fix-point                \ experiment
 ':' OF   2 ENDOF \ value-data-multi-threads fix-point
 '$' OF   4 ENDOF \ value-data float-point
 ';' OF   5 ENDOF \ value-data-multi-threads float-point
@@ -66,7 +65,6 @@ lhere @ u + 5 + DUP dtyp ! C! 0 lhere @ u + 6 + C!
 \ c-addr u ss -- c-addr u
 m: nf2-exit a u a u + 2- W@ s <> IF NOTFOUND EXIT THEN
 a u 2- SFIND IF a u 1- CR TYPE ." this name already exists" CR CR 2DROP THEN 2DROP
-\ -ROT 2DUP + 2- W@ -ROT 2SWAP <> IF NOTFOUND EXIT THEN
 a u + 2- W@
 CASE
 '!d' OF 3 ENDOF
@@ -143,20 +141,9 @@ USER st-wr  0 st-wr !
   ')' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere
   L{ ldhere LIT, RET, ldhere 2 CELLS + TO ldhere }L
 ;
-\ experiment opt
-0 VALUE smzp
-m: zpsv i| ldhere @=t smzp t=c  |i ;
-m: rdsv i| -4 c=t ldhere t=@ -4 pa |i ;
-m: ezpv i| smzp pa 0 TO smzp |i ;
-
 : NOTFOUND ( a u --  ) \ value   "name\"
   '\' { a u s } nf1-exit  1- headl  ldhere ALIGNED TO ldhere ldhere LIT, ` !
   L{  ldhere LIT, ` @ RET, ldhere LIT, ` ! RET, ldhere 1 CELLS + TO ldhere }L
-;
-\ experiment
-: NOTFOUND ( a u --  ) \ value   "name\"
-  '!' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere ` zpsv smzp 4 + TO smzp
-  L{ ` rdsv RET, ldhere LIT, ` ! RET, ldhere 1 CELLS + TO ldhere }L
 ;
 : NOTFOUND ( a u --  ) \ 2value  "name!d"
   '!d' { a u s } nf2-exit 2- headl ldhere ALIGNED TO ldhere ldhere LIT, ` 2!
@@ -190,7 +177,6 @@ m: ezpv i| smzp pa 0 TO smzp |i ;
   L{ ` DUP ` adr@ RET,
   udhere + TO udhere }L
 ;
-
 \ floating point number recognition  ( "1,0"  "-123,045" )
 : NOTFOUND  ( c-addr u -- ) { a u | sq sz pt [ 20 ] an }
   a u OVER + SWAP ?DO I C@ '0' ':' WITHIN IF sq 1+ TO sq THEN
@@ -199,18 +185,7 @@ m: ezpv i| smzp pa 0 TO smzp |i ;
   IF a u NOTFOUND EXIT THEN
   a an u 2+  MOVE 'e' an u + C! '.' an pt + C! an u 1+ EVALUATE
 ;
-
 I: | NextWord 2DUP + 1- C@ '|' <> IF RECURSE EVALUATE ELSE 2DROP THEN ;
-
-\ experiment
-CREATE bufsv 128 ALLOT 0 VALUE ddp
-I: (: 0 TO ddp
-BEGIN NextWord 2DUP S" :)" COMPARE
-  IF   bufsv ddp + 2! ddp 8 + TO ddp 0
-  ELSE 2DROP 1
-  THEN
-UNTIL
-bufsv DUP ddp + 8 - DO I 2@ EVALUATE -8 +LOOP ` ezpv ;
 
 : .s CR DEPTH .SN CR S0 @ SP! ;
 : .sd DEPTH 0 DO I ROLL LOOP DEPTH 0 DO SWAP D. 2 +LOOP CR ;

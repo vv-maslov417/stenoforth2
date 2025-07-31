@@ -44,7 +44,7 @@ m: |vs }} ;
 ;MODULE
 
 : NOTFOUND u\ a\ a C@ '\' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-  ` vs| a 1+ a 1+ u + 2- DO  I 1 EVALUATE -1  +LOOP ` |vs ;
+  ` vs| a 1+ a 1+ u + 2- DO  I 1 EVALUATE -1 +LOOP ` |vs ;
 
 m: |2 \12 ; m: |3 \123 ; m: |4 \1234 ; m: |5 \12345 ; m: |6 \123456 ; m: |7 \1234567 ; m: |8 \12345678 ; m: |9 \123456789 ;
 
