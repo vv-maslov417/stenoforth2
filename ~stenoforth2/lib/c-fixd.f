@@ -77,7 +77,7 @@ m: |sd }} ;
 ;MODULE
 
 : NOTFOUND u\ a\ a C@ '"' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-` sd| a 1+ u 1- aDO I 1 EVALUATE 1 LOOP ` |sd ;
+` sd| a 1+ u 1- aDO I 1 EVALUATE LOOP ` |sd ;
 
 MODULE: dvaluenames
 m: 1 с!d ; m: 2 т!d ; m: 3 у!d ; m: 4 ф!d ; m: 5 х!d ; m: 6 ц!d ; m: 7 ч!d ; m: 8 ш!d ; m: 9 щ!d ;
