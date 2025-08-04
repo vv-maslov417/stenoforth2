@@ -9,7 +9,7 @@ CREATE lcode 0x100000 ALLOT lcode VALUE dpl
 CREATE ldate 0x100000 ALLOT ldate VALUE ldhere
 VARIABLE XHERE  VARIABLE xdpl
 
-0x1000 CONSTANT lenlvoc
+0x1800 CONSTANT lenlvoc
 USER-CREATE alvoc  lenlvoc USER-ALLOT  0 alvoc C!
 USER lhere
 USER axtloc
@@ -176,6 +176,16 @@ USER st-wr  0 st-wr !
   '}' { a u s } nf1-exit 1- headl
   L{ ` DUP ` adr@ RET,
   udhere + TO udhere }L
+;
+\ execution from the forth or if not there, then from the local dictionary
+: NOTFOUND ( c-addr u -- ) { a u | [ 16 ] arr }
+ a u + 1- C@ '`' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
+ a u 1- SFIND IF EXECUTE              \ search in current global dictionary
+              ELSE lvoc 2SWAP lsearch \ search in local dictionary
+                   IF + 1+ @ EXECUTE
+                   ELSE TYPE SPACE ." not found " CR
+                   THEN
+              THEN
 ;
 \ floating point number recognition  ( "1,0"  "-123,045" )
 : NOTFOUND  ( c-addr u -- ) { a u | sq sz pt [ 20 ] an }
