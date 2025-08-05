@@ -30,6 +30,7 @@ SYNONYM f>d     F>D
 SYNONYM fmax    FMAX
 SYNONYM fpi     FPI
 SYNONYM f>ds    F>DS
+SYNONYM ds>f    DS>F
 SYNONYM ftan    FTAN
 SYNONYM exp     EXP
 SYNONYM f0=     F0=
