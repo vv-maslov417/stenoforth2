@@ -58,6 +58,7 @@ CASE
 '{' OF   9 ENDOF \ closures
 ']' OF  10 ENDOF \ arrays-data fix-point
 '}' OF  11 ENDOF \ arrays-data float-point
+'^' OF  12 ENDOF \ vectors
 ENDCASE
 lhere @ u + 5 + DUP dtyp ! C! 0 lhere @ u + 6 + C!
 ;
@@ -67,7 +68,7 @@ m: nf2-exit a u a u + 2- W@ s <> IF NOTFOUND EXIT THEN
 a u 2- SFIND IF a u 1- CR TYPE ." this name already exists" CR CR 2DROP THEN 2DROP
 a u + 2- W@
 CASE
-'!d' OF 3 ENDOF
+'!d' OF  3 ENDOF
 ENDCASE
 lhere @ u + 4 + DUP dtyp ! C! 0 lhere @ u + 5 + C!
 ;
@@ -177,6 +178,12 @@ USER st-wr  0 st-wr !
   L{ ` DUP ` adr@ RET,
   udhere + TO udhere }L
 ;
+\ vectors
+: NOTFOUND ( a u --  ) \ vector "name^"
+  '^' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere ldhere LIT, ` !
+  L{ ldhere LIT, ` @ ` EXECUTE RET, ldhere LIT, ` ! RET, 1 CELLS ldhere + TO ldhere }L
+;
+
 \ execution from the forth or if not there, then from the local dictionary
 : NOTFOUND ( c-addr u -- ) { a u | [ 16 ] arr }
  a u + 1- C@ '`' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
