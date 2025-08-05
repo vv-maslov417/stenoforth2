@@ -113,12 +113,13 @@ USER st-wr  0 st-wr !
   + 1+ DUP 5 + C@ { typ }
   @ st-wr @
   IF
-  typ 1 = IF 12 ELSE   \ 1
-  typ 2 = IF 13 ELSE   \ 4
-  typ 3 = IF 20 ELSE   \ 2
-  typ 4 = IF 25 ELSE   \ 3
-  typ 5 = IF 13 ELSE   \ 5
-  0 THEN THEN THEN THEN THEN
+  typ  1 = IF 12 ELSE   \  1
+  typ  2 = IF 13 ELSE   \  4
+  typ  3 = IF 20 ELSE   \  2
+  typ  4 = IF 25 ELSE   \  3
+  typ  5 = IF 13 ELSE   \  5
+  typ 12 = IF 14 ELSE   \ 12
+  0 THEN THEN THEN THEN THEN THEN
   +
   THEN
   locxt @ 0<>
@@ -178,6 +179,7 @@ USER st-wr  0 st-wr !
   L{ ` DUP ` adr@ RET,
   udhere + TO udhere }L
 ;
+
 \ vectors
 : NOTFOUND ( a u --  ) \ vector "name^"
   '^' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere ldhere LIT, ` !
