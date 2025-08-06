@@ -19,7 +19,7 @@ REQUIRE 1-!          ~stenoforth2\lib\man-ip.f       \ расширения ба
 REQUIRE pusto        ~stenoforth2\lib\staxy4.f       \ прямое задание манипуляций параметрами на стеке параметров
 REQUIRE sseet        ~stenoforth2\lib\seetl.f        \ измеритель времени исполнения слова при разовом и циклическом его исполнении
 REQUIRE fpoint       ~stenoforth2\lib\w-flo.f        \ модуль для слов плав.точки
-REQUIRE closure      ~stenoforth2\lib\closure.f      \ расширение для замыканий и для формирования литеральных слов
+REQUIRE recgen       ~stenoforth2\lib\recgen.f       \ расширение для формирования литеральных слов
 REQUIRE valuenames   ~stenoforth2\lib\c-fix.f        \ модуль синонимов для сжатия слов для работы с фикс.точкой - разряднось 32
 REQUIRE mfvaluenames ~stenoforth2\lib\c-flo.f        \ модуль синонимов для сжатия слов для работы с плав.точкой
 REQUIRE dsynonyms    ~stenoforth2\lib\c-fixd.f       \ модуль синонимов для сжатия слов для работы с фикс.точкой - разрядность 64

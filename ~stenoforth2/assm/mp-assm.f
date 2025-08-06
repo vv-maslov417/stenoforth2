@@ -835,9 +835,9 @@ I: ret      0xC3 C, ;
 : ret,      0xC3 C, ;
 
 \ ВЫЗОВЫ ПОДПРОГРАММ
-I: :@  CS> 0xE8 C, DP @ 4 + - , ;  \ CALL REL32
-:  :@, CS> 0xE8 C, DP @ 4 + - , ;  \ CALL ADDR
-I: :R      0xFF C, 0xD0 RO1     ;  \ CALL R
+I: ^@  CS> 0xE8 C, DP @ 4 + - , ;  \ CALL REL32
+:  ^@, CS> 0xE8 C, DP @ 4 + - , ;  \ CALL ADDR
+I: ^R      0xFF C, 0xD0 RO1     ;  \ CALL R
 
 \ ИНСТРУКЦИИ СОПРОЦЕССОРА
 I: 0=@wR  0 0xDF @RO ; \ FILD m16int

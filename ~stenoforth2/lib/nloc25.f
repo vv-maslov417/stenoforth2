@@ -65,10 +65,10 @@ lhere @ u + 5 + DUP dtyp ! C! 0 lhere @ u + 6 + C!
 
 \ c-addr u ss -- c-addr u
 m: nf2-exit a u a u + 2- W@ s <> IF NOTFOUND EXIT THEN
-a u 2- SFIND IF a u 1- CR TYPE ." this name already exists" CR CR 2DROP THEN 2DROP
+a u 2- SFIND IF a u 1- CR TYPE ." <-- this name already exists" CR CR 2DROP THEN 2DROP
 a u + 2- W@
 CASE
-'!d' OF  3 ENDOF
+'!d' OF  3 ENDOF \ value-data fix-point 64 bits
 ENDCASE
 lhere @ u + 4 + DUP dtyp ! C! 0 lhere @ u + 5 + C!
 ;
@@ -77,11 +77,15 @@ lhere @ u + 4 + DUP dtyp ! C! 0 lhere @ u + 5 + C!
 : : init-lvoc : ; \ erase dictionary of previous definitions by next definition via ':'
 
 : NOTFOUND ( a u -- ) '(' { a u s } nf1-exit 1- headl L{ ;
-: ) ( -- )  RET, }L ; IMMEDIATE                                                         \ name(  ) code
+: ) ( -- )  RET, }L ; IMMEDIATE \ name(  ) code
+
+\ recursion for local word
+: recloc ( -- ) g| axtloc @ @ c@r |g ; IMMEDIATE
+
 : NOTFOUND ( a u -- ) '"' { a u s } nf1-exit 1- headl L{ LOAD-TEXT RET, }L ;            \ name"  " string
 : NOTFOUND ( a u -- ) '[' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` EVALUATE RET, }L ; \ name[  ] macros
 
-\ closures
+\ creating an anonymous function
 : NOTFOUND ( a u -- ) '{' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` xts RET, }L ;      \ name{  closure text }
 : x) ( -- )  RET, }L axtloc @ @ LIT, ; IMMEDIATE           \ name( ... x) xt gives out ( name is not used further)
 
@@ -185,6 +189,7 @@ USER st-wr  0 st-wr !
   '^' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere ldhere LIT, ` !
   L{ ldhere LIT, ` @ ` EXECUTE RET, ldhere LIT, ` ! RET, 1 CELLS ldhere + TO ldhere }L
 ;
+
 
 \ execution from the forth or if not there, then from the local dictionary
 : NOTFOUND ( c-addr u -- ) { a u | [ 16 ] arr }

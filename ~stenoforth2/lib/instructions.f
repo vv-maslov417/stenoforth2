@@ -286,6 +286,7 @@ MODULE: instructions
 : T=c  0x7D8B W, C, ;
 
 : paL ( offset32 -- )   0x8D C, 0xAD C, , ;
+: c@r ( addr -- ) 0xE8 C, DP @ 4 + - , ;  \ call rell32
 
 EXPORT
 m: g| {{   instructions ;

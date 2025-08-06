@@ -777,7 +777,7 @@ M: XR!
 : NOTFOUND   S" ?0123"       IDN 0 RG!             ` R0123      ;  \ BSWAP
 
 \ ВЫЗОВЫ ПОДПРОГРАММ
-: NOTFOUND   S" :?"          IDN 1 RG!             ` :R         ;  \ CALL R
+: NOTFOUND   S" ^?"          IDN 1 RG!             ` ^R         ;  \ CALL R
 
 \ ПЛАВ. ТОЧКА
 : NOTFOUND   S" 0=@w?"       IDN 4 RG!             ` 0=@wR      ;  \ FILD  m16int

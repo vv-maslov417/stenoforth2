@@ -5,7 +5,7 @@ DAC=TSCP DUP A=D -> t1 A=C DUP -> pr1
 DAC=TSCP DUP A=D -> t2 A=C DUP -> pr2
 xt WordByAddr CR TYPE CR
 DAC=TSCP DUP A=D 2DUP -> t1 A=C DUP -> pr1
-xt :A
+xt ^A
 DAC=TSCP DUP A=D -> t2 A=C DUP -> pr2
 t2 t1 D- -> tics
 ." p1=" pr1 . ." p2=" pr2 . CR
@@ -17,9 +17,9 @@ tics            D. ." tics "
 ms               . ." ms "
 mcs ms  1000 * - . ." us "
 ns DROP mcs  1000 * - . ." ns " CR
-xt :A xt :A xt :A xt :A
+xt ^A xt ^A xt ^A xt ^A
 DAC=TSCP DUP A=D -> t1 A=C DUP -> pr1
-xt :A
+xt ^A
 DAC=TSCP DUP A=D -> t2 A=C DUP -> pr2
 t2 t1 D- -> tics
 ." p1=" pr1 . ." p2=" pr2 . CR
