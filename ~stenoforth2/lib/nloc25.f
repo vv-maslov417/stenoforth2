@@ -49,7 +49,7 @@ a u + 1- C@
 CASE
 ')' OF   0 ENDOF \ variable-addres  4 or 8 bytes
 '\' OF   1 ENDOF \ value-data fix-point
-':' OF   2 ENDOF \ value-data-multi-threads fix-point
+'%' OF   2 ENDOF \ value-data-multi-threads fix-point
 '$' OF   4 ENDOF \ value-data float-point
 ';' OF   5 ENDOF \ value-data-multi-threads float-point
 '"' OF   6 ENDOF \ evaluate strings
