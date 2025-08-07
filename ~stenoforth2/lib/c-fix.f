@@ -43,17 +43,19 @@ m: vs| {{ valuenames ;
 m: |vs }} ;
 ;MODULE
 
-: NOTFOUND u\ a\ a C@ '\' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
+: NOTFOUND u\ a\ a C@ '\' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN  \  \1234
   ` vs| a 1+ a 1+ u + 2- DO  I 1 EVALUATE -1 +LOOP ` |vs ;
 
-m: |2 \12 ; m: |3 \123 ; m: |4 \1234 ; m: |5 \12345 ; m: |6 \123456 ; m: |7 \1234567 ; m: |8 \12345678 ; m: |9 \123456789 ;
+m: |1 \1 ; m: |2 \12 ; m: |3 \123 ; m: |4 \1234 ; m: |5 \12345 ; m: |6 \123456 ; m: |7 \1234567 ; m: |8 \12345678 ; m: |9 \123456789 ;
 
 MODULE: mvaluenames
-m: 1 а: ; m: 2 б: ; m: 3 в: ; m: 4 г: ; m: 5 д: ; m: 6 е: ; m: 7 ё: ; m: 8 ж: ; m: 9 з: ;
+m: 1 а% ; m: 2 б% ; m: 3 в% ; m: 4 г% ; m: 5 д% ; m: 6 е% ; m: 7 ё% ; m: 8 ж% ; m: 9 з% ;
 EXPORT
 m: mvs| {{ mvaluenames ;
 m: |mvs }} ;
 ;MODULE
 
-: NOTFOUND u\ a\ a C@ ':' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
+: NOTFOUND u\ a\ a C@ '%' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN  \  %1234
   ` mvs| a 1+ a 1+ u + 2- DO I 1 EVALUATE -1 +LOOP ` |mvs ;
+
+m: |%1 %1 ; m: |%2 %12 ; m: |%3 %123 ; m: |%4 %1234 ; m: |%5 %12345 ; m: |%6 %123456 ; m: |%7 %1234567 ; m: |%8 %12345678 ; m: |%9 %123456789 ;

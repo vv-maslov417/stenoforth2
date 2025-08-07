@@ -160,8 +160,8 @@ USER st-wr  0 st-wr !
   L{ ldhere LIT, ` 2@ ` DATA>FLOAT RET, ` FLOAT>DATA ldhere LIT, ` 2! RET, ldhere 2 CELLS + TO ldhere }L
 ;
 \ variables multithreaded
-: NOTFOUND ( a u --  ) \ value   "name:"
-  ':' { a u s } nf1-exit 1- headl ` usn! ` DROP \ 2 ltyp !
+: NOTFOUND ( a u --  ) \ value   "name%"
+  '%' { a u s } nf1-exit 1- headl ` usn! ` DROP \ 2 ltyp !
   L{ ` DUP  ` usn@ RET,
      ` usn! ` DROP RET,
      udhere 1 CELLS + TO udhere }L
