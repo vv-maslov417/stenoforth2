@@ -55,7 +55,7 @@ CASE
 '"' OF   6 ENDOF \ evaluate strings
 '(' OF   7 ENDOF \ code )
 '[' OF   8 ENDOF \ macros
-'{' OF   9 ENDOF \ closures
+'{' OF   9 ENDOF \ function modifier
 ']' OF  10 ENDOF \ arrays-data fix-point
 '}' OF  11 ENDOF \ arrays-data float-point
 '^' OF  12 ENDOF \ vectors
@@ -86,7 +86,7 @@ lhere @ u + 4 + DUP dtyp ! C! 0 lhere @ u + 5 + C!
 : NOTFOUND ( a u -- ) '[' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` EVALUATE RET, }L ; \ name[  ] macros
 
 \ creating an anonymous function
-: NOTFOUND ( a u -- ) '{' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` xts RET, }L ;      \ name{  closure text }
+: NOTFOUND ( a u -- ) '{' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` xts RET, }L ;      \ name{  function modifier text }
 : x) ( -- )  RET, }L axtloc @ @ LIT, ; IMMEDIATE           \ name( ... x) xt gives out ( name is not used further)
 
 \ search dictionary definition
