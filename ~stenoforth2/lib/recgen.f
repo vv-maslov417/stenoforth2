@@ -7,7 +7,7 @@ m: gen: 0= IF a u NOTFOUND EXIT THEN  ;
 \ непоср.значение переменной name' на стек
 rec: a C@ ''' <> a u + 1- C@ ''' = AND
 gen: [ 16 ] ar] lvoc a u 1- lsearch 2DROP 7 + C@ typ\
-     a ar u 1- MOVE '`' ar u + 1- C! ar u EVALUATE
+     a ar u 1- MOVE '`' ar u + 1- C! ar u EVALUATE ar 16 ERASE
      typ 3 > IF S" FLITERAL" EVALUATE ELSE
      typ 3 < IF S" LITERAL"  EVALUATE ELSE
      typ 3 = IF S" 2LITERAL" EVALUATE THEN

@@ -80,7 +80,7 @@ lhere @ u + 4 + DUP dtyp ! C! 0 lhere @ u + 5 + C!
 : ) ( -- )  RET, }L ; IMMEDIATE \ name(  ) code
 
 \ recursion for local word
-: recloc ( -- ) g| axtloc @ @ c@r |g ; IMMEDIATE
+: recloc ( -- )  g| axtloc @ @ c@r |g ; IMMEDIATE
 
 : NOTFOUND ( a u -- ) '"' { a u s } nf1-exit 1- headl L{ LOAD-TEXT RET, }L ;            \ name"  " string
 : NOTFOUND ( a u -- ) '[' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` EVALUATE RET, }L ; \ name[  ] macros

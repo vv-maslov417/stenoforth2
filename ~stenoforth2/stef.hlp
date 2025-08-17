@@ -399,4 +399,3 @@ dTc = 92 tics 0 ms 0 us 25 ns     \ среднее арифметическое 
 11. Встроенный ассемблер 
 ( исходники в файлах каталога \spf429\devel\~stenoforth2\assm\ и в файле \spf429\devel\~stenoforth2\lib\instructions.f)
 
-

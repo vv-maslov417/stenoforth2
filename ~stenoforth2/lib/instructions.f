@@ -16,8 +16,6 @@ MODULE: instructions  \ instructions parameterizable from the stack
 \ if the instruction does not need parameters, then the registers will be instead of t --> A,
 \ instead of rB rC rD rS rT rP rX --> B C D S T P X
 
-
-: t=t*#  0xC069 W, , ;
 : @=t    0x0589 W, , ;
 : t=@    0xA1 C, , ;
 
@@ -48,17 +46,45 @@ MODULE: instructions  \ instructions parameterizable from the stack
 : rS*c   0x0F C, 0x75AF W, C, ;
 
 \ rO#
-: t=#    0xB8   C,  , ;
-: rB=#   0xBB   C,  , ;
-: rC=#   0xB9   C,  , ;
-: rD=#   0xBA   C,  , ;
-: rS=#   0xBE   C,  , ;
+: t=#    0xB8   C, , ;
+: rB=#   0xBB   C, , ;
+: rC=#   0xB9   C, , ;
+: rD=#   0xBA   C, , ;
+: rS=#   0xBE   C, , ;
 
 : t+#    0xC081 W, , ;
 : rB+#   0xC381 W, , ;
 : rC+#   0xC181 W, , ;
 : rD+#   0xC281 W, , ;
 : rS+#   0xC681 W, , ;
+
+: t*#    0xC069 W, , ;
+: rB*#   0xDB69 W, , ;
+: rC*#   0xC969 W, , ;
+: rD*#   0xD269 W, , ;
+: rS*#   0xF669 W, , ;
+
+\ r=r*#
+: t=B*#  0xC369 W, , ;
+: t=C*#  0xC169 W, , ;
+: t=D*#  0xC269 W, , ;
+: t=S*#  0xC669 W, , ;
+: rB=t*#   0xD869 W, , ;
+: rB=C*#  0xD969 W, , ;
+: rB=D*#  0xDA69 W, , ;
+: rB=S*#  0xDE69 W, , ;
+: rC=t*#   0xC869 W, , ;
+: rC=B*#  0xCB69 W, , ;
+: rC=D*#  0xCA69 W, , ;
+: rC=S*#  0xCE69 W, , ;
+: rD=t*#   0xD069 W, , ;
+: rD=B*#  0xD369 W, , ;
+: rD=C*#  0xD169 W, , ;
+: rD=S*#  0xD669 W, , ;
+: rS=t*#   0xF069 W, , ;
+: rS=B*#  0xF369 W, , ;
+: rS=C*#  0xF169 W, , ;
+: rS=D*#  0xF269 W, , ;
 
 \ cOr
 : c=t    0x4589 W, C, ;
@@ -67,14 +93,32 @@ MODULE: instructions  \ instructions parameterizable from the stack
 : c=rD   0x5589 W, C, ;
 : c=rS   0x7589 W, C, ;
 
+: c+t    0x4501 W, C, ;
+: c+rB   0x5D01 W, C, ;
+: c+rC   0x4D01 W, C, ;
+: c+rD   0x5501 W, C, ;
+: c+rS   0x7501 W, C, ;
+
+: c-t    0x4529 W, C, ;
+: c-rB   0x5D29 W, C, ;
+: c-rC   0x4D29 W, C, ;
+: c-rD   0x5529 W, C, ;
+: c-rS   0x7529 W, C, ;
+
+\ cO#
+: c=#    0x45C7 W, C, , ;
+: c+#    0x4581 W, C, , ;
+: c-#    0x6D81 W, C, , ;
+: c|#    0x4D81 W, C, , ;
+: c&#    0x6581 W, C, , ;
+: c^#    0x7581 W, C, , ;
+
 : [rB=t  0x4389 W, C, ;
 : [rC=t  0x4189 W, C, ;
 : [rD=t  0x4289 W, C, ;
 : [rS=t  0x4689 W, C, ;
 
 : rB=c*# 0x5D69 W, C, , ;
-
-: c=#    0x45C7 W, C, , ;
 : LB=c   0xF C, 0x5D4C W, C, ;
 : GB=c   0xF C, 0x5D4F W, C, ;
 : t=c?   0x453B W, C, ;
@@ -94,13 +138,10 @@ MODULE: instructions  \ instructions parameterizable from the stack
 : c&rC   0x4D21 W, C, ;
 : c^rC   0x4D31 W, C, ;
 : c|rC   0x4D09 W, C, ;
-: c+rC   0x4D01 W, C, ;
-: c-rC   0x4D29 W, C, ;
 : c&t    0x4521 W, C, ;
 : c^t    0x4531 W, C, ;
 : c|t    0x4509 W, C, ;
-: c+t    0x4501 W, C, ;
-: c-t    0x4529 W, C, ;
+
 : rB^#   0xF381 W, , ;
 : rB^c   0x5D33 W, C, ;
 : *c     0x6DF7 W, C, ;
@@ -109,11 +150,7 @@ MODULE: instructions  \ instructions parameterizable from the stack
 : t^#    0x35 C, , ;
 
 : t-#    NEGATE 0xC081 W, , ;
-: c|#    0x4D81 W, C, , ;
-: c&#    0x6581 W, C, , ;
-: c^#    0x7581 W, C, , ;
-: c+#    0x4581 W, C, , ;
-: c-#    0x6D81 W, C, , ;
+
 : t<<    0xE0C1 W, C, ;
 : t>>    0xE8C1 W, C, ;
 : ta>>   0xF8C1 W, C, ;
