@@ -12,7 +12,7 @@ t2 t1 D- -> tics
 tics 10. D* 36. D/ -> ns
 ns      1000. D/ DROP -> mcs
 mcs     1000 / -> ms
-." dT1 = "
+." t1 = "
 tics            D. ." tics "
 ms               . ." ms "
 mcs ms  1000 * - . ." us "
@@ -26,7 +26,7 @@ t2 t1 D- -> tics
 tics 10. D* 36. D/  -> ns
 ns      1000. D/ DROP -> mcs
 mcs     1000 / -> ms
-." dTc = "
+." tc = "
 tics            D. ." tics "
 ms               . ." ms "
 mcs ms  1000 * - . ." us "

@@ -30,6 +30,7 @@ REQUIRE f.           ~stenoforth2\lib\r-flo.f        \ перевод имен �
 REQUIRE [type]       ~stenoforth2\math\matr.f        \ операции над матрицами с числами с фикс. точкой
 REQUIRE SEE          ~stenoforth2\lib\disasm.f       \ доработанный SEE(дает размер кода и число инструкций)
 REQUIRE s-inv        ~stenoforth2\lib\string.f       \ операции над строками
+REQUIRE }a           ~stenoforth2\lib\short-asm.f
 
 S" f:\spf429\devel\~stenoforth2\bin\spf486.exe" SAVE
 

@@ -171,6 +171,7 @@ SYNONYM abs                   ABS
 SYNONYM negate                NEGATE
 SYNONYM mod                   MOD
 SYNONYM /mod                  /MOD
+SYNONYM umod                  UMOD
 SYNONYM evaluate              EVALUATE
 SYNONYM postpone              POSTPONE
 SYNONYM execute               EXECUTE
