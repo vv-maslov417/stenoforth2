@@ -1,7 +1,4 @@
-m: rec: 0 WARNING ! : NOTFOUND u\ a\
-   p>c[ a 1- + C@ ]   \ pos -- char
-   pc?[ SWAP p>c = ]  \ pos char -- flag
-;
+m: rec: 0 WARNING ! : NOTFOUND u\ a\ ;
 m: gen: 0= IF a u NOTFOUND EXIT THEN ;
 
 \ непоср.значение переменной name' на стек
