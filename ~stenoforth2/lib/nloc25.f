@@ -9,7 +9,7 @@ CREATE lcode 0x100000 ALLOT lcode VALUE dpl
 CREATE ldate 0x100000 ALLOT ldate VALUE ldhere
 VARIABLE XHERE  VARIABLE xdpl
 
-0x1800 CONSTANT lenlvoc
+0x800 CONSTANT lenlvoc
 USER-CREATE alvoc  lenlvoc USER-ALLOT  0 alvoc C!
 USER lhere
 USER axtloc
@@ -17,7 +17,7 @@ USER dtyp  0 dtyp !   \ variable type
 USER locxt 0 locxt !
 USER iol   0 iol !
 
-USER-CREATE udata  0x2500 USER-ALLOT
+USER-CREATE udata  0x2000 USER-ALLOT
 udata ' udata 5 + @ DUP VALUE udhere - VALUE basa
 
 m: usn! [ 0x8789 W, udhere , ] ;
