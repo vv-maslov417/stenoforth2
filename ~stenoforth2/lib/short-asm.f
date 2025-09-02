@@ -3,7 +3,7 @@
 \ short assm
 \ rO [rO rOr rO[r [rOr rO# [rO# r=r*# rc+r rc-r rc+[r rc-[r rc+# rc-# [rc+# [rc-#
 \ r>> r<< [r>> [r<< rc>> rc<< [rc>> [rc<< ra>> ra<< [ra>> [ra<< ra rra cdq /r /[r
-\ r=r? r=[r? [r=r? r=#? [r=#? rO@ @Or @O#
+\ r=r? r=[r? [r=r? r=#? [r=#? rO@ @Or @O# <r=r >r=r Zr=r zr=r <r=[r >r=[r Zr=[r zr=[r
 
 MODULE: asmforth
 : CinStr { s a u -- tf }
@@ -174,6 +174,30 @@ gen: 1 spos case '+' of 0x1 endof '-' of 0x29 endof '=' of 0x89 endof endcase c,
 
 rec: '@' 0 spos?  '+' 1 spos? '-' 1 spos? '=' 1 spos? or or and a 2 + u 2 - number? nip swap n\ and
 gen: 1 spos case '+' of 0x81 c, 0x5 c, endof '-' of 0x81 c, 0x2D c, endof '=' of 0xC7 c, 0x5 c, endof endcase , n , ;
+\ <r=r
+rec: '<' 0 spos? 1 regs? and '=' 2 spos? and 3 regs? and u 4 = and
+gen: 1 nregs R\ 3 nregs r\ 0xF c, 0x4C c, 0xC0 R 3 lshift or r or c, ;
+\ >r=r
+rec: '>' 0 spos? 1 regs? and '=' 2 spos? and 3 regs? and u 4 = and
+gen: 1 nregs R\ 3 nregs r\ 0xF c, 0x4F c, 0xC0 R 3 lshift or r or c, ;
+\ Zr=r
+rec: 'Z' 0 spos? 1 regs? and '=' 2 spos? and 3 regs? and u 4 = and
+gen: 1 nregs R\ 3 nregs r\ 0xF c, 0x44 c, 0xC0 R 3 lshift or r or c, ;
+\ zr=r
+rec: 'z' 0 spos? 1 regs? and '=' 2 spos? and 3 regs? and u 4 = and
+gen: 1 nregs R\ 3 nregs r\ 0xF c, 0x45 c, 0xC0 R 3 lshift or r or c, ;
+\ <r=[r
+rec: '<' 0 spos? 1 regs? and '=[' 2 2spos? and 4 regs? and u 5 = and
+gen: 1 nregs R\ 4 nregs r\ 0xF c, 0x4C c, 0x40 R 3 lshift or r or c, r 4 = if 0x24 c, then c, ;
+\ >r=[r
+rec: '>' 0 spos? 1 regs? and '=[' 2 2spos? and 4 regs? and u 5 = and
+gen: 1 nregs R\ 4 nregs r\ 0xF c, 0x4F c, 0x40 R 3 lshift or r or c, r 4 = if 0x24 c, then c, ;
+\ Zr=[r
+rec: 'Z' 0 spos? 1 regs? and '=[' 2 2spos? and 4 regs? and u 5 = and
+gen: 1 nregs R\ 4 nregs r\ 0xF c, 0x44 c, 0x40 R 3 lshift or r or c, r 4 = if 0x24 c, then c, ;
+\ zr=[r
+rec: 'z' 0 spos? 1 regs? and '=[' 2 2spos? and 4 regs? and u 5 = and
+gen: 1 nregs R\ 4 nregs r\ 0xF c, 0x45 c, 0x40 R 3 lshift or r or c, r 4 = if 0x24 c, then c, ;
 EXPORT
 m: A|  {{   asmforth ;
 m: |A  }}            ;
