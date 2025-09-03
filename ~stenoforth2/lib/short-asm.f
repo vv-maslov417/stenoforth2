@@ -1,12 +1,12 @@
 \ stenoforth32
 
 \ short assm
-\ rO     [rO     rOr    rO[r    [rOr  rO#    [rO#  r=r*#  rc+r   c-r     rc+[r  rc-[r   rc+#   rc-#    [rc+#  [rc-#
-\ r>>    r<<     [r>>   [r<<    rc>>  rc<<   [rc>> [rc<<  ra>>   ra<<    [ra>>  [ra<<   ra     rra     /r     /[r
-\ r=r?   r=[r?   [r=r?  r=#?    [r=#? rO@    @Or   @O#    <r=r   >r=r    Zr=r   zr=r    <r=[r  >r=[r   Zr=[r  zr=[r
-\ r=l\r  r=h\r   r=l\[r r=h\[r  c=r\r c=[r\r c=r\# c=[r\# c=r0\r c=[r0\r c=r0\# c=[r0\# c=r1\r c=[r1\r c=r1\# c=[r1\#
-\ c=r~\r c=[r~\r c=r~\# c=[r~\#
-\ cdq
+\ rO     [rO     rOr    rO[r    [rOr  rO#    [rO#  r=r*#  rc+r     c-r     rc+[r  rc-[r   rc+#   rc-#    [rc+#  [rc-#
+\ r>>    r<<     [r>>   [r<<    rc>>  rc<<   [rc>> [rc<<  ra>>     ra<<    [ra>>  [ra<<   ra     rra     /r     /[r
+\ r=r?   r=[r?   [r=r?  r=#?    [r=#? rO@    @Or   @O#    <r=r     >r=r    Zr=r   zr=r    <r=[r  >r=[r   Zr=[r  zr=[r
+\ r=l\r  r=h\r   r=l\[r r=h\[r  c=r\r c=[r\r c=r\# c=[r\# c=r0\r   c=[r0\r c=r0\# c=[r0\# c=r1\r c=[r1\r c=r1\# c=[r1\#
+\ c=r~\r c=[r~\r c=r~\# c=[r~\# r3210 r+~r   [r+~r
+\ cdq    pushad  popad  cf=0    cf=1  df=0   df=1  cpuid  dac=tscp nop
 
 MODULE: asmforth
 : CinStr { s a u -- tf }
@@ -249,7 +249,23 @@ gen: 2 nregs R\ 0xF c, 0xBA c, 0xC0 0x7 3 lshift or R or c, n c, ;
 \ c=[r~\#
 rec: 'c=' 0 2spos? '[' 2 spos? and 3 regs? and '~\' 4 2spos? and a 6 + u 6 - number? nip swap n\ and u 6 > and u 9 < and
 gen: 3 nregs R\ 0xF c, 0xBA c, 0x40 0x7 3 lshift or R or c, R 4 = if 0x24 c, then c, n c, ;
-
+\ r3210
+rec: 0 regs? s" 3210" a 1+ u 1- compare 0= and gen: 0xF c, 0xC8 0 nregs or c, ;
+\ r+~r
+rec: 0 regs? '+~' 1 2spos? and 3 regs? and u 4 = and
+gen: 0xF c, 0xC1 c, 0xC0 3 nregs 3 lshift or 0 nregs or c, ;
+\ [r+~r
+rec: '[' 0 spos? 1 regs? and '+~' 2 2spos? and 4 regs? and u 5 = and
+gen: 0xF c, 0xC1 c, 0x40 4 nregs 3 lshift or 1 nregs or c, 1 nregs 4 = if 0x24 c, then c, ;
+i: pushad   0x60 c, ;
+i: popad    0x61 c, ;
+i: cf=0     0xF8 c, ;
+i: cf=1     0xF9 c, ;
+i: df=0     0xFC c, ;
+i: df=1     0xFD c, ;
+I: cpuid    0x0F c, 0xA2 c, ;
+i: dac=tscp 0x0F c, 0x1 c, 0xF9 c, ;
+i: nop      0x90 c, ;
 EXPORT
 m: A|  {{   asmforth ;
 m: |A  }}            ;
