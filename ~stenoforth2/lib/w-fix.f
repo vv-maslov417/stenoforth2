@@ -236,3 +236,4 @@ SYNONYM reposition-file       REPOSITION-FILE
 SYNONYM xn                    XN
 SYNONYM $label                $LABEL
 SYNONYM choose                CHOOSE
+SYNONYM i:                    I:
