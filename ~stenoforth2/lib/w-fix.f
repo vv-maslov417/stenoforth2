@@ -237,3 +237,4 @@ SYNONYM xn                    XN
 SYNONYM $label                $LABEL
 SYNONYM choose                CHOOSE
 SYNONYM i:                    I:
+SYNONYM export                EXPORT

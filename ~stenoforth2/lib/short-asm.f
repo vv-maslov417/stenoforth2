@@ -232,4 +232,3 @@ EXPORT
 m: A|  {{   asmforth ; m: |A  }}    ;
 m: a|  {{ [ asmforth ; m: |a  ] }}  ;
 ;module
-
