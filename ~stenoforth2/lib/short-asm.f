@@ -228,7 +228,8 @@ i: cpuid    0x0F c, 0xA2 c, ;
 i: dac=tscp 0x0F c, 0x1 c, 0xF9 c, ;
 i: nop      0x90 c, ;  i: cdq 0x99 c, ;
 i: rep      0xF3 c, ;  i: repn     0xF2 c, ;
-EXPORT
+export
 m: A|  {{   asmforth ; m: |A  }}    ;
 m: a|  {{ [ asmforth ; m: |a  ] }}  ;
 ;module
+
