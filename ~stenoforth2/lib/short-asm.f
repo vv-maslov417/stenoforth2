@@ -165,9 +165,9 @@ gen: 1 spos case '+' of 0x1 endof '-' of 0x29 endof '=' of 0x89 endof endcase c,
 \ @O#
 rec: '@' 0 spos? '+' 1 spos? '-' 1 spos? '=' 1 spos? or or and a 2 + u 2 - number? nip swap n\ and u 2 > and u 12 < and
 gen: 1 spos case '+' of 0x81 c, 0x5 c, endof '-' of 0x81 c, 0x2D c, endof '=' of 0xC7 c, 0x5 c, endof endcase , n , ;
-\ s@O#
-rec: 's@' 0 2spos? '+' 2 spos? '-' 2 spos? or '=' 2 spos? or and '#' 3 spos? and u 4 = and
-gen: 2 spos case '+' of 0x81 c, 0x5  c, endof '-' of 0x81 c, 0x2D c, endof '=' of 0xC7 c, 0x5  c, endof endcase swap , , ;
+\ @Oi
+rec: '@' 0 spos?  '+' 1 spos? '-' 1 spos? or '=' 1 spos? or and 'i' 2 spos? and u 3 = and
+gen: 1 spos case '+' of 0x81 c, 0x5  c, endof '-' of 0x81 c, 0x2D c, endof '=' of 0xC7 c, 0x5  c, endof endcase swap , , ;
 \ <r=r >r=r Zr=r zr=r
 rec: '<' 0 spos? '>' 0 spos? 'Z' 0 spos? 'z' 0 spos? or or or 1 regs? and '=' 2 spos? and 3 regs? and u 4 = and
 gen: 1 nregs R\ 3 nregs r\ 0xF c, 0 spos
