@@ -231,4 +231,5 @@ i: rep      0xF3 c, ;  i: repn     0xF2 c, ;
 EXPORT
 m: A|  {{   asmforth ; m: |A  }}    ;
 m: a|  {{ [ asmforth ; m: |a  ] }}  ;
-;MODULE
+;module
+
