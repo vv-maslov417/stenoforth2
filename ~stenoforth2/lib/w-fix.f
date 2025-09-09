@@ -12,8 +12,8 @@ SYNONYM d+                    D+
 SYNONYM d-                    D-
 SYNONYM d*                    D*
 SYNONYM d/                    D/
-SYNONYM dmax                  DMAX
-SYNONYM dmin                  DMIN
+\ SYNONYM dmax                  DMAX
+\ SYNONYM dmin                  DMIN
 SYNONYM dor                   DOR
 SYNONYM dxor                  DXOR
 SYNONYM dand                  DAND

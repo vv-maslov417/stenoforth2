@@ -5,7 +5,7 @@
 \ r>>    r<<     [r>>   [r<<    rc>>  rc<<   [rc>> [rc<<  ra>>     ra<<    [ra>>  [ra<<   ra     rra     /r     /[r
 \ r=r?   r=[r?   [r=r?  r=i?    [r=i? rO@    @Or   @Oi    <r=r     >r=r    Zr=r   zr=r    <r=[r  >r=[r   Zr=[r  zr=[r
 \ r=l\r  r=h\r   r=l\[r r=h\[r  c=r\r c=[r\r c=r\i c=[r\i c=r0\r   c=[r0\r c=r0\i c=[r0\i c=r1\r c=[r1\r c=r1\i c=[r1\i
-\ c=r~\r c=[r~\r c=r~\i c=[r~\i r3210 r+~r   [r+~r @Oi
+\ c=r~\r c=[r~\r c=r~\i c=[r~\i r3210 r+~r   [r+~r
 \ cdq    pushad  popad  cf=0    cf=1  df=0   df=1  cpuid  dac=tscp nop
 
 module: asmforth
@@ -16,15 +16,18 @@ module: asmforth
 t: sregs acdbxpst ;   \ eax ecx edx ebx esp ebp esi  edi
 t: soper |&^=+-*~ ;   \ or  and xor mov add sub imul xchg
 t: soper1 |&^=+-~ ;
-t: soper2 |&^=+- ;
+t: soper2 |&^=+-* ;
+t: soper3 |&^=+- ;
 m: regs?  a + c@ sregs  cinstr ;      \ pos reg -- flag
 m: nregs  a + c@ sregs  sym>offs ;    \ pos reg -- numreg
 m: oper?  a + c@ soper  cinstr ;      \ pos oper -- flag
 m: oper1? a + c@ soper1 cinstr ;
 m: oper2? a + c@ soper2 cinstr ;
+m: oper3? a + c@ soper3 cinstr ;
 m: spos?  a + c@ = ;                  \ sym pos -- flag
 m: 2spos? a + w@ = ;                  \ 2symop pos -- flag
 m: spos   a + c@ ;                    \ pos -- char
+
 : cops  \ symb -- cop
   case '|' of 0x0B endof '&' of 0x23 endof '^' of 0x33 endof
        '+' of 0x03 endof '-' of 0x2B endof '~' of 0x87 endof
@@ -44,6 +47,7 @@ m: spos   a + c@ ;                    \ pos -- char
   case '|' of 0x81 c, 0x48 endof '&' of 0x81 c, 0x60 endof
        '^' of 0x81 c, 0x70 endof '=' of 0xC7 c, 0x40 endof
        '+' of 0x81 c, 0x40 endof '-' of 0x81 c, 0x68 endof endcase ;
+
 \ ror  reg1 adc sbb reg2
 : copsa  case 'c+' of 0x13 c, 0xC0 endof 'c-' of 0x1B c, 0xC0 endof endcase ;
 \ roc  reg adc sbb cell
@@ -72,13 +76,12 @@ gen: 0 nregs R\ 2 nregs r\ a 1+ C@ cops op\
 \ rO[r  |&^=+-*~
 rec: 0 regs? 1 oper? and '[' 2 spos? and 3 regs? and u 4 = and
 gen: 0 nregs R\ 3 nregs r\ a 1+ C@ cops op\
-     roc[ c, 0x40 r or R 3 lshift or c, ]
-     op 0xAF = if 0x0F c, then op roc c, ;
+     op 0xAF = if 0x0F c, then op c, 0x40 r or R 3 lshift or c, c, ;
 \ [rOr  |&^=+-~
 rec: '[' 0 spos? 1 regs? and 2 oper1? and 3 regs? and u 4 = and
 gen: 3 nregs R\ 1 nregs r\ a 2+ C@ cops1 op\
      op 0xAF = if 0x0F c, then op c, r 4 <>
-     if 0x40 r or R 3 lshift or c, else 0x40 r or c, 0x24 c, then c, ;
+     if 0x40 r or R 3 lshift or c, else 0x40 r or c, 0x24 c, then depth if c, then ;
 \ r<< r>>
 rec: 0 regs? '>>' 1 2spos? '<<' 1 2spos? dup pc\ or and u 3 = and
 gen: 0xC1 c, pc if 0xE0 else 0xE8 then 0 nregs or c, c, ;
@@ -104,10 +107,10 @@ rec: '[' 0 spos? 1 regs? and 'a' 2 spos? and
 gen: 0xC1 c, pc if 0x60 else 0x78 then
      1 nregs or c, 1 nregs 4 = if 0x24 c, then c, c, ;
 \ rOi  |&^+-=*
-rec: 0 n\ 0 regs? 1 oper? and 'i' 2 spos? st\ st if 1 and u 3 = and else a 2+ u 2- number? nip swap -> n and u 12 < and u 2 > and then
-gen: 1 spos cops2 0 nregs dup 3 lshift or or c, st 0= if n then , ;
+rec: 0 n\ 0 regs? 1 oper2? and 'i' 2 spos? st\ st if 1 and u 3 = and else a 2+ u 2- number? nip swap -> n and u 12 < and u 2 > and then
+gen: 1 spos cops2 0 nregs '*' 1 spos? if dup 3 lshift or then or c, st 0= if n then , ;
 \ [rOi  |&^+-=
-rec: 0 n\ '[' 0 spos? 1 regs? and 2 oper2? and 'i' 3 spos? st\
+rec: 0 n\ '[' 0 spos? 1 regs? and 2 oper3? and 'i' 3 spos? st\
      st if 1 and u 4 = and else a 3 + u 3 - number? nip swap -> n and u 12 < and u 2 > and then
 gen: 2 spos cops3 1 nregs 4 <> if 1 nregs or c, else 1 nregs or c, 0x24 c, then c, st 0= if n then , ;
 \ r=r*i
@@ -161,11 +164,12 @@ gen: 1 spos case '+' of 0x3 endof '-' of 0x2B endof '=' of 0x8B endof endcase c,
 \ @Or +-=
 rec: '@' 0 spos?  '+' 1 spos? '-' 1 spos? '=' 1 spos? or or and 2 regs? and u 3 = and
 gen: 1 spos case '+' of 0x1 endof '-' of 0x29 endof '=' of 0x89 endof endcase c, 5 2 nregs 3 lshift or c, , ;
-\ @Oi
-rec: '@' 0 spos?  '+' 1 spos? '-' 1 spos? or '=' 1 spos? or and 'i' 2 spos? u 3 = and dup st\
-      a 2 + u 2 - number? nip swap n\  u 2 > and u 12 < and or and
-gen: 1 spos case '+' of 0x81 c, 0x5  c, endof '-' of 0x81 c, 0x2D c, endof '=' of 0xC7 c, 0x5  c, endof endcase
-     st if  swap , , else , n , then ;
+\ @Oi data addr --
+rec: '@' 0 spos?  '+' 1 spos? '-' 1 spos? or '=' 1 spos? or '|' 1 spos? or '&' 1 spos? or '^' 1 spos? or
+     and 'i' 2 spos? u 3 = and dup st\ a 2 + u 2 - number? nip swap n\  u 2 > and u 12 < and or and
+gen: 1 spos case '+' of 0x81 c, 0x5 c, endof '-' of 0x81 c, 0x2D c, endof '=' of 0xC7 c, 0x5  c, endof
+                 '|' of 0x81 c, 0xD c, endof '&' of 0x81 c, 0x25 c, endof '^' of 0x81 c, 0x35 c, endof
+            endcase st if , , else , n , then ;
 \ <r=r >r=r Zr=r zr=r
 rec: '<' 0 spos? '>' 0 spos? 'Z' 0 spos? 'z' 0 spos? or or or 1 regs? and '=' 2 spos? and 3 regs? and u 4 = and
 gen: 1 nregs R\ 3 nregs r\ 0xF c, 0 spos
@@ -222,12 +226,10 @@ gen: 0xF c, 0xC1 c, 0xC0 3 nregs 3 lshift or 0 nregs or c, ;
 rec: '[' 0 spos? 1 regs? and '+~' 2 2spos? and 4 regs? and u 5 = and
 gen: 0xF c, 0xC1 c, 0x40 4 nregs 3 lshift or 1 nregs or c, 1 nregs 4 = if 0x24 c, then c, ;
 i: pushad   0x60 c, ;  i: popad    0x61 c, ;
-i: cf=0     0xF8 c, ;  i: cf=1     0xF9 c, ;
-i: df=0     0xFC c, ;  i: df=1     0xFD c, ;
-i: cpuid    0x0F c, 0xA2 c, ;
-i: dac=tscp 0x0F c, 0x1 c, 0xF9 c, ;
-i: nop      0x90 c, ;  i: cdq 0x99 c, ;
-i: rep      0xF3 c, ;  i: repn     0xF2 c, ;
+i: cf=0     0xF8 c, ;  i: cf=1     0xF9 c, ;  i: df=0     0xFC c, ;  i: df=1     0xFD c, ;
+i: cpuid    0x0F c, 0xA2 c, ;                 i: dac=tscp 0x0F c, 0x1 c, 0xF9 c, ;
+i: nop      0x90 c, ;                         i: cdq 0x99 c, ;
+i: rep      0xF3 c, ;                         i: repn     0xF2 c, ;
 export
 m: A|  {{   asmforth ; m: |A  }}    ;
 m: a|  {{ [ asmforth ; m: |a  ] }}  ;

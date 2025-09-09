@@ -9,7 +9,7 @@ CREATE lcode 0x100000 ALLOT lcode VALUE dpl
 CREATE ldate 0x100000 ALLOT ldate VALUE ldhere
 VARIABLE XHERE  VARIABLE xdpl
 
-0x800 CONSTANT lenlvoc
+0x400 CONSTANT lenlvoc
 USER-CREATE alvoc  lenlvoc USER-ALLOT  0 alvoc C!
 USER lhere
 USER axtloc
