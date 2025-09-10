@@ -56,16 +56,16 @@ m: spos   a + c@ ;                    \ pos -- char
 : copsd  case 'c+' of 0x81 c, 0xD0 endof 'c-' of 0x81 c, 0xD8 endof endcase ;
 \ ccoi  cell adc sbb imm
 : copse  case 'c+' of 0x81 c, 0x50 endof 'c-' of 0x81 c, 0x58 endof endcase ;
-\ rO
-rec: 0 regs? '-' 1 spos? '~' 1 spos? or 'i' 1 spos? or 'j' 1 spos? or and u 2 = AND
+\ rO n~ij
+rec: 0 regs? 'n' 1 spos? '~' 1 spos? or 'i' 1 spos? or 'j' 1 spos? or and u 2 = AND
 gen: 0 nregs 1 spos
-     case '-' of 0xF7 c, 0xD8 endof '~' of 0xF7 c, 0xD0 endof
+     case 'n' of 0xF7 c, 0xD8 endof '~' of 0xF7 c, 0xD0 endof
           'i' of 0x40         endof 'j' of 0x48         endof endcase or c, ;
-\ [rO  -~ij
-rec: '[' 0 spos? 1 regs? and '-' 2 spos? '~' 2 spos? 'i' 2 spos? 'j' 2 spos?
+\ [rO  n~ij
+rec: '[' 0 spos? 1 regs? and 'n' 2 spos? '~' 2 spos? 'i' 2 spos? 'j' 2 spos?
      or or or and u 3 = and
 gen: 1 nregs 2 spos
-     case '-' of 0xF7 c, 0x58 endof '~' of 0xF7 c, 0x50 endof
+     case 'n' of 0xF7 c, 0x58 endof '~' of 0xF7 c, 0x50 endof
           'i' of 0xFF c, 0x40 endof 'j' of 0xFF c, 0x48 endof endcase or c, c, ;
 \ rOr  |&^=+-*~
 rec: 0 regs? 1 oper? and 2 regs? and u 3 = and
@@ -75,13 +75,14 @@ gen: 0 nregs R\ 2 nregs r\ a 1+ C@ cops op\
                else 0xF7 op = if op c, 0xF8 r or c, else op ror then then ;
 \ rO[r  |&^=+-*~
 rec: 0 regs? 1 oper? and '[' 2 spos? and 3 regs? and u 4 = and
-gen: 0 nregs R\ 3 nregs r\ a 1+ C@ cops op\
-     op 0xAF = if 0x0F c, then op c, 0x40 r or R 3 lshift or c, c, ;
+gen: 0 nregs R\ 3 nregs r\ a 1+ C@ cops op\ op 0xAF = if 0x0F c, then
+     op c, depth if 0x40 else r 5 = if 0x40 else 0x0 then then r or R 3 lshift or c, r 4 = if 0x24 c, then
+     depth if c, else r 5 = if 0 c, then then ;
 \ [rOr  |&^=+-~
 rec: '[' 0 spos? 1 regs? and 2 oper1? and 3 regs? and u 4 = and
-gen: 3 nregs R\ 1 nregs r\ a 2+ C@ cops1 op\
-     op 0xAF = if 0x0F c, then op c, r 4 <>
-     if 0x40 r or R 3 lshift or c, else 0x40 r or c, 0x24 c, then depth if c, then ;
+gen: 3 nregs R\ 1 nregs r\ a 2+ C@ cops1 op\ op 0xAF = if 0x0F c, then
+     op c, depth if 0x40 else r 5 = if 0x40 else 0x0 then then r or R 3 lshift or c, r 4 = if 0x24 c, then
+     depth if c, else r 5 = if 0 c, then then ;
 \ r<< r>>
 rec: 0 regs? '>>' 1 2spos? '<<' 1 2spos? dup pc\ or and u 3 = and
 gen: 0xC1 c, pc if 0xE0 else 0xE8 then 0 nregs or c, c, ;
@@ -137,12 +138,12 @@ gen: 0x8D c, 0x40 0 nregs or 0 nregs 3 lshift or c, c, ;
 \ rra
 rec: 0 regs? 1 regs? and 'a' 2 spos? and u 3 = and
 gen: 0x8D c, 0x40 1 nregs or 0 nregs 3 lshift or c, 1 nregs 4 = if 0x24 c, then c, ;
-\ /r
-rec: '/' 0 spos? 1 regs? and u 2 = and
-gen: 0xF7 c, 0xF8 1 nregs or c, ;
-\ /[r
-rec: '/' 0 spos? '[' 1 spos? and 2 regs? and u 3 = and
-gen: 0xF7 c, 0x78 2 nregs or c, 2 nregs 4 = if 0x24 c, then c, ;
+\ /r                                                                                                            \   F73C24           IDIV    [ESP]
+rec: '/' 0 spos? 1 regs? and u 2 = and                                                                          \   F77D00           IDIV    0 [EBP]
+gen: 0xF7 c, 0xF8 1 nregs or c, ;                                                                               \   F738             IDIV    [EAX]
+\ /[r                                                                                                           \   F77C24F7         IDIV    F7 [ESP]
+rec: '/' 0 spos? '[' 1 spos? and 2 regs? and u 3 = and                                                          \   7D00             JGE     7CB8F1
+gen: 0xF7 c, 2 nregs 5 = if 0x78 else 0x38 then 2 nregs or c, 2 nregs 4 = if 0x24 c, then depth if c, else 2 nregs 5 = if 0 c, then then ;    \   F778C3           IDIV    C3 [EAX]
 \ r=r?
 rec: 0 regs? '=' 1 spos? and 2 regs? and '?' 3 spos? and u 4 = and
 gen: 0 nregs R\ 2 nregs r\ 0x3B c, 0xC0 R 3 lshift or r or c, ;
