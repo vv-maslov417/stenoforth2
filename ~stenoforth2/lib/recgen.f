@@ -10,8 +10,10 @@ gen: [ 16 ] ar] lvoc a u 1- lsearch 2DROP 7 + C@ typ\
      typ 3 = IF S" 2LITERAL" EVALUATE THEN
      THEN THEN ;
 
+\ ) \ % ] } <-- immediate for state @ 0=  [ <-- immediate for macros
 rec: lvoc a u lsearch fl\ um\ am\
-     fl am um + 6 + C@ 8 = AND
+     fl am um + 6 + C@ ty\ ty 8 =
+     ty 0 = ty 1 = ty 2 = OR OR STATE @ 0= AND OR AND
 gen: am um + 1+ @ EXECUTE ;
 
 : recgen ;

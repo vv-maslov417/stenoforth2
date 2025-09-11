@@ -138,11 +138,11 @@ gen: 0x8D c, 0x40 0 nregs or 0 nregs 3 lshift or c, c, ;
 \ rra
 rec: 0 regs? 1 regs? and 'a' 2 spos? and u 3 = and
 gen: 0x8D c, 0x40 1 nregs or 0 nregs 3 lshift or c, 1 nregs 4 = if 0x24 c, then c, ;
-\ /r                                                                                                            \   F73C24           IDIV    [ESP]
-rec: '/' 0 spos? 1 regs? and u 2 = and                                                                          \   F77D00           IDIV    0 [EBP]
-gen: 0xF7 c, 0xF8 1 nregs or c, ;                                                                               \   F738             IDIV    [EAX]
-\ /[r                                                                                                           \   F77C24F7         IDIV    F7 [ESP]
-rec: '/' 0 spos? '[' 1 spos? and 2 regs? and u 3 = and                                                          \   7D00             JGE     7CB8F1
+\ /r
+rec: '/' 0 spos? 1 regs? and u 2 = and
+gen: 0xF7 c, 0xF8 1 nregs or c, ;
+\ /[r
+rec: '/' 0 spos? '[' 1 spos? and 2 regs? and u 3 = and
 gen: 0xF7 c, 2 nregs 5 = if 0x78 else 0x38 then 2 nregs or c, 2 nregs 4 = if 0x24 c, then depth if c, else 2 nregs 5 = if 0 c, then then ;    \   F778C3           IDIV    C3 [EAX]
 \ r=r?
 rec: 0 regs? '=' 1 spos? and 2 regs? and '?' 3 spos? and u 4 = and
