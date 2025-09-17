@@ -18,6 +18,7 @@ t: soper |&^=+-*~ ;   \ or  and xor mov add sub imul xchg
 t: soper1 |&^=+-~ ;
 t: soper2 |&^=+-* ;
 t: soper3 |&^=+- ;
+
 m: regs?  a + c@ sregs  cinstr ;      \ pos reg -- flag
 m: nregs  a + c@ sregs  sym>offs ;    \ pos reg -- numreg
 m: oper?  a + c@ soper  cinstr ;      \ pos oper -- flag
@@ -108,15 +109,15 @@ rec: '[' 0 spos? 1 regs? and 'a' 2 spos? and
 gen: 0xC1 c, pc if 0x60 else 0x78 then
      1 nregs or c, 1 nregs 4 = if 0x24 c, then c, c, ;
 \ rOi  |&^+-=*
-rec: 0 n\ 0 regs? 1 oper2? and 'i' 2 spos? st\ st if 1 and u 3 = and else a 2+ u 2- number? nip swap -> n and u 12 < and u 2 > and then
+rec: 0 n\ 0 regs? 1 oper2? and 'i' 2 spos? st\ st if 1 and u 3 = and else a 2+ u 2- number? nip swap -> n and u 14 < and u 2 > and then
 gen: 1 spos cops2 0 nregs '*' 1 spos? if dup 3 lshift or then or c, st 0= if n then , ;
 \ [rOi  |&^+-=
 rec: 0 n\ '[' 0 spos? 1 regs? and 2 oper3? and 'i' 3 spos? st\
-     st if 1 and u 4 = and else a 3 + u 3 - number? nip swap -> n and u 12 < and u 2 > and then
+     st if 1 and u 4 = and else a 3 + u 3 - number? nip swap -> n and u 15 < and u 3 > and then
 gen: 2 spos cops3 1 nregs 4 <> if 1 nregs or c, else 1 nregs or c, 0x24 c, then c, st 0= if n then , ;
 \ r=r*i
 rec: 0 n\ 0 regs? '=' 1 spos? and 2 regs? and '*' 3 spos? and 'i' 4 spos? st\
-     st if 1 and u 5 = and else a 4 + u 4 - number? nip swap -> n and u 14 < and u 4 > and then
+     st if 1 and u 5 = and else a 4 + u 4 - number? nip swap -> n and u 16 < and u 4 > and then
 gen: '*' cops2 0 nregs 3 lshift or 2 nregs or c, st 0= if n then , ;
 \ rc+r rc-r
 rec: 0 regs? 'c+' 1 2spos? 'c-' 1 2spos? or and 3 regs? and u 4 = and
@@ -126,11 +127,11 @@ rec: 0 regs? 'c+' 1 2spos? 'c-' 1 2spos? or and '[' 3 spos? and 4 regs? and u 5 
 gen: a 1+ W@ copsb 0 nregs 3 lshift or 4 nregs or c, 4 nregs 4 = if 0x24 c, then c, ;
 \ rc+i rc-i
 rec: 0 n\ 0 regs? 'c+' 1 2spos? 'c-' 1 2spos? or and 'i' 3 spos? st\ st if 1 and u 4 = and
-     else a 3 + u 3 - number? nip swap -> n and u 13 < and u 3 > and then
+     else a 3 + u 3 - number? nip swap -> n and u 15 < and u 3 > and then
 gen: a 1+ w@ copsd 0 nregs or c, st 0= if n then , ;
 \ [rc+i [rc-i
 rec: 0 n\ '[' 0 spos? 1 regs? and 'c+' 2 2spos? 'c-' 2 2spos? or and
-      'i' 4 spos? st\ st if 1 and u 5 = and else a 4 + u 4 - number? nip swap -> n and u 13 < and u 3 > and then
+      'i' 4 spos? st\ st if 1 and u 5 = and else a 4 + u 4 - number? nip swap -> n and u 16 < and u 4 > and then
 gen: a 2+ W@ copse 1 nregs or c, 1 nregs 4 = if 0x24 c, then c, st 0= if n then , ;
 \ ra
 rec: 0 regs? 'a' 1 spos? and u 2 = and
@@ -154,10 +155,10 @@ gen: 0x3B c, 0 nregs R\ 3 nregs r\ 0x40 R 3 lshift or r or c, r 4 = if 0x24 c, t
 rec: '[' 0 spos? 1 regs? and '=' 2 spos? and 3 regs? and '?' 4 spos? and u 5 = and
 gen: 0x39 c, 1 nregs R\ 3 nregs r\ 0x40 r 3 lshift or R or c, R 4 = if 0x24 c, then c, ;
 \ r=i?
-rec: 0 regs? '=' 1 spos? and a 2+ u 3 - number? nip swap n\ and '?' u 1- spos? and u 3 > u 11 < and and
+rec: 0 regs? '=' 1 spos? and a 2+ u 3 - number? nip swap n\ and '?' u 1- spos? and u 3 > u 15 < and and
 gen: 0x81 c, 0xF8 0 nregs or c, n , ;
 \ [r=i?
-rec: '[' 0 spos? 1 regs? and '=' 2 spos? and a 3 + u 4 - number? nip swap n\ and '?' u 1- spos? and u 4 > u 12 < and and
+rec: '[' 0 spos? 1 regs? and '=' 2 spos? and a 3 + u 4 - number? nip swap n\ and '?' u 1- spos? and u 4 > u 16 < and and
 gen: 0x81 c, 0x78 1 nregs or c, 1 nregs 4 = if 0x24 c, then c, n , ;
 \ rO@ +-=
 rec: 0 regs? '+' 1 spos? '-' 1 spos? '=' 1 spos? or or and '@' 2 spos? and u 3 = and
@@ -167,7 +168,7 @@ rec: '@' 0 spos?  '+' 1 spos? '-' 1 spos? '=' 1 spos? or or and 2 regs? and u 3 
 gen: 1 spos case '+' of 0x1 endof '-' of 0x29 endof '=' of 0x89 endof endcase c, 5 2 nregs 3 lshift or c, , ;
 \ @Oi data addr --
 rec: '@' 0 spos?  '+' 1 spos? '-' 1 spos? or '=' 1 spos? or '|' 1 spos? or '&' 1 spos? or '^' 1 spos? or
-     and 'i' 2 spos? u 3 = and dup st\ a 2 + u 2 - number? nip swap n\  u 2 > and u 12 < and or and
+     and 'i' 2 spos? u 3 = and dup st\ a 2 + u 2 - number? nip swap n\  u 2 > and u 14 < and or and
 gen: 1 spos case '+' of 0x81 c, 0x5 c, endof '-' of 0x81 c, 0x2D c, endof '=' of 0xC7 c, 0x5  c, endof
                  '|' of 0x81 c, 0xD c, endof '&' of 0x81 c, 0x25 c, endof '^' of 0x81 c, 0x35 c, endof
             endcase st if , , else , n , then ;
@@ -195,10 +196,10 @@ gen: 2 nregs R\ 4 nregs r\ 0xF c, 0xA3 c, 0xC0 r 3 lshift or R or c, ;
 rec: 'c' 0 spos? '=[' 1 2spos? and 3 regs? and  '\' 4 spos? and 5 regs? and u 6 = and
 gen: 3 nregs R\ 5 nregs r\ 0xF c, 0xA3 c, 0x40 r 3 lshift or R or c, R 4 = if 0x24 c, then c, ;
 \ c=r\i
-rec: 'c' 0 spos? '=' 1 spos? and 2 regs? and  '\' 3 spos? and a 4 + u 4 - number? nip swap n\ and u 4 > and u 7 < and
+rec: 'c' 0 spos? '=' 1 spos? and 2 regs? and  '\' 3 spos? and a 4 + u 4 - number? nip swap n\ and u 4 > and u 8 < and
 gen: 2 nregs R\ 0xF c, 0xBA c, 0xC0 0x4 3 lshift or R or c, n c, ;
 \ c=[r\i
-rec: 'c' 0 spos? '=[' 1 2spos? and 3 regs? and '\' 4 spos? and a 5 + u 5 - number? nip swap n\ and u 5 > and u 8 < and
+rec: 'c' 0 spos? '=[' 1 2spos? and 3 regs? and '\' 4 spos? and a 5 + u 5 - number? nip swap n\ and u 5 > and u 9 < and
 gen: 3 nregs R\ 0xF c, 0xBA c, 0x40 0x4 3 lshift or R or c, R 4 = if 0x24 c, then c, n c, ;
 \ c=r0\r c=r1\r c=r~\r
 rec: 'c=' 0 2spos? 2 regs? and '0\' 3 2spos? '1\' 3 2spos? '~\' 3 2spos? or or and 5 regs? and u 6 = and
@@ -210,12 +211,12 @@ gen: 3 nregs R\ 6 nregs r\ 0xF c, 4 spos case '0' of 0xB3 endof '1' of 0xAB endo
      0x40 r 3 lshift or R or c, R 4 = if 0x24 c, then c, ;
 \ c=r0\i c=r1\i c=r~\i
 rec: 'c=' 0 2spos? 2 regs? and '0\' 3 2spos? '1\' 3 2spos? '~\' 3 2spos? or or and
-     a 5 + u 5 - number? nip swap n\ and u 5 > and u 8 < and
+     a 5 + u 5 - number? nip swap n\ and u 5 > and u 9 < and
 gen: 2 nregs R\ 0xF c, 0xBA c, 0xC0 3 spos case '0' of 0x6 endof '1' of 0x5 endof '~' of 0x7 endof endcase
      3 lshift or R or c, n c, ;
 \ c=[r0\i c=[r1\i c=[r~\i
 rec: 'c=' 0 2spos? '[' 2 spos? and 3 regs? and '0\' 4 2spos? '1\' 4 2spos? '~\' 4 2spos? or or and
-     a 6 + u 6 - number? nip swap n\ and u 6 > and u 9 < and
+     a 6 + u 6 - number? nip swap n\ and u 6 > and u 10 < and
 gen: 3 nregs R\ 0xF c, 0xBA c, 0x40 4 spos case '0' of 0x6 endof '1' of 0x5 endof '~' of 0x7 endof endcase
      3 lshift or R or c, R 4 = if 0x24 c, then c, n c, ;
 \ r3210
@@ -225,13 +226,47 @@ rec: 0 regs? '+~' 1 2spos? and 3 regs? and u 4 = and
 gen: 0xF c, 0xC1 c, 0xC0 3 nregs 3 lshift or 0 nregs or c, ;
 \ [r+~r
 rec: '[' 0 spos? 1 regs? and '+~' 2 2spos? and 4 regs? and u 5 = and
-gen: 0xF c, 0xC1 c, 0x40 4 nregs 3 lshift or 1 nregs or c, 1 nregs 4 = if 0x24 c, then c, ;
+gen: 0xF c, 0xC1 c, 0x40 4 nregs 3 lshift or 1 nregs or c, 1 nregs 4 = if 0x24 c, then depth if c, then ;
+\ ur=r
+rec: 'Z' 0 spos? 'z' 0 spos? or '<' 0 spos? or '>' 0 spos? or 1 regs? and '=' 2 spos? and 3 regs? and u 4 = and
+gen: 0xF c, 0 spos case 'Z' of 0x44 endof 'z' of 0x45 endof '<' of 0x4C endof '>' of 0x4F endof endcase c,
+     0xC0 1 nregs 3 lshift or 3 nregs or c, ;
+\ ur=[r  Z z < > S s
+rec: 'Z' 0 spos? 'z' 0 spos? or '<' 0 spos? or '>' 0 spos? or 'S' 0 spos? or 's' 0 spos? or 1 regs? and '=[' 2 2spos? and 4 regs? and u 5 = and
+gen: 0xF c, 0 spos case 'Z' of 0x44 endof 'z' of 0x45 endof '<' of 0x4C endof '>' of 0x4F endof 'S' of 0x48 endof 's' of 0x49 endof endcase c,
+     depth if 0x40 else 4 nregs 5 = if 0x40 else 0x00 then then 1 nregs 3 lshift or 4 nregs or c,
+     4 nregs 4 = if 0x24 c, then depth if c, else 4 nregs 5 = if 0x0 c, then then ;
+\ a=r?=r
+rec: 'a=' 0 2spos? 2 regs? and '?' 3 spos? and '=' 4 spos? and 5 regs? and 6 u = and
+gen: 0x0F c, 0xB1 c, 0xC0 5 nregs 3 lshift or 2 nregs or c, ;
+\ a=[r?=r
+rec: 'a=' 0 2spos? '[' 2 spos? and 3 regs? and '?=' 4 2spos? and 6 regs? and 7 u = and
+gen: 0x0F c, 0xB1 c, depth if 0x40 else 3 nregs 5 = if 0x40 else 0x00 then then 6 nregs 3 lshift or 3 nregs or c,
+     3 nregs 4 = if 0x24 c, then depth if c, else 3 nregs 5 = if 0x0 c, then then ;
+
 i: pushad   0x60 c, ;  i: popad    0x61 c, ;
-i: cf=0     0xF8 c, ;  i: cf=1     0xF9 c, ;  i: df=0     0xFC c, ;  i: df=1     0xFD c, ;
-i: cpuid    0x0F c, 0xA2 c, ;                 i: dac=tscp 0x0F c, 0x1 c, 0xF9 c, ;
-i: nop      0x90 c, ;                         i: cdq 0x99 c, ;
-i: rep      0xF3 c, ;                         i: repn     0xF2 c, ;
+i: cf=0     0xF8 c, ;  i: cf=1     0xF9 c, ;
+i: df=0     0xFC c, ;  i: df=1     0xFD c, ;
+i: cpuid    0x0F c, 0xA2 c, ;
+i: dac=tscp 0x0F c, 0x1 c, 0xF9 c, ;
+i: nop      0x90 c, ;  i: cdq  0x99 c, ;
+i: rep      0xF3 c, ;  i: repn 0xF2 c, ;
+i: @b@      0xA4 c, ;  i: @w@  0x66 c, 0xA5 c, ; i: @d@  0xA5 c, ;  \ [esi]=[edi]  df=0(a+) df=1(a-)
+i: cmpb     0xA6 c, ;  i: cmpw 0x66 c, 0xA7 c, ; i: cmpd 0xA7 c, ;  \ [esi]=[edi]? df=0(a+) df=1(a-)
 export
 m: A|  {{   asmforth ; m: |A  }}    ;
 m: a|  {{ [ asmforth ; m: |a  ] }}  ;
 ;module
+
+\eof
+s1
+7CBA27 0F4CC3           CMOVL   EAX , EBX
+7CBA2A 0F4CE5           CMOVL   ESP , EBP
+7CBA2D 0F4FC3           CMOVG   EAX , EBX
+7CBA30 0F4FE5           CMOVG   ESP , EBP
+7CBA33 0F4403           CMOVE   EAX , [EBX]
+7CBA36 0F456500         CMOVNE  ESP , 0 [EBP]
+7CBA3A 0F4403           CMOVE   EAX , [EBX]
+7CBA3D 0F452C24         CMOVNE  EBP , [ESP]
+7CBA41 C3               RET     NEAR
+27 bytes, 9 instructions

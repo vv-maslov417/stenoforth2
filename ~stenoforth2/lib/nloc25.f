@@ -190,7 +190,6 @@ USER st-wr  0 st-wr !
   L{ ldhere LIT, ` @ ` EXECUTE RET, ldhere LIT, ` ! RET, 1 CELLS ldhere + TO ldhere }L
 ;
 
-
 \ execution from the forth or if not there, then from the local dictionary
 : NOTFOUND ( c-addr u -- ) { a u | [ 16 ] arr }
  a u + 1- C@ '`' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
