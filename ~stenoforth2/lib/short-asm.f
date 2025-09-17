@@ -258,15 +258,3 @@ m: A|  {{   asmforth ; m: |A  }}    ;
 m: a|  {{ [ asmforth ; m: |a  ] }}  ;
 ;module
 
-\eof
-s1
-7CBA27 0F4CC3           CMOVL   EAX , EBX
-7CBA2A 0F4CE5           CMOVL   ESP , EBP
-7CBA2D 0F4FC3           CMOVG   EAX , EBX
-7CBA30 0F4FE5           CMOVG   ESP , EBP
-7CBA33 0F4403           CMOVE   EAX , [EBX]
-7CBA36 0F456500         CMOVNE  ESP , 0 [EBP]
-7CBA3A 0F4403           CMOVE   EAX , [EBX]
-7CBA3D 0F452C24         CMOVNE  EBP , [ESP]
-7CBA41 C3               RET     NEAR
-27 bytes, 9 instructions
