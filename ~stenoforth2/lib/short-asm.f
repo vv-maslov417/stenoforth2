@@ -6,7 +6,8 @@
 \ r=r?   r=[r?   [r=r?  r=i?    [r=i? rO@    @Or   @Oi    <r=r     >r=r    Zr=r   zr=r    <r=[r  >r=[r   Zr=[r  zr=[r
 \ r=l\r  r=h\r   r=l\[r r=h\[r  c=r\r c=[r\r c=r\i c=[r\i c=r0\r   c=[r0\r c=r0\i c=[r0\i c=r1\r c=[r1\r c=r1\i c=[r1\i
 \ c=r~\r c=[r~\r c=r~\i c=[r~\i r3210 r+~r   [r+~r
-\ cdq    pushad  popad  cf=0    cf=1  df=0   df=1  cpuid  dac=tscp nop
+\ cdq    pushad  popad  cf=0    cf=1  df=0   df=1  cpuid  dac=tscp nop     @b@    @w@     @d@    cmpb    cmpw   cmpd
+\ rep    repn    xlat
 
 module: asmforth
 : cinstr  | s\ a\ u\ | \ -- tf
@@ -48,7 +49,10 @@ m: spos   a + c@ ;                    \ pos -- char
   case '|' of 0x81 c, 0x48 endof '&' of 0x81 c, 0x60 endof
        '^' of 0x81 c, 0x70 endof '=' of 0xC7 c, 0x40 endof
        '+' of 0x81 c, 0x40 endof '-' of 0x81 c, 0x68 endof endcase ;
-
+: cops4 \ symb -- cop
+  case '|' of 0x81 c, 0x08 endof '&' of 0x81 c, 0x20 endof
+       '^' of 0x81 c, 0x30 endof '=' of 0xC7 c, 0x00 endof
+       '+' of 0x81 c, 0x00 endof '-' of 0x81 c, 0x28 endof endcase ;
 \ ror  reg1 adc sbb reg2
 : copsa  case 'c+' of 0x13 c, 0xC0 endof 'c-' of 0x1B c, 0xC0 endof endcase ;
 \ roc  reg adc sbb cell
@@ -76,9 +80,10 @@ gen: 0 nregs R\ 2 nregs r\ a 1+ C@ cops op\
                else 0xF7 op = if op c, 0xF8 r or c, else op ror then then ;
 \ rO[r  |&^=+-*~
 rec: 0 regs? 1 oper? and '[' 2 spos? and 3 regs? and u 4 = and
-gen: 0 nregs R\ 3 nregs r\ a 1+ C@ cops op\ op 0xAF = if 0x0F c, then
-     op c, depth if 0x40 else r 5 = if 0x40 else 0x0 then then r or R 3 lshift or c, r 4 = if 0x24 c, then
-     depth if c, else r 5 = if 0 c, then then ;
+gen: 0 fzp^ 0 bad\ 0 offs\ depth if dup -> offs offs 0x10000 > if 0x80 ['] , else 0x40 ['] c, then -> fzp -> bad then
+     0 nregs R\ 3 nregs r\ a 1+ C@ cops op\ op 0xAF = if 0x0F c, then
+     op c, depth if bad else r 5 = if 0x40 else 0x0 then then r or R 3 lshift or c, r 4 = if 0x24 c, then
+     depth if fzp else r 5 = if 0 c, then then ;
 \ [rOr  |&^=+-~
 rec: '[' 0 spos? 1 regs? and 2 oper1? and 3 regs? and u 4 = and
 gen: 3 nregs R\ 1 nregs r\ a 2+ C@ cops1 op\ op 0xAF = if 0x0F c, then
@@ -111,10 +116,14 @@ gen: 0xC1 c, pc if 0x60 else 0x78 then
 \ rOi  |&^+-=*
 rec: 0 n\ 0 regs? 1 oper2? and 'i' 2 spos? st\ st if 1 and u 3 = and else a 2+ u 2- number? nip swap -> n and u 14 < and u 2 > and then
 gen: 1 spos cops2 0 nregs '*' 1 spos? if dup 3 lshift or then or c, st 0= if n then , ;
-\ [rOi  |&^+-=
-rec: 0 n\ '[' 0 spos? 1 regs? and 2 oper3? and 'i' 3 spos? st\
-     st if 1 and u 4 = and else a 3 + u 3 - number? nip swap -> n and u 15 < and u 3 > and then
-gen: 2 spos cops3 1 nregs 4 <> if 1 nregs or c, else 1 nregs or c, 0x24 c, then c, st 0= if n then , ;
+\ [rOi  |&^+-=   n s [rOi  n [rOi  [rOn  s [rOn
+rec: 0 n\ 0 st\ '[' 0 spos? 1 regs? and 2 oper3? and 'i' 3 spos? -> st  ( n sm | n )
+     st if 1 and u 4 = and  else a 3 + u 3 - number? nip swap -> n and u 15 < and u 3 > and then
+gen: st if   depth 2 = if   2 spos cops3 1 nregs or c, 1 nregs 4 = if 0x24 c, then c,
+                       else 1 nregs 5 = if 2 spos cops3 5 or c, 0 c, else 2 spos cops4 1 nregs or c, then 1 nregs 4 = if 0x24 c, then then ,
+        else depth if   2 spos cops3 1 nregs or c, 1 nregs 4 = if 0x24 c, then c,
+                   else 1 nregs 5 = if 2 spos cops3 5 or c, 0 c, else 2 spos cops4 1 nregs or c, then 1 nregs 4 = if 0x24 c, then then n ,
+        then ;
 \ r=r*i
 rec: 0 n\ 0 regs? '=' 1 spos? and 2 regs? and '*' 3 spos? and 'i' 4 spos? st\
      st if 1 and u 5 = and else a 4 + u 4 - number? nip swap -> n and u 16 < and u 4 > and then
@@ -144,7 +153,7 @@ rec: '/' 0 spos? 1 regs? and u 2 = and
 gen: 0xF7 c, 0xF8 1 nregs or c, ;
 \ /[r
 rec: '/' 0 spos? '[' 1 spos? and 2 regs? and u 3 = and
-gen: 0xF7 c, 2 nregs 5 = if 0x78 else 0x38 then 2 nregs or c, 2 nregs 4 = if 0x24 c, then depth if c, else 2 nregs 5 = if 0 c, then then ;    \   F778C3           IDIV    C3 [EAX]
+gen: 0xF7 c, 2 nregs 5 = if 0x78 else 0x38 then 2 nregs or c, 2 nregs 4 = if 0x24 c, then depth if c, else 2 nregs 5 = if 0 c, then then ;
 \ r=r?
 rec: 0 regs? '=' 1 spos? and 2 regs? and '?' 3 spos? and u 4 = and
 gen: 0 nregs R\ 2 nregs r\ 0x3B c, 0xC0 R 3 lshift or r or c, ;
@@ -253,8 +262,8 @@ i: nop      0x90 c, ;  i: cdq  0x99 c, ;
 i: rep      0xF3 c, ;  i: repn 0xF2 c, ;
 i: @b@      0xA4 c, ;  i: @w@  0x66 c, 0xA5 c, ; i: @d@  0xA5 c, ;  \ [esi]=[edi]  df=0(a+) df=1(a-)
 i: cmpb     0xA6 c, ;  i: cmpw 0x66 c, 0xA7 c, ; i: cmpd 0xA7 c, ;  \ [esi]=[edi]? df=0(a+) df=1(a-)
+i: xlat     0xD7 c, ; \ пересылка байта в AL из таблицы с адресом в EBX со смещением в AL
 export
 m: A|  {{   asmforth ; m: |A  }}    ;
 m: a|  {{ [ asmforth ; m: |a  ] }}  ;
 ;module
-
