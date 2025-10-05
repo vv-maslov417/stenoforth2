@@ -771,6 +771,11 @@ M: XR!
 : NOTFOUND   S" @?=LE"       IDN 1 RG!             ` @R=LE      ;  \ SETLE [RL]
 : NOTFOUND   S" ?=GE"        IDN 0 RG!             ` R=GE       ;  \ SETGE RL
 : NOTFOUND   S" @?=GE"       IDN 1 RG!             ` @R=GE      ;  \ SETGE [RL]
+\ : NOTFOUND   S" ?=FZ"        IDN 0 RG!             ` R=Z        ;  \ SETZ RL
+\ : NOTFOUND   S" ?=Fz"        IDN 0 RG!             ` R=NZ       ;  \ SETz RL
+\ : NOTFOUND   S" @?=FZ"       IDN 1 RG!             ` @R=Z       ;  \ SETZ [RL]
+\ : NOTFOUND   S" @?=Fz"       IDN 1 RG!             ` @R=NZ      ;  \ SETz [RL]
+
 \ : NOTFOUND   S" ?=G"         IDN 0 RG!             ` R=G        ;
 
 \ ПЕРЕСТАНОВКА БАЙТОВ

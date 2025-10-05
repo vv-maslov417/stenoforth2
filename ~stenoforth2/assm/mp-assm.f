@@ -476,7 +476,7 @@ ENDCASE
 : ?JZ|S#O 0x7E REL-Jcc  ;    I: JLE  ?JZ|S#O ;    I: JNG   ?JZ|S#O ;   I: J<=  ?JZ|S#O ;
 : ?JzS=O  0x7F REL-Jcc  ;    I: JG   ?JzS=O  ;    I: JNLE  ?JzS=O  ;   I: J>   ?JzS=O  ;
 : ?JRCZ   1 TO JRCZ  0xE3 REL-Jcc  ;              I: JCXZ  ?JRCZ   ;   I: JECXZ ?JRCZ  ;
-
+: ?LOOP              0xE2 REL-Jcc  ;              I: LOOPz  ?LOOP  ;
 \ безусловные относительные переходы   JMP REL8/REL32
 : RAZ-J8/32  0 C, 0 , ;
 : COD-J8/32  IF 0xE9 C, DP @ 4 + - , ELSE 0xEB C, DP @ 1+ - C, THEN ;

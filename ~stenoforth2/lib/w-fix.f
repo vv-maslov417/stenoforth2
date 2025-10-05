@@ -131,6 +131,7 @@ SYNONYM ->variable            ->VARIABLE
 SYNONYM user                  USER
 SYNONYM user-value            USER-VALUE
 SYNONYM user-create           USER-CREATE
+SYNONYM user-allot            USER-ALLOT
 SYNONYM to                    TO
 SYNONYM allocate              ALLOCATE
 SYNONYM resize                RESIZE
@@ -238,3 +239,5 @@ SYNONYM $label                $LABEL
 SYNONYM choose                CHOOSE
 SYNONYM i:                    I:
 SYNONYM export                EXPORT
+SYNONYM //                    \
+SYNONYM ///                   \EOF

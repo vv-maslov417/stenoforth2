@@ -1,13 +1,15 @@
 \ stenoforth32
 
 \ short assm
+
 \ rO     [rO     rOr    rO[r    [rOr  rOi    [rOi  r=r*i  rc+r     c-r     rc+[r  rc-[r   rc+i   rc-i    [rc+i  [rc-i
 \ r>>    r<<     [r>>   [r<<    rc>>  rc<<   [rc>> [rc<<  ra>>     ra<<    [ra>>  [ra<<   ra     rra     /r     /[r
 \ r=r?   r=[r?   [r=r?  r=i?    [r=i? rO@    @Or   @Oi    <r=r     >r=r    Zr=r   zr=r    <r=[r  >r=[r   Zr=[r  zr=[r
 \ r=l\r  r=h\r   r=l\[r r=h\[r  c=r\r c=[r\r c=r\i c=[r\i c=r0\r   c=[r0\r c=r0\i c=[r0\i c=r1\r c=[r1\r c=r1\i c=[r1\i
-\ c=r~\r c=[r~\r c=r~\i c=[r~\i r3210 r+~r   [r+~r
+\ c=r~\r c=[r~\r c=r~\i c=[r~\i r3210 r~+r   [r~+r
 \ cdq    pushad  popad  cf=0    cf=1  df=0   df=1  cpuid  dac=tscp nop     @b@    @w@     @d@    cmpb    cmpw   cmpd
-\ rep    repn    xlat
+\ rep    repn    xlat   ^r      r=br  r=[br  br=[r br=[r? rl=LE    rl=GE   rl=Z   rl=z    rl=Sg  rl=sg   rh=LE  rh=GE
+\ rh=Z   rh=z    rh=Sg  rh=sg   [r=LE [r=GE  [r=Z  [r=z   [r=Sg    [r=sg
 
 module: asmforth
 : cinstr  | s\ a\ u\ | \ -- tf
@@ -66,25 +68,28 @@ rec: 0 regs? 'n' 1 spos? '~' 1 spos? or 'i' 1 spos? or 'j' 1 spos? or and u 2 = 
 gen: 0 nregs 1 spos
      case 'n' of 0xF7 c, 0xD8 endof '~' of 0xF7 c, 0xD0 endof
           'i' of 0x40         endof 'j' of 0x48         endof endcase or c, ;
-\ [rO  n~ij
+\ [rO sm [rO  n~ij
 rec: '[' 0 spos? 1 regs? and 'n' 2 spos? '~' 2 spos? 'i' 2 spos? 'j' 2 spos?
      or or or and u 3 = and
-gen: 1 nregs 2 spos
-     case 'n' of 0xF7 c, 0x58 endof '~' of 0xF7 c, 0x50 endof
-          'i' of 0xFF c, 0x40 endof 'j' of 0xFF c, 0x48 endof endcase or c, c, ;
+gen:  2 spos
+     case 'n' of 0xF7 c, depth if 0x58 else 1 nregs 5 = if 0x58 else 0x18 then then endof
+          '~' of 0xF7 c, depth if 0x50 else 1 nregs 5 = if 0x50 else 0x10 then then endof
+          'i' of 0xFF c, depth if 0x40 else 1 nregs 5 = if 0x40 else 0x00 then then endof
+          'j' of 0xFF c, depth if 0x48 else 1 nregs 5 = if 0x48 else 0x08 then then endof
+     endcase 1 nregs or c, 1 nregs 4 = if 0x24 c, then depth if c, else 1 nregs 5 = if 0 c, then then ;
 \ rOr  |&^=+-*~
 rec: 0 regs? 1 oper? and 2 regs? and u 3 = and
 gen: 0 nregs R\ 2 nregs r\ a 1+ C@ cops op\
      ror[ c, R 3 lshift r 0xC0 or or c, ]
      op 0xAF = if R 0= r 0= and if 0xF7 c, 0xE8 c, else 0x0F c, op ror then
                else 0xF7 op = if op c, 0xF8 r or c, else op ror then then ;
-\ rO[r  |&^=+-*~
+\ rO[r sm rO[r |&^=+-*~
 rec: 0 regs? 1 oper? and '[' 2 spos? and 3 regs? and u 4 = and
 gen: 0 fzp^ 0 bad\ 0 offs\ depth if dup -> offs offs 0x10000 > if 0x80 ['] , else 0x40 ['] c, then -> fzp -> bad then
      0 nregs R\ 3 nregs r\ a 1+ C@ cops op\ op 0xAF = if 0x0F c, then
      op c, depth if bad else r 5 = if 0x40 else 0x0 then then r or R 3 lshift or c, r 4 = if 0x24 c, then
      depth if fzp else r 5 = if 0 c, then then ;
-\ [rOr  |&^=+-~
+\ [rOr sm [rOr |&^=+-~
 rec: '[' 0 spos? 1 regs? and 2 oper1? and 3 regs? and u 4 = and
 gen: 3 nregs R\ 1 nregs r\ a 2+ C@ cops1 op\ op 0xAF = if 0x0F c, then
      op c, depth if 0x40 else r 5 = if 0x40 else 0x0 then then r or R 3 lshift or c, r 4 = if 0x24 c, then
@@ -116,7 +121,7 @@ gen: 0xC1 c, pc if 0x60 else 0x78 then
 \ rOi  |&^+-=*
 rec: 0 n\ 0 regs? 1 oper2? and 'i' 2 spos? st\ st if 1 and u 3 = and else a 2+ u 2- number? nip swap -> n and u 14 < and u 2 > and then
 gen: 1 spos cops2 0 nregs '*' 1 spos? if dup 3 lshift or then or c, st 0= if n then , ;
-\ [rOi  |&^+-=   n s [rOi  n [rOi  [rOn  s [rOn
+\ [rOi  n sm [rOi  n [rOi  [rOn  sm [rOn  |&^+-=
 rec: 0 n\ 0 st\ '[' 0 spos? 1 regs? and 2 oper3? and 'i' 3 spos? -> st  ( n sm | n )
      st if 1 and u 4 = and  else a 3 + u 3 - number? nip swap -> n and u 15 < and u 3 > and then
 gen: st if   depth 2 = if   2 spos cops3 1 nregs or c, 1 nregs 4 = if 0x24 c, then c,
@@ -153,16 +158,19 @@ rec: '/' 0 spos? 1 regs? and u 2 = and
 gen: 0xF7 c, 0xF8 1 nregs or c, ;
 \ /[r
 rec: '/' 0 spos? '[' 1 spos? and 2 regs? and u 3 = and
-gen: 0xF7 c, 2 nregs 5 = if 0x78 else 0x38 then 2 nregs or c, 2 nregs 4 = if 0x24 c, then depth if c, else 2 nregs 5 = if 0 c, then then ;
+gen: 0xF7 c, depth if 0x78 else 2 nregs 5 = if 0x78 else 0x38 then then 2 nregs or c,
+     2 nregs 4 = if 0x24 c, then depth if c, else 2 nregs 5 = if 0 c, then then ;
 \ r=r?
 rec: 0 regs? '=' 1 spos? and 2 regs? and '?' 3 spos? and u 4 = and
 gen: 0 nregs R\ 2 nregs r\ 0x3B c, 0xC0 R 3 lshift or r or c, ;
 \ r=[r?
 rec: 0 regs? '=' 1 spos? and '[' 2 spos? and 3 regs? and '?' 4 spos? and u 5 = and
-gen: 0x3B c, 0 nregs R\ 3 nregs r\ 0x40 R 3 lshift or r or c, r 4 = if 0x24 c, then c, ;
+gen: 0x3B c, 0 nregs R\ 3 nregs r\ depth if 0x40 else r 5 = if 0x40 else 0x0 then then
+     R 3 lshift or r or c, r 4 = if 0x24 c, then depth if c, else r 5 = if 0 c, then then ;
 \ [r=r?
 rec: '[' 0 spos? 1 regs? and '=' 2 spos? and 3 regs? and '?' 4 spos? and u 5 = and
-gen: 0x39 c, 1 nregs R\ 3 nregs r\ 0x40 r 3 lshift or R or c, R 4 = if 0x24 c, then c, ;
+gen: 0x39 c, 1 nregs R\ 3 nregs r\ depth if 0x40 else R 5 = if 0x40 else 0x0 then then
+     r 3 lshift or R or c, R 4 = if 0x24 c, then depth if c, else R 5 = if 0 c, then then ;
 \ r=i?
 rec: 0 regs? '=' 1 spos? and a 2+ u 3 - number? nip swap n\ and '?' u 1- spos? and u 3 > u 15 < and and
 gen: 0x81 c, 0xF8 0 nregs or c, n , ;
@@ -230,12 +238,12 @@ gen: 3 nregs R\ 0xF c, 0xBA c, 0x40 4 spos case '0' of 0x6 endof '1' of 0x5 endo
      3 lshift or R or c, R 4 = if 0x24 c, then c, n c, ;
 \ r3210
 rec: 0 regs? s" 3210" a 1+ u 1- compare 0= and gen: 0xF c, 0xC8 0 nregs or c, ;
-\ r+~r
-rec: 0 regs? '+~' 1 2spos? and 3 regs? and u 4 = and
+\ r~+r
+rec: 0 regs? '~+' 1 2spos? and 3 regs? and u 4 = and
 gen: 0xF c, 0xC1 c, 0xC0 3 nregs 3 lshift or 0 nregs or c, ;
-\ [r+~r
-rec: '[' 0 spos? 1 regs? and '+~' 2 2spos? and 4 regs? and u 5 = and
-gen: 0xF c, 0xC1 c, 0x40 4 nregs 3 lshift or 1 nregs or c, 1 nregs 4 = if 0x24 c, then depth if c, then ;
+\ [r~+r
+rec: '[' 0 spos? 1 regs? and '~+' 2 2spos? and 4 regs? and u 5 = and
+gen: 0xF c, 0xC1 c, 0x40 4 nregs 3 lshift or 1 nregs or c, 1 nregs 4 = if 0x24 c, then depth if c, else 1 nregs 5 = if 0 c, then then ;
 \ ur=r
 rec: 'Z' 0 spos? 'z' 0 spos? or '<' 0 spos? or '>' 0 spos? or 1 regs? and '=' 2 spos? and 3 regs? and u 4 = and
 gen: 0xF c, 0 spos case 'Z' of 0x44 endof 'z' of 0x45 endof '<' of 0x4C endof '>' of 0x4F endof endcase c,
@@ -252,6 +260,54 @@ gen: 0x0F c, 0xB1 c, 0xC0 5 nregs 3 lshift or 2 nregs or c, ;
 rec: 'a=' 0 2spos? '[' 2 spos? and 3 regs? and '?=' 4 2spos? and 6 regs? and 7 u = and
 gen: 0x0F c, 0xB1 c, depth if 0x40 else 3 nregs 5 = if 0x40 else 0x00 then then 6 nregs 3 lshift or 3 nregs or c,
      3 nregs 4 = if 0x24 c, then depth if c, else 3 nregs 5 = if 0x0 c, then then ;
+\ ^r  call reg
+rec: '^' 0 spos? 1 regs? and
+gen: 0xFF c, 0xD0 1 nregs or c, ;
+\ r=br
+rec: 0 regs? '=b' 1 2spos? and 3 regs? and u 4 = and
+gen: 0xB60F w, 0xC0 0 nregs 3 lshift or 3 nregs or c, ;
+\ r=[br
+rec: 0 regs? '=[' 1 2spos? and 'b' 3 spos? and 4 regs? and u 5 = and
+gen: 0xB60F w, depth if 0x40 else 4 nregs 5 = if 0x40 else 0x0 then then 0 nregs 3 lshift or
+     4 nregs or c, 4 nregs 4 = if 0x24 c, then depth if c, else 4 nregs 5 = if 0 c, then then ;
+\ br=[br
+rec: 'b' 0 spos? 1 regs? and '=[' 2 2spos? and 'b' 4 spos? and 5 regs? and u 6 = and
+gen: 0x8A c, depth if 0x40 else 5 nregs 5 = if 0x40 else 0x0 then then 1 nregs 3 lshift or 5 nregs or c,
+     5 nregs 4 = if 0x24 c, then depth if c, else 5 nregs 5 = if 0 c, then then ;
+\ br=[br?
+rec: 'b' 0 spos? 1 regs? and '=[' 2 2spos? and 'b' 4 spos? and 5 regs? and '?' 6 spos? and u 7 = and
+gen: 0x3A c, depth if 0x40 else 5 nregs 5 = if 0x40 else 0x0 then then 1 nregs 3 lshift or 5 nregs or c,
+     5 nregs 4 = if 0x24 c, then depth if c, else 5 nregs 5 = if 0 c, then then ;
+\ rl=LE rl=GE  rl abcd
+rec: 0 regs? 'l=' 1 2spos? and 'LE' 3 2spos? dup pL\ 'GE' 3 2spos? or and u 5 = and
+gen: 0xF c, pL if 0x9E else 0x9D then c, 0xC0 0 nregs or c, ;
+\ rl=Z rl=z  rl abcd
+rec: 0 regs?  'l=' 1 2spos? and  'Z' 3 spos? dup pZ\ 'z' 3 spos? or and u 4 = and
+gen: 0xF c, pZ if 0x94 else 0x95 then c, 0xC0 0 nregs or c, ;
+\ rl=Sg rl=sg  rl abcd
+rec: 0 regs? 'l=' 1 2spos? and 'Sg' 3 2spos? dup pS\ 'sg' 3 2spos? or and u 5 = and
+gen: 0xF c, pS if 0x98 else 0x99 then c, 0xC0 0 nregs or c, ;
+\ rh=LE rh=GE  rh abcd
+rec: 0 regs? 'h=' 1 2spos? and 'LE' 3 2spos? dup pL\ 'GE' 3 2spos? or and u 5 = and
+gen: 0xF c, pL if 0x9E else 0x9D then c, 0xC0 0 nregs or 4 or c, ;
+\ rh=Z rh=z  rh abcd
+rec: 0 regs? 'h=' 1 2spos? and 'Z' 3 spos? dup pZ\ 'z' 3 spos? or and u 4 = and
+gen: 0xF c, pZ if 0x94 else 0x95 then c, 0xC0 0 nregs or 4 or c, ;
+\ rh=Sg rh=sg  rh abcd
+rec: 0 regs? 'h=' 1 2spos? and 'Sg' 3 2spos? dup pS\ 'sg' 3 2spos? or and u 5 = and
+gen: 0xF c, pS if 0x98 else 0x99 then c, 0xC0 0 nregs or 4 or c, ;
+\ [r=LE [r=GE
+rec: '[' 0 spos? 1 regs? and '=' 2 spos? and 'LE' 3 2spos? dup pL\ 'GE' 3 2spos? or and u 5 = and
+gen: 0xF c, pL if 0x9E else 0x9D then c, depth if 0x40 else 0 1 nregs 5 = if 0x40 then then 1 nregs or c,
+     1 nregs 4 = if 0x24 c, then depth if c, else 1 nregs 5 = if 0 c, then then ;
+\ [r=Z [r=z
+rec: '[' 0 spos? 1 regs? and '=Z' 2 2spos? dup pZ\ '=z' 2 2spos? or and u 4 = and
+gen: 0xF c, pZ if 0x94 else 0x95 then c, depth if 0x40 else 0 1 nregs 5 = if 0x40 then then 1 nregs or c,
+     1 nregs 4 = if 0x24 c, then depth if c, else 1 nregs 5 = if 0 c, then then ;
+\ [r=Sg [r=sg
+rec: '[' 0 spos? 1 regs? and '=' 2 spos? and 'Sg' 3 2spos? dup pS\ 'sg' 3 2spos? or and u 5 = and
+gen: 0xF c, pS if 0x98 else 0x99 then c, depth if 0x40 else 0 1 nregs 5 = if 0x40 then then 1 nregs or c,
+     1 nregs 4 = if 0x24 c, then depth if c, else 1 nregs 5 = if 0 c, then then ;
 
 i: pushad   0x60 c, ;  i: popad    0x61 c, ;
 i: cf=0     0xF8 c, ;  i: cf=1     0xF9 c, ;
@@ -263,6 +319,7 @@ i: rep      0xF3 c, ;  i: repn 0xF2 c, ;
 i: @b@      0xA4 c, ;  i: @w@  0x66 c, 0xA5 c, ; i: @d@  0xA5 c, ;  \ [esi]=[edi]  df=0(a+) df=1(a-)
 i: cmpb     0xA6 c, ;  i: cmpw 0x66 c, 0xA7 c, ; i: cmpd 0xA7 c, ;  \ [esi]=[edi]? df=0(a+) df=1(a-)
 i: xlat     0xD7 c, ; \ пересылка байта в AL из таблицы с адресом в EBX со смещением в AL
+
 export
 m: A|  {{   asmforth ; m: |A  }}    ;
 m: a|  {{ [ asmforth ; m: |a  ] }}  ;
