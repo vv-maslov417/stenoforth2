@@ -1613,7 +1613,7 @@ DUP FIND-REST-END ['] REST-AREA CATCH DROP ;
   cr A wordbyaddr type cr
   begin
    A INST -> A n 1+ -> n  cr
-   A c@ 0xC3 =
+   A w@ 0x89C3 <> A w@ 0x8BC3 <> and A w@ 0xC3C3 <> and A w@ 0xE8C3 <> and A c@ 0xC3 = and
      if
         A INST  cr
         A a - 1+ . ." bytes, " n 1+ . ." instructions"
@@ -1651,7 +1651,7 @@ DUP FIND-REST-END ['] REST-AREA CATCH DROP ;
   cr ." st-dis" cr \ A wordbyaddr type
   begin
    A INST -> A n 1+ -> n  cr
-   A c@ 0xC3 =
+   A c@ 0xC3 = A 1+ c@ 0x89 <> A 1+ c@ 0x8B <> or and
      if
         A INST  cr
         A a - 1+ .d ." bytes, " n 1+ .d ." instructions"
