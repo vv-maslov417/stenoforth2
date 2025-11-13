@@ -2,5 +2,5 @@
 *.* text=auto
 # Бинарные файлы — без преобразований
 *.exe binary
-git add --renormalize .
+git add --renormalize 
 git commit -m 
