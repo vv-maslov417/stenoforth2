@@ -3,4 +3,4 @@
 # Бинарные файлы — без преобразований
 *.exe binary
 git add --renormalize .
-git commit -m "Применить кодировку CP866"
+git commit -m 
