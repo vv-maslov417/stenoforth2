@@ -1,6 +1,6 @@
 \ stenoforth32
 
-\ ╨б╨╛╨║╤А╨░╤Й╨╡╨╜╨╜╨░╤П ╤Д╨╛╤А╨╝╨░ ╨╖╨░╨┐╨╕╤Б╨╕ ╨╝╨╜╨╡╨╝╨╛╨╜╨╕╨║ ╨║╨╛╨╝╨░╨╜╨┤ x86 - ╨┐╨╛ ╨╝╨╡╤А╨╡ ╨╜╨╡╨╛╨▒╤Е╨╛╨┤╨╕╨╝╨╛╤Б╤В╨╕ ╨┐╨╛╨┐╨╛╨╗╨╜╤П╨╡╤В╤Б╤П ╨╕╨╖ ╤Д╨░╨╣╨╗╨░ MP-Assm
+\ Сокращенная форма записи мнемоник команд x86 - по мере необходимости пополняется из файла MP-Assm
 
 I: ` [COMPILE] POSTPONE ;
 
@@ -22,7 +22,7 @@ IF 2R> NOTFOUND EXIT THEN 2R> TO L-MNEM TO A-MNEM
   3 OF CS-DROP CS-DROP CS-DROP ENDOF
   ENDCASE
 ;
-: SRG  \ ╤А╨╡╨│╨╕╤Б╤В╤А╤Л ╨╛╨▒╤Й╨╡╨│╨╛ ╨╜╨░╨╖╨╜╨░╤З╨╡╨╜╨╕╤П
+: SRG  \ регистры общего назначения
   CTRG++
   0 TO FLAG-RG
   CASE
@@ -35,7 +35,7 @@ M: RG!
    A-M@ SRG FLAG-RG
    IF A-MNEM L-MNEM NOTFOUND EXIT THEN ;M
 
-: SSRG  \ ╤Б╨╕╤Б╤В╨╡╨╝╨╜╤Л╨╡ ╤А╨╡╨│╨╕╤Б╤В╤А╤Л
+: SSRG  \ системные регистры
   CTRG++
   0 TO FLAG-RG
   CASE
@@ -47,7 +47,7 @@ M: SR!
    A-M@ SSRG FLAG-RG
    IF A-MNEM L-MNEM NOTFOUND EXIT THEN ;M
 
-: SDRG  \ ╨╛╤В╨╗╨░╨┤╨╛╤З╨╜╤Л╨╡ ╤А╨╡╨│╨╕╤Б╤В╤А╤Л
+: SDRG  \ отладочные регистры
   CTRG++
   0 TO FLAG-RG
   CASE
@@ -59,7 +59,7 @@ M: DR!
    A-M@ SDRG FLAG-RG
    IF A-MNEM L-MNEM NOTFOUND EXIT THEN ;M
 
-: SMRG  \ MMX ╤А╨╡╨│╨╕╤Б╤В╤А╤Л
+: SMRG  \ MMX регистры
   CTRG++
   0 TO FLAG-RG
   CASE
@@ -72,7 +72,7 @@ M: MR!
    A-M@ SMRG FLAG-RG
    IF A-MNEM L-MNEM NOTFOUND EXIT THEN ;M
 
-: SXRG  \ XMM ╤А╨╡╨│╨╕╤Б╤В╤А╤Л
+: SXRG  \ XMM регистры
   CTRG++
   0 TO FLAG-RG
   CASE
@@ -88,10 +88,10 @@ M: XR!
 \ : !1  OP0 @ 4 - @ >CS POSTPONE DROP ;
 
 
-\ ╨╕╨┤╨╡╨╜╤В╨╕╤Д╨╕╨║╨░╤Ж╨╕╤П ╨╕ ╨║╨╛╨┤╨╛╨│╨╡╨╜╨╡╤А╨░╤Ж╨╕╤П ╨║╨╛╨╝╨░╨╜╨┤ x86 ╨┐╨╛ ╨╕╤Е ╨╝╨╜╨╡╨╝╨╛╨╜╨╕╨║╨░╨╝ ╨▓ ╤Б╨╛╨║╤А╨░╤Й╨╡╨╜╨╜╨╛╨╣ ╤Д╨╛╤А╨╝╨╡
-\ ╤Б╨╝╨╡╤Й╨╡╨╜╨╕╨╡      0123456          S-R1  S-R2  S-R3
+\ идентификация и кодогенерация команд x86 по их мнемоникам в сокращенной форме
+\ смещение      0123456          S-R1  S-R2  S-R3
 
-\ ╨Я╨Х╨а╨Х╨б╨л╨Ы╨Ъ╨Ш
+\ ПЕРЕСЫЛКИ
 : NOTFOUND   S" ?=?"         IDN 0 RG! 2 RG!       ` R=R        ;   \ MOV R,R
 : NOTFOUND   S" w?=w?"       IDN 1 RG! 4 RG!       ` wR=wR      ;
 : NOTFOUND   S" w?=b?"       IDN 1 RG! 4 RG!       ` wR=bR      ;
@@ -193,7 +193,7 @@ M: XR!
 : NOTFOUND   S" X?=|@"       IDN 1 XR!             ` XR=|@      ;   \ MOVAPS  XMR, |ADR
 : NOTFOUND   S" |@=X?"       IDN 4 XR!             ` |@=XR      ;   \ MOVAPS  |ADR, XMR
 
-\ ╨Р╨а╨Ш╨д╨Ь╨Х╨в╨Ш╨Ъ╨Р
+\ АРИФМЕТИКА
 : NOTFOUND   S" w?c-w?"      IDN 1 RG! 5 RG!       ` wRc-wR     ;
 : NOTFOUND   S" w?c-w#"      IDN 1 RG!             ` wRc-w#     ;
 : NOTFOUND   S" w?c-b#"      IDN 1 RG!             ` wRc-b#     ;
@@ -422,7 +422,7 @@ M: XR!
 : NOTFOUND   S" ?+~?"        IDN 0 RG! 3 RG!       ` R+~R       ; \ XADD R,R
 : NOTFOUND   S" @?+~?"       IDN 1 RG! 4 RG!       ` @R+~R      ; \ XADD [R],R
 
-\ ╨Ы╨Ю╨У╨Ш╨Ъ╨Р ╨Ш ╨б╨Ф╨Т╨Ш╨У╨Ш
+\ ЛОГИКА И СДВИГИ
 : NOTFOUND   S" ?&?"         IDN 0 RG! 2 RG!       ` R&R        ;
 : NOTFOUND   S" ?&@?"        IDN 0 RG! 3 RG!       ` R&@R       ;
 : NOTFOUND   S" ?&@??"       IDN 0 RG! 3 RG! 4 RG! ` R&@RR      ;
@@ -692,7 +692,7 @@ M: XR!
 : NOTFOUND   S" @w??~"       IDN 2 RG! 3 RG!       ` @wRR~      ;
 : NOTFOUND   S" @b??~"       IDN 2 RG! 3 RG!       ` @bRR~      ;
 
-\ ╨б╨а╨Р╨Т╨Э╨Х╨Э╨Ш╨п
+\ СРАВНЕНИЯ
 : NOTFOUND   S" ?=?\?"       IDN 0 RG! 2 RG!       ` R=R?       ;  \ CMP R, R
 : NOTFOUND   S" ?=@?\?"      IDN 0 RG! 3 RG!       ` R=@R?      ;  \ CMP R, [R]
 : NOTFOUND   S" @?=?\?"      IDN 1 RG! 3 RG!       ` @R=R?      ;  \ CMP [R], R
@@ -737,7 +737,7 @@ M: XR!
 : NOTFOUND   S" A=@w?\?=w?"  IDN 4 RG! 8 RG!       ` A=@wR?=wR  ;
 : NOTFOUND   S" A=@w??\?=w?" IDN 4 RG! 5 RG! 9 RG! ` A=@wRR?=wR ;
 
-\ ╨а╨Р╨С╨Ю╨в╨Р ╨б ╨С╨Ш╨в╨Р╨Ь╨Ш
+\ РАБОТА С БИТАМИ
 : NOTFOUND   S" ?=L\\?"      IDN 0 RG! 4 RG!       ` R=L\R      ;  \ BSF R, R
 : NOTFOUND   S" ?=L\\@?"     IDN 0 RG! 5 RG!       ` R=L\@R     ;  \ BSF R, [R]
 : NOTFOUND   S" ?=H\\?"      IDN 0 RG! 4 RG!       ` R=H\R      ;  \ BSR R, R
@@ -751,12 +751,12 @@ M: XR!
 : NOTFOUND   S" C=?\\?1"     IDN 2 RG! 4 RG!       ` C=R\R1     ;  \ BTS R, R
 : NOTFOUND   S" C=?\\@?1"    IDN 2 RG! 5 RG!       ` C=R\@R1    ;  \ BTS R, [R]
 
-\ ╨Я╨Х╨а╨Х╨е╨Ю╨Ф╨л
+\ ПЕРЕХОДЫ
 : NOTFOUND   S" JR?"         IDN 2 RG!             ` JR         ;  \ JMP R
 : NOTFOUND   S" J@?"         IDN 2 RG!             ` J@R        ;  \ JMP [R]
 : NOTFOUND   S" J@??"        IDN 2 RG! 3 RG!       ` J@RR       ;  \ JMP [R][R]
 
-\ ╨г╨б╨Ы╨Ю╨Т╨Э╨л╨Х ╨Я╨Х╨а╨Х╨б╨л╨Ы╨Ъ╨Ш
+\ УСЛОВНЫЕ ПЕРЕСЫЛКИ
 : NOTFOUND   S" L\\?=?"      IDN 2 RG! 4 RG!       ` L\R=R      ;
 : NOTFOUND   S" G\\?=?"      IDN 2 RG! 4 RG!       ` G\R=R      ;
 : NOTFOUND   S" Z\\?=?"      IDN 2 RG! 4 RG!       ` Z\R=R      ;
@@ -766,7 +766,7 @@ M: XR!
 : NOTFOUND   S" Z\\?=@?"     IDN 2 RG! 5 RG!       ` Z\R=@R     ;
 : NOTFOUND   S" NZ\\?=@?"    IDN 3 RG! 6 RG!       ` NZ\R=@R    ;
 
-\ ╨г╨б╨в╨Р╨Э╨Ю╨Т╨Ъ╨Р ╨С╨Р╨Щ╨в╨Р ╨Я╨Ю ╨г╨б╨Ы╨Ю╨Т╨Ш╨о
+\ УСТАНОВКА БАЙТА ПО УСЛОВИЮ
 : NOTFOUND   S" ?=LE"        IDN 0 RG!             ` R=LE       ;  \ SETLE RL
 : NOTFOUND   S" @?=LE"       IDN 1 RG!             ` @R=LE      ;  \ SETLE [RL]
 : NOTFOUND   S" ?=GE"        IDN 0 RG!             ` R=GE       ;  \ SETGE RL
@@ -778,13 +778,13 @@ M: XR!
 
 \ : NOTFOUND   S" ?=G"         IDN 0 RG!             ` R=G        ;
 
-\ ╨Я╨Х╨а╨Х╨б╨в╨Р╨Э╨Ю╨Т╨Ъ╨Р ╨С╨Р╨Щ╨в╨Ю╨Т
+\ ПЕРЕСТАНОВКА БАЙТОВ
 : NOTFOUND   S" ?0123"       IDN 0 RG!             ` R0123      ;  \ BSWAP
 
-\ ╨Т╨л╨Ч╨Ю╨Т╨л ╨Я╨Ю╨Ф╨Я╨а╨Ю╨У╨а╨Р╨Ь╨Ь
+\ ВЫЗОВЫ ПОДПРОГРАММ
 : NOTFOUND   S" ^?"          IDN 1 RG!             ` ^R         ;  \ CALL R
 
-\ ╨Я╨Ы╨Р╨Т. ╨в╨Ю╨з╨Ъ╨Р
+\ ПЛАВ. ТОЧКА
 : NOTFOUND   S" 0=@w?"       IDN 4 RG!             ` 0=@wR      ;  \ FILD  m16int
 : NOTFOUND   S" 0=@?"        IDN 3 RG!             ` 0=@R       ;  \ FILD  m32int
 : NOTFOUND   S" 0=@d?"       IDN 4 RG!             ` 0=@dR      ;  \ FILD  m64int
@@ -818,14 +818,14 @@ M: XR!
 
 1 WARNING !
 \EOF
-\ ╨┐╨╛╨╕╤Б╨║ ╤Б╨╗╨╛╨▓╨░ ╨▓ ╨б╨Я╨д
+\ поиск слова в СПФ
 : TST
     RS=T
-    D=@P                    \ ╨┤╨╗╨╕╨╜╨░ ╤Б╤З╨╡╤В╤З╨╕╨║
+    D=@P                    \ длина счетчик
     D|D
-L2  JZ                      \ ╨╡╤Б╨╗╨╕ ╨┤╨╗╨╕╨╜╨░ ╨╜╨╛╨╗╤М - ╤Б╤А╨░╨╖╤Г ╨╜╨░ ╨▓╤Л╤Е╨╛╨┤
-    S=A                     \ ╨▓╤Е╨╛╨┤ ╨▓ ╤Б╨┐╨╕╤Б╨╛╨║
-    $ 4 D=@P                \ ╨╕╤Б╨║╨╛╨╝╨╛╨╡ ╤Б╨╗╨╛╨▓╨╛ ╨▓ ES:DI
+L2  JZ                      \ если длина ноль - сразу на выход
+    S=A                     \ вход в список
+    $ 4 D=@P                \ искомое слово в ES:DI
     $ 0xFFFF B=#   $ 3 D=#?
 L6  JB
     $ 0xFFFFFFFF B=#
@@ -833,19 +833,19 @@ L6: A=@T  $ 8 #A<<  D|A  D&B  $ 0 bA=b#  $ 0xFF A&#
 L1  JMP
 L3: $ 0xFF  A&#   $ 1 S=@SA
 L1: S|S
-L2  JZ                      \ ╨║╨╛╨╜╨╡╤Ж ╨┐╨╛╨╕╤Б╨║╨░
+L2  JZ                      \ конец поиска
     A=@S  A&B   A=D?
-L3  JNZ                     \ ╨┤╨╗╨╕╨╜╤Л ╨╜╨╡ ╤А╨░╨▓╨╜╤Л - ╨╕╨┤╨╡╨╝ ╨┤╨░╨╗╤М╤И╨╡
+L3  JNZ                     \ длины не равны - идем дальше
     S++   DF=0  C^C  bC=bD
-    RS=S  RS=T              \ ╤Б╨╛╤Е╤А╨░╨╜╤П╨╡╨╝ ╨░╨┤╤А╨╡╤Б ╨╜╨░╤З╨░╨╗╨░ ╨╕╤Б╨║╨╛╨╝╨╛╨│╨╛ ╤Б╨╗╨╛╨▓╨░
+    RS=S  RS=T              \ сохраняем адрес начала искомого слова
     Repn  CMPSB  T=RS
 L4  JZ
-    A=RS                    \ ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╡ esi ╨╜╨╡ ╨╕╨╜╤В╨╡╤А╨╡╤Б╤Г╨╡╤В ╨▓ ╤Б╨╗╤Г╤З╨░╨╡ ╨╜╨╡╤Г╨┤╨░╤З╨╕
+    A=RS                    \ значение esi не интересует в случае неудачи
     S=@SC
 L1  JMP
 L2: A^A
-L5  JMP                     \ ╨▓╤Л╤Е╨╛╨┤ ╤Б "╨╜╨╡ ╨╜╨░╨╣╨┤╨╡╨╜╨╛"
-L4: S=RS  S-- A=S           \ ╨┐╨╡╤А╨╡╨┤╨▓╨╕╨│╨░╨╡╨╝╤Б╤П ╨╛╤В ╨╜╨░╤З╨░╨╗╨░ ╤Б╤В╤А╨╛╨║╨╕ ╨║ NFA
+L5  JMP                     \ выход с "не найдено"
+L4: S=RS  S-- A=S           \ передвигаемся от начала строки к NFA
 L5: T=RS
 ;
 

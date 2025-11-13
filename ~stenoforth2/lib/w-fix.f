@@ -1,6 +1,6 @@
 \ stenoforth32
 
-\ –ø–µ—Ä–µ–≤–æ–¥ —á–∞—Å—Ç–æ –∏—Å–ø–æ–ª—å–∑—É–µ–º—ã—Ö –∏–º–µ–Ω —Å–ª–æ–≤ –≤ –Ω–∏–∂–Ω–∏–π —Ä–µ–≥–∏—Å—Ç—Ä
+\ Ø•‡•¢Æ§ Á†·‚Æ ®·ØÆ´Ïß„•¨ÎÂ ®¨•≠ ·´Æ¢ ¢ ≠®¶≠®© ‡•£®·‚‡
 : 2LIT, SWAP LIT, LIT, ;
 SYNONYM c@                    C@
 SYNONYM w@                    W@
@@ -236,6 +236,7 @@ SYNONYM file-position         FILE-POSITION
 SYNONYM reposition-file       REPOSITION-FILE
 SYNONYM xn                    XN
 SYNONYM $label                $LABEL
+SYNONYM randomize             RANDOMIZE
 SYNONYM choose                CHOOSE
 SYNONYM i:                    I:
 SYNONYM export                EXPORT

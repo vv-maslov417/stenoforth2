@@ -1,36 +1,38 @@
 \ stenoforth32
 
 0 WARNING !
-REQUIRE STACK        ~stenoforth2\lib\cstack.f       \ стеки в памяти
-REQUIRE CASE         lib\ext\case.f                  \ конструкция CASE
-REQUIRE {            lib\ext\locals.f                \ локальные переменные SPF
-REQUIRE NUMBER?      ~mak\lib\fpcnum.f               \ преобразование строк в числа
-REQUIRE LIKE         ~pinka\lib\like.f               \ выделение по маске
-REQUIRE M:           ~stenoforth2\lib\nf-name.f      \ макросы, слова-строки
-REQUIRE $!           ~mak\place.f                    \ утилиты для многопроходной компиляции
-REQUIRE 0SQRT        ~stenoforth2\assm\mp-assm.f     \ встроенный постфиксный ассемблер( с зачатками плав.точки)
-REQUIRE IDN          ~stenoforth2\assm\sp-assm.f     \ встроенный трехпроходный ассемблер с метками и коротким синтаксисом для инструкций
-REQUIRE CHOOSE       lib\ext\rnd.f                   \ случайный выбор
-REQUIRE randomize    ~stenoforth2\lib\nrand.f        \ модифицированный случайный выбор повышенного быстродействия
-REQUIRE F.           lib\include\float2.f            \ вещественные числа
-REQUIRE instructions ~stenoforth2\lib\instructions.f \ часто используемые инструкции процессора, параметризуемые со стека данных
-REQUIRE sd.          ~stenoforth2\lib\nloc25.f       \ статические локальные переменные, слова, макросы, строки
-REQUIRE 1-!          ~stenoforth2\lib\man-ip.f       \ расширения базового словаря FORTH
-REQUIRE pusto        ~stenoforth2\lib\staxy4.f       \ прямое задание манипуляций параметрами на стеке параметров
-REQUIRE sseet        ~stenoforth2\lib\seetl.f        \ измеритель времени исполнения слова при разовом и циклическом его исполнении
-REQUIRE fpoint       ~stenoforth2\lib\w-flo.f        \ модуль для слов плав.точки
-REQUIRE recgen       ~stenoforth2\lib\recgen.f       \ расширение для формирования литеральных слов
-REQUIRE valuenames   ~stenoforth2\lib\c-fix.f        \ модуль синонимов для сжатия слов для работы с фикс.точкой - разряднось 32
-REQUIRE mfvaluenames ~stenoforth2\lib\c-flo.f        \ модуль синонимов для сжатия слов для работы с плав.точкой
-REQUIRE dsynonyms    ~stenoforth2\lib\c-fixd.f       \ модуль синонимов для сжатия слов для работы с фикс.точкой - разрядность 64
-REQUIRE SYNONYM      ~stenoforth2\lib\synonym.f      \ перевод имен из верхнего регистра в нижний
-REQUIRE 2VARIABLE    lib\include\double.f            \ переменные двойной разрядности
-REQUIRE immediate    ~stenoforth2\lib\w-fix.f        \ перевод имен из верхнего регистра в нижний для слов с фикс. точкой - разряднось 32
-REQUIRE f.           ~stenoforth2\lib\r-flo.f        \ перевод имен из верхнего регистра в нижний для слов с плав. точкой
-REQUIRE [type]       ~stenoforth2\math\matr.f        \ операции над матрицами с числами с фикс. точкой
-REQUIRE SEE          ~stenoforth2\lib\disasm.f       \ доработанный SEE(дает размер кода и число инструкций)
-REQUIRE s-inv        ~stenoforth2\lib\string.f       \ операции над строками
-REQUIRE }a           ~stenoforth2\lib\short-asm.f    \ часто используемые инструкции процессора, параметризуемые со стека данных и из их имён
+REQUIRE STACK        ~stenoforth2\lib\cstack.f       \ стеки в памяти                                                                             
+REQUIRE CASE         lib\ext\case.f                  \ конструкция CASE                                                                           
+REQUIRE {            lib\ext\locals.f                \ локальные переменные SPF                                                                   
+REQUIRE NUMBER?      ~mak\lib\fpcnum.f               \ преобразование строк в числа                                                               
+REQUIRE LIKE         ~pinka\lib\like.f               \ выделение по маске                                                                         
+REQUIRE M:           ~stenoforth2\lib\nf-name.f      \ макросы, слова-строки                                                                      
+REQUIRE $!           ~mak\place.f                    \ утилиты для многопроходной компиляции                                                      
+REQUIRE 0SQRT        ~stenoforth2\assm\mp-assm.f     \ встроенный постфиксный ассемблер( с зачатками плав.точки)                                  
+REQUIRE IDN          ~stenoforth2\assm\sp-assm.f     \ встроенный трехпроходный ассемблер с метками и коротким синтаксисом для инструкций         
+REQUIRE CHOOSE       lib\ext\rnd.f                   \ случайный выбор                                                                            
+REQUIRE randomize    ~stenoforth2\lib\nrand.f        \ модифицированный случайный выбор повышенного быстродействия                                
+REQUIRE F.           lib\include\float2.f            \ вещественные числа                                                                         
+REQUIRE instructions ~stenoforth2\lib\instructions.f \ часто используемые инструкции процессора, параметризуемые со стека данных                  
+REQUIRE sd.          ~stenoforth2\lib\nloc25.f       \ статические локальные переменные, слова, макросы, строки                                   
+REQUIRE 1-!          ~stenoforth2\lib\man-ip.f       \ расширения базового словаря FORTH                                                          
+REQUIRE pusto        ~stenoforth2\lib\staxy4.f       \ прямое задание манипуляций параметрами на стеке параметров                                 
+REQUIRE sseet        ~stenoforth2\lib\seetl.f        \ измеритель времени исполнения слова при разовом и циклическом его исполнении               
+REQUIRE fpoint       ~stenoforth2\lib\w-flo.f        \ модуль для слов плав.точки                                                                 
+REQUIRE recgen       ~stenoforth2\lib\recgen.f       \ расширение для формирования литеральных слов                                               
+REQUIRE valuenames   ~stenoforth2\lib\c-fix.f        \ модуль синонимов для сжатия слов для работы с фикс.точкой - разряднось 32                  
+REQUIRE mfvaluenames ~stenoforth2\lib\c-flo.f        \ модуль синонимов для сжатия слов для работы с плав.точкой                                  
+REQUIRE dsynonyms    ~stenoforth2\lib\c-fixd.f       \ модуль синонимов для сжатия слов для работы с фикс.точкой - разрядность 64                 
+REQUIRE SYNONYM      ~stenoforth2\lib\synonym.f      \ перевод имен из верхнего регистра в нижний                                                 
+REQUIRE 2VARIABLE    lib\include\double.f            \ переменные двойной разрядности                                                             
+REQUIRE immediate    ~stenoforth2\lib\w-fix.f        \ перевод имен из верхнего регистра в нижний для слов с фикс. точкой - разряднось 32         
+REQUIRE f.           ~stenoforth2\lib\r-flo.f        \ перевод имен из верхнего регистра в нижний для слов с плав. точкой                         
+REQUIRE [type]       ~stenoforth2\math\matr.f        \ операции над матрицами с числами с фикс. точкой                                            
+REQUIRE SEE          ~stenoforth2\lib\disasm.f       \ доработанный SEE(дает размер кода и число инструкций)                                      
+REQUIRE s-inv        ~stenoforth2\lib\string.f       \ операции над строками                                                                      
+REQUIRE |a           ~stenoforth2\lib\short-asm.f    \ часто используемые инструкции процессора, параметризуемые со стека данных и из их имён     
+REQUIRE VARIANTS     ~stenoforth2\lib\gps.f
+REQUIRE Sector       ~pi\lib\wincon\graph.f
 
 S" f:\spf429\devel\~stenoforth2\bin\spf486.exe" SAVE
 
@@ -38,22 +40,22 @@ BYE
 
 \EOF
 
-╨Я╨╛╤А╤П╨┤╨╛╨║ ╨┐╨╛╨╗╤Г╤З╨╡╨╜╨╕╤П ╤А╨░╤Б╤И╨╕╤А╨╡╨╜╨╜╨╛╨╣ ╤Д╨╛╤А╤В-╤Б╨╕╤Б╤В╨╡╨╝╤Л spf-4.29(spf486.exe):
+Порядок получения расширенной форт-системы spf-4.29(spf486.exe):
 
-1. ╨Я╤Г╤Б╤В╤М ╨╕╤Б╤Е╨╛╨┤╨╜╨░╤П ╤Д╨╛╤А╤В-╤Б╨╕╤Б╤В╨╡╨╝╨░ ╤А╨░╤Б╨┐╨╛╨╗╨╛╨╢╨╡╨╜╨░ ╨▓ ╨┐╨░╨┐╨║╨╡ f:\spf429(╨▓╨╝╨╡╤Б╤В╨╛ f: ╨┤.╨▒. ╨▒╤Л╤В╤М ╤Г╨║╨░╨╖╨░╨╜ ╨▓╨░╤И ╨┤╨╕╤Б╨║).
-   ╨Я╨╛╤Б╨╗╨╡ ╤Б╨║╨░╤З╨╕╨▓╨░╨╜╨╕╤П ╤Д╨░╨╣╨╗╨╛╨▓ ╨╕╨╖ ╤А╨╡╨┐╨╛╨╖╨╕╤В╨╛╤А╨╕╤П(github) ╨╜╤Г╨╢╨╜╨╛ ╨┐╨╛╨╝╨╡╨╜╤П╤В╤М ╤Д╨╛╤А╨╝╨░╤В ╤Б╤В╤А╨╛╨║ ╨▓╨╛ ╨▓╤Б╨╡╤Е ╤Д╨░╨╣╨╗╨░╤Е ╨╜╨░ Dos/Windows(0Dh,0Ah).
-   ╨Х╤Б╨╗╨╕ ╨╡╤Б╤В╤М ╨╢╨╡╨╗╨░╨╜╨╕╨╡ ╨╕╤Б╨┐╨╛╨╗╤М╨╖╨╛╨▓╨░╤В╤М ╨║╨╕╤А╨╕╨╗╨╗╨╕╤Ж╤Г ╨▓ ╨╕╨╝╨╡╨╜╨░╤Е ╤Б╨╗╨╛╨▓ ╨╕ ╤В╨╡╨║╤Б╤В╨╛╨▓╤Л╤Е ╨╗╨╕╤В╨╡╤А╨░╨╗╨░╤Е(╨╗╨╡╨║╤Б╨╡╨╝╨░╤Е) ╨▓ ╨▓╨░╤И╨╕╤Е ╨┐╤А╨╛╨│╤А╨░╨╝╨╝╨░╤Е,
-   ╤В╨╛ ╨╝╨╛╨╢╨╜╨╛ ╨┐╨╛╨╝╨╡╨╜╤П╤В╤М ╨║╨╛╨┤╨╕╤А╨╛╨▓╨║╤Г ╨▓╤Б╨╡╤Е ╤В╨╡╨║╤Б╤В╨╛╨▓╤Л╤Е ╤Д╨░╨╣╨╗╨╛╨▓ ╨╜╨░ cp866 ╨┤╨╗╤П ╨║╨╛╤А╤А╨╡╨║╤В╨╜╨╛╨│╨╛ ╨╛╤В╨╛╨▒╤А╨░╨╢╨╡╨╜╨╕╤П ╨║╨╕╤А╨╕╨╗╨╗╨╕╤Ж╤Л ╨▓ ╨║╨╛╨╜╤Б╨╛╨╗╨╕.
+1. Пусть исходная форт-система расположена в папке f:\spf429(вместо f: д.б. быть указан ваш диск).
+   После скачивания файлов из репозитория(github) нужно поменять формат строк во всех файлах на Dos/Windows(0Dh,0Ah).
+   Если есть желание использовать кириллицу в именах слов и текстовых литералах(лексемах) в ваших программах,
+   то можно поменять кодировку всех текстовых файлов на cp866 для корректного отображения кириллицы в консоли.
 
-2. ╨б╨║╨╛╨┐╨╕╤А╨╛╨▓╨░╤В╤М ╤Б╨║╨░╤З╨░╨╜╨╜╤Г╤О ╨╕╨╖ ╤А╨╡╨┐╨╛╨╖╨╕╤В╨╛╤А╨╕╤П GIT ╨┐╨░╨┐╨║╤Г ~stenoforth2, ╨▓ ╨║╨░╤В╨░╨╗╨╛╨│ \spf429\devel\
-   ╤Д╨░╨╣╨╗ disasm.f ╨╕╨╖ spf429\lib\ext\ ╨╖╨░╨╝╨╡╨╜╨╕╤В╤М ╤Д╨░╨╣╨╗╨╛╨╝ disasm.f, ╨╕╨╖ ╤Б╨║╨░╤З╨░╨╜╨╜╨╛╨│╨╛ ╤А╨╡╨┐╨╛╨╖╨╕╤В╨╛╤А╨╕╤П.
+2. Скопировать скачанную из репозитория GIT папку ~stenoforth2, в каталог \spf429\devel\
+   файл disasm.f из spf429\lib\ext\ заменить файлом disasm.f, из скачанного репозитория.
 
-3. ╨Ш╤Б╨┐╨╛╨╗╨╜╨╕╤В╤М ╤Д╨░╨╣╨╗ compile.bat ╨╕╨╖ ╨┐╨░╨┐╨║╨╕ \spf429\src
+3. Исполнить файл compile.bat из папки \spf429\src
 
-4. ╨г╨▓╨╡╨╗╨╕╤З╨╕╤В╤М ╤А╨░╨╖╨╝╨╡╤А ╨╛╨▒╤А╨░╨╖╨░ ╤Д╨╛╤А╤В-╤Б╨╕╤Б╤В╨╡╨╝╤Л, ╨╕╤Б╨┐╨╛╨╗╨╜╨╕╨▓ ╨╕╨╖ ╨║╨╛╨╝. ╤Б╤В╤А╨╛╨║╨╕ ╨║╨╛╨╝╨░╨╜╨┤╤Г:
+4. Увеличить размер образа форт-системы, исполнив из ком. строки команду:
    spf4.exe  IMAGE-SIZE 64 * TO IMAGE-SIZE S" spf4p.exe" SAVE BYE
 
-5. ╨Ю╤В╤В╤А╨░╨╜╤Б╨╗╨╕╤А╨╛╨▓╨░╤В╤М ╤Н╤В╨╛╤В ╤Д╨░╨╣╨╗(Spf4290.f) c ╨┐╨╛╨╝╨╛╤Й╤М╤О spf4p.exe ╨╕╨╖ ╨┐╨░╨┐╨║╨╕ \spf429
+5. Оттранслировать этот файл(Spf4290.f) c помощью spf4p.exe из папки \spf429
 
 
    

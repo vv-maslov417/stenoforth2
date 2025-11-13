@@ -1,7 +1,7 @@
 m: rec: 0 WARNING ! : NOTFOUND u\ a\ ;
 m: gen: 0= IF a u NOTFOUND EXIT THEN ;
 
-\ –Ω–µ–ø–æ—Å—Ä.–∑–Ω–∞—á–µ–Ω–∏–µ –ø–µ—Ä–µ–º–µ–Ω–Ω–æ–π name' –Ω–∞ —Å—Ç–µ–∫
+\ ≠•ØÆ·‡.ß≠†Á•≠®• Ø•‡•¨•≠≠Æ© name' ≠† ·‚•™
 rec: a C@ ''' <> a u + 1- C@ ''' = AND
 gen: [ 16 ] ar] lvoc a u 1- lsearch 2DROP 7 + C@ typ\
      a ar u 1- MOVE '`' ar u + 1- C! ar u EVALUATE ar 16 ERASE

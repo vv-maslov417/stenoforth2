@@ -82,8 +82,8 @@ lhere @ u + 4 + DUP dtyp ! C! 0 lhere @ u + 5 + C!
 \ recursion for local word
 : recloc ( -- )  g| axtloc @ @ c@r |g ; IMMEDIATE
 
-: NOTFOUND ( a u -- ) '"' { a u s } nf1-exit 1- headl L{ LOAD-TEXT RET, }L ;            \ name"  " string
-: NOTFOUND ( a u -- ) '[' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` EVALUATE RET, }L ; \ name[  ] macros
+: NOTFOUND ( a u -- ) '"' { a u s } nf1-exit 1- headl L{ load-text 1- DLIT, RET, }L ;            \ name"  " string
+: NOTFOUND ( a u -- ) '[' { a u s } nf1-exit 1- headl L{ load-text  DLIT, ` EVALUATE RET, }L ; \ name[  ] macros
 
 \ creating an anonymous function
 : NOTFOUND ( a u -- ) '{' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` xts RET, }L ;      \ name{  function modifier text }
@@ -145,10 +145,20 @@ USER st-wr  0 st-wr !
 \ variables are single threaded
 : NOTFOUND ( a u --  ) \ 2variable variable    "name)"
   ')' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere
-  L{ ldhere LIT, RET, ldhere 2 CELLS + TO ldhere }L
+   L{ ldhere LIT, RET, ldhere 2 CELLS + TO ldhere }L
 ;
+\ : NOTFOUND ( a u --  ) \ 2variable variable    "name)"
+\   ')' { a u s } nf1-exit 1- headl \ lcode ALIGNED TO lcode
+\   L{ lcode LIT, RET, lcode 2 CELLS + TO lcode }L
+\ ;
+
+\ 0 VALUE sml
+\ I: sv! i| ldhere @=t sml t=c |i ;
+\ m: svv sml ' sv! 8 + C! sml 4 + TO sml ;
+\ I: esv i| sml pa |i 0 TO sml ;
+
 : NOTFOUND ( a u --  ) \ value   "name\"
-  '\' { a u s } nf1-exit  1- headl  ldhere ALIGNED TO ldhere ldhere LIT, ` !
+  '\' { a u s } nf1-exit  1- headl  ldhere ALIGNED TO ldhere ldhere LIT, ` ! \ ` sv! svv \ smloc 4 + TO smloc
   L{  ldhere LIT, ` @ RET, ldhere LIT, ` ! RET, ldhere 1 CELLS + TO ldhere }L
 ;
 : NOTFOUND ( a u --  ) \ 2value  "name!d"
@@ -178,18 +188,16 @@ USER st-wr  0 st-wr !
   L{ ldhere LIT, RET, ldhere + TO ldhere }L
 ;
 \ arrays multithreaded
-: NOTFOUND ( a u --  ) \ [ 20 ] arr]u
+: NOTFOUND ( a u --  ) \ [ 20 ] arr}
   '}' { a u s } nf1-exit 1- headl
   L{ ` DUP ` adr@ RET,
   udhere + TO udhere }L
 ;
-
 \ vectors
 : NOTFOUND ( a u --  ) \ vector "name^"
   '^' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere ldhere LIT, ` !
   L{ ldhere LIT, ` @ ` EXECUTE RET, ldhere LIT, ` ! RET, 1 CELLS ldhere + TO ldhere }L
 ;
-
 \ execution from the forth or if not there, then from the local dictionary
 : NOTFOUND ( c-addr u -- ) { a u | [ 16 ] arr }
  a u + 1- C@ '`' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
@@ -208,7 +216,14 @@ USER st-wr  0 st-wr !
   IF a u NOTFOUND EXIT THEN
   a an u 2+  MOVE 'e' an u + C! '.' an pt + C! an u 1+ EVALUATE
 ;
-I: | NextWord 2DUP + 1- C@ '|' <> IF RECURSE EVALUATE ELSE 2DROP THEN ;
-
+\ I: | NextWord 2DUP + 1- C@ '|' <> IF RECURSE EVALUATE ELSE 2DROP THEN  ;
+I: | CS0
+   BEGIN NextWord 2DUP S" |" COMPARE 0=
+     IF 2DROP
+        BEGIN ?CS IF EXIT ELSE CS> CS> EVALUATE THEN AGAIN
+     ELSE >CS >CS THEN
+   AGAIN ;
 : .s CR DEPTH .SN CR S0 @ SP! ;
 : .sd DEPTH 0 DO I ROLL LOOP DEPTH 0 DO SWAP D. 2 +LOOP CR ;
+
+\ : ss1 | a\ b\ | a b ; SEE ss1

@@ -1,9 +1,7 @@
-\ генератор всех разных перестановок символов 
 \ обмен байтами между двумя адресами
 : cswapa \ a1 a2 --
   a| b=[p cl=[b dl=[a [b=dl [a=cl |a 2\
 ;
-\ если char нет в памяти между адресами a1 и a2 то выдать true
 : cnotfinda \ char a2 a1 -- t/f
   a| L4: 0 a=[p?
      L1  J=  bl=[a 4 bl=[p?
@@ -16,7 +14,7 @@
   |a
 ;
 \ 0 a2 a1 a u -- count a2 a1' a u
-1 value notype \ не выводить на печать 
+1 value notype
 : variants
   2>r 2dup - 1 <
   if 2>r 1+ 2r> 2r>
@@ -40,7 +38,7 @@
     2dup 2>r over + swap 0 -rot 2r> variants 2drop 2drop
 ;
 
-\eof
+\ eof
 0 to notype
 s" 1111444466666666" 2DUP VARIANTS .( variants: ) . type cr cr
 

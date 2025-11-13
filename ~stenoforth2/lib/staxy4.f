@@ -78,7 +78,7 @@ THEN
 bmax emax - DUP 0<> IF 4 * p+` ELSE DROP THEN STATE @ 0= IF RET, here EXECUTE THEN
 ;
 
-: NOTFOUND u\ a\
+: NOTFOUND  u\ a\
 a C@ '1' '5' 1+ WITHIN a 1+ C@ '%' =  AND a 2+ C@ '[' <> AND 0= IF a u NOTFOUND EXIT THEN
 a C@ '0' - bmax\ bmax u 2- +  emax\
 1s" 1\1 "  2s" 2\12 "  3s" 3\123 "  4s" 4\1234 "  5s" 5\12345 "

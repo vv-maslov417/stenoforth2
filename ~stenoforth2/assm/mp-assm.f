@@ -1,6 +1,6 @@
 \ stenoforth32
 
-\ ╨Я╨╛╤Б╤В╤Д╨╕╨║╤Б╨╜╤Л╨╣ ╤Ж╨╡╨╗╨╛╤З╨╕╤Б╨╗╨╡╨╜╨╜╤Л╨╣ ╨░╤Б╤Б╨╡╨╝╨▒╨╗╨╡╤А ╨┤╨╗╤П ╨┐╨╗╨░╤В╤Д╨╛╤А╨╝╤Л IA-32(╨▒╨╡╨╖ ╨╜╨░╨▒╨╛╤А╨░ ╨║╨╛╨╝╨░╨╜╨┤ ╤А╨░╤Б╤И╨╕╤А╨╡╨╜╨╕╤П ╨Ь╨Ь╨е)
+\ Постфиксный целочисленный ассемблер для платформы IA-32(без набора команд расширения ММХ)
 
 
 0 WARNING !
@@ -10,16 +10,16 @@
 \ : I: : IMMEDIATE ;
 : ITO CREATE , IMMEDIATE DOES> @ >CS ;
 
-\ ╤А╨╡╨│╨╕╤Б╤В╤А╤Л ╨╛╨▒╤Й╨╡╨│╨╛ ╨╜╨░╨╖╨╜╨░╤З╨╡╨╜╨╕╤П
+\ регистры общего назначения
 \    EAX      ECX      EDX      EBX     ESP     EBP     ESI     EDI
 0 ITO EA  1 ITO EC  2 ITO ED  3 ITO EB 4 ITO EX 5 ITO EP 6 ITO ES 7 ITO ET
 4 ITO AH 5 ITO CH 6 ITO DH 7 ITO BH
 
-\ ╤А╨╡╨│╨╕╤Б╤В╤А╤Л MM
+\ регистры MM
 \   MMX0     MMX1     MMX2     MMX3     MMX4     MMX5     MMX6     MMX7
 0 ITO M0 1 ITO M1 2 ITO M2 3 ITO M3 4 ITO M4 5 ITO M5 6 ITO M6 7 ITO M7
 
-\ ╤А╨╡╨│╨╕╤Б╤В╤А╤Л XMM
+\ регистры XMM
 \   XMM0     XMM1     XMM2     XMM3     XMM4     XMM5     XMM6     XMM7
 0 ITO X0 1 ITO X1 2 ITO X2 3 ITO X3 4 ITO X4 5 ITO X5 6 ITO X6 7 ITO X7
 
@@ -85,7 +85,7 @@ I: $ HEX NextWord NUMBER? DROP D>S >CS DECIMAL ;  \ decimal
 : R=@RROb# 3RD R2 ?MD01 R1 0x04 RRMR! R2 R3 SIB! R2 ?0SM! DT C, ;
 : Dw,  0x66 C, ;
 
-\ ╨░╤А╨╕╤Д╨╝╨╡╤В╨╕╨║╨░  ADD ADC SUB SBB MUL IMUL CWD CDQ DIV IDIV INC DEC NEG
+\ арифметика  ADD ADC SUB SBB MUL IMUL CWD CDQ DIV IDIV INC DEC NEG
 I: R+@              0x03 RO@      ; I: wR+@       Dw,         0x03 RO@      ; I: bR+@           0x02 RO@    ;
 I: R+R              0x03 ROR      ; I: R+@R                   0x03 RO@R     ; I: R+@RR          0x03 RO@RR  ;
 I: wR+wR      Dw,   0x03 ROR      ; I: wR+@wR     Dw,         0x03 RO@R     ; I: wR+@wRR  Dw,   0x03 RO@RR  ;
@@ -174,7 +174,7 @@ I: R=@R*b#          0x6B R=@ROb#  ; I: wR=@wR*b#  Dw,         0x6B R=@ROb#  ;
 I: R=@RR*#          0x69 R=@RRO#  ; I: wR=@wRR*w# Dw,         0x69 R=@RROw# ;
 I: R=@RR*b#         0x6B R=@RROb# ; I: wR=@wRR*b# Dw,         0x6B R=@RROb# ;
 
-\ ╨╗╨╛╨│╨╕╨║╨░ ╨╕ ╤Б╨┤╨▓╨╕╨│╨╕  AND OR XOR NOT SHL SHR
+\ логика и сдвиги  AND OR XOR NOT SHL SHR
 I: bR&bR        0x22 ROR  ; I: bR&@bR        0x22 RO@R  ; I: bR&@bRR     0x22 RO@RR  ;
 I: wR&wR  Dw,   0x23 ROR  ; I: wR&@wR  Dw,   0x23 RO@R  ; I: wR&@wRR Dw, 0x23 RO@RR  ;
 I: R&R          0x23 ROR  ; I: R&@R          0x23 RO@R  ; I: R&@RR       0x23 RO@RR  ;
@@ -273,7 +273,7 @@ I: #bRo>>     1 0xC0 ROb# ; I: #@bRo>>     1 0xC0 @ROb# ; I: #@bRRo>>     1 0xC0
 I: #wRo>> Dw, 1 0xC1 ROb# ; I: #@wRo>> Dw, 1 0xC1 @ROb# ; I: #@wRRo>> Dw, 1 0xC1 @RROb# ;
 I: #Ro>>      1 0xC1 ROb# ; I: #@Ro>>      1 0xC1 @ROb# ; I: #@RRo>>      1 0xC1 @RROb# ;
 
-\ ╨┐╨╡╤А╨╡╤Б╤Л╨╗╨║╨╕   MOVSX MOVZX MOV XCHG LODS MOVS LEA
+\ пересылки   MOVSX MOVZX MOV XCHG LODS MOVS LEA
 I: swR=sbR Dw,  0x0F C, 0xBE ROR  ; I: swR=@sbR Dw, 0x0F C, 0xBE RO@R  ; I: swR=@sbRR Dw, 0x0F C, 0xBE RO@RR  ;
 I: sR=sbR       0x0F C, 0xBE ROR  ; I: sR=@sbR      0x0F C, 0xBE RO@R  ; I: sR=@sbRR      0x0F C, 0xBE RO@RR  ;
 I: sR=swR  Dw,  0x0F C, 0xBF ROR  ; I: sR=@swR  Dw, 0x0F C, 0xBF RO@R  ; I: sR=@swRR  Dw, 0x0F C, 0xBF RO@RR  ;
@@ -324,17 +324,17 @@ I: XR=R  0x66 C, 0x0F C, 0x6E ROR  ; I: R=XR  0x66 C, 0x0F C, 0x7E ROR1 ;
 I: XR=@R 0x66 C, 0x0F C, 0x6E RO@R ; I: @R=XR 0x66 C, 0x0F C, 0x7E @ROR ;
 I: XR=XR 0x0F C, 0x10 ROR ;
 
-\ ╨┐╨╡╤А╨╡╤Б╤Л╨╗╨║╨░ ╨╜╨╡╨▓╤Л╤А╨░╨▓╨╜╨╡╨╜╤Л╤Е 8 ╨▒╨░╨╣╤В╨╛╨▓
+\ пересылка невыравненых 8 байтов
 I: XR=@  0x0F C, 0x10 RO@  ;         I: @=XR  0x0F C, 0x11 @OR  ;
 
-\ ╨┐╨╡╤А╨╡╤Б╤Л╨╗╨║╨░ 8 ╨▒╨░╨╣╤В╨╛╨▓, ╨▓╤Л╤А╨░╨▓╨╜╨╡╨╜╤Л╤Е ╨┐╨╛ ╨│╤А╨░╨╜╨╕╤Ж╨╡, ╨║╤А╨░╤В╨╜╨╛╨╣ 16-╤В╨╕ ╨▒╨░╨╣╤В╨░╨╝ ( ╨┤.╨▒. ╤Б╨▒╤А╨╛╤И╨╡╨╜╤Л ╨▓ 0 4 ╨╝╨╗╨░╨┤╤И╨╕╤Е ╨▒╨╕╤В╨░ ╨░╨┤╤А╨╡╤Б╨░)
+\ пересылка 8 байтов, выравненых по границе, кратной 16-ти байтам ( д.б. сброшены в 0 4 младших бита адреса)
 I: XR=|@ 0x0F C, 0x28 RO@  ;         I: |@=XR 0x0F C, 0x29 @OR  ;
 
-I: Rep  0xF3 C, ; \ ╨Ф╨Ы╨п INS OUTS MOVS STOS CMPS SCAS
-I: Repn 0xF2 C, ; \ ╨Ф╨Ы╨п CMPS SCAS
-I: XLAT 0xD7 C, ; \ ╨┐╨╡╤А╨╡╨║╨╛╨┤╨╕╤А╨╛╨▓╨║╨░ ╨▒╨░╨╣╤В╨░ ╨▓ AL ╨╕╨╖ ╤В╨░╨▒╨╗╨╕╤Ж╤Л ╤Б ╨░╨┤╤А╨╡╤Б╨╛╨╝ ╨▓ EBX
+I: Rep  0xF3 C, ; \ ДЛЯ INS OUTS MOVS STOS CMPS SCAS
+I: Repn 0xF2 C, ; \ ДЛЯ CMPS SCAS
+I: XLAT 0xD7 C, ; \ перекодировка байта в AL из таблицы с адресом в EBX
 
-\ ╤Б╤А╨░╨▓╨╜╨╡╨╜╨╕╤П  CMP CMPS SCAS CMPXCHG  CMPXCHG8B
+\ сравнения  CMP CMPS SCAS CMPXCHG  CMPXCHG8B
 I: bR=bR?                 0x3A ROR  ; I: bR=@bR?               0x3A RO@R  ; I: bR=@bRR?               0x3A RO@RR  ;
 I: @bR=bR?                0x38 @ROR ; I: @bRR=bR?              0x38 @RROR ;
 I: wR=wR?   Dw,           0x3B ROR  ; I: wR=@wR?   Dw,         0x3B RO@R  ; I: wR=@wRR?   Dw,         0x3B RO@RR  ;
@@ -358,10 +358,10 @@ I: A=R?=R       0x0F C,   0xB1 ROR1 ; I: A=@R?=R       0x0F C, 0xB1 @ROR  ; I: A
 I: DA=@R?=CB    0x0F C, 1 0xC7 @RO  ;
 I: DA=@RR?=CB   0x0F C, 1 0xC7 @RRO ;
 
-\ ╨║╨╛╨╝╨░╨╜╨┤╤Л ╤Г╨┐╤А╨░╨▓╨╗╨╡╨╜╨╕╤П:
-\ ╤Г╤Б╨╗╨╛╨▓╨╜╤Л╨╡ ╨┐╨╡╤А╨╡╤Е╨╛╨┤╤Л  Jcc
+\ команды управления:
+\ условные переходы  Jcc
 
-\ ╤А╨╡╨░╨╗╨╕╨╖╨░╤Ж╨╕╤П ╨╝╨╡╤Е╨░╨╜╨╕╨╖╨╝╨░ ╨╝╨╜╨╛╨│╨╛╨┐╤А╨╛╤Е╨╛╨┤╨╜╨╛╨╣ ╨║╨╛╨╝╨┐╨╕╨╗╤П╤Ж╨╕╨╕ ╨╛╨┐╤А╨╡╨┤╨╡╨╗╨╡╨╜╨╕╨╣
+\ реализация механизма многопроходной компиляции определений
 
 \ REQUIRE $!           ~mak\place.f
 
@@ -373,9 +373,9 @@ VARIABLE XCURSTR
 0 VALUE XN
 0 VALUE $LABEL
 CREATE X-L 96 ALLOT
-: addrL X-L  + ;      \ ╨░╨┤╤А╨╡╤Б╨░ ╨╝╨╡╤В╨╛╨║
-: addrX X-L 32 + + ;  \ ╨┐╤А╨╕╨╖╨╜╨░╨║╨╕ ╨┤╨╗╨╕╨╜ ╨╕╨╜╤В╨╡╤А╨▓╨░╨╗╨╛╨▓  ╨╛╤В  00000000  ╨┤╨╛ 11111111
-: addrC X-L 64 + + ;  \ ╤Б╤З╨╡╤В╤З╨╕╨║╨╕ ╨╝╨╡╤В╨╛╨║  ╨╛╤В 1 ╨┤╨╛ 8
+: addrL X-L  + ;      \ адреса меток
+: addrX X-L 32 + + ;  \ признаки длин интервалов  от  00000000  до 11111111
+: addrC X-L 64 + + ;  \ счетчики меток  от 1 до 8
 : lab1  0 addrL ; : lab2  4 addrL ; : lab3  8 addrL ; : lab4 12 addrL ;
 : lab5 16 addrL ; : lab6 20 addrL ; : lab7 24 addrL ; : lab8 28 addrL ;
 : xln1  0 addrX ; : xln2  4 addrX ; : xln3  8 addrX ; : xln4 12 addrX ;
@@ -388,7 +388,7 @@ I: L1 lab1 @ xln1 count1 count+ ; I: L1: DP @ lab1 ! ; I: L2 lab2 @ xln2 count2 
 I: L3 lab3 @ xln3 count3 count+ ; I: L3: DP @ lab3 ! ; I: L4 lab4 @ xln4 count4 count+ ; I: L4: DP @ lab4 ! ;
 I: L5 lab5 @ xln5 count5 count+ ; I: L5: DP @ lab5 ! ; I: L6 lab6 @ xln6 count6 count+ ; I: L6: DP @ lab6 ! ;
 I: L7 lab7 @ xln7 count7 count+ ; I: L7: DP @ lab7 ! ; I: L8 lab8 @ xln8 count8 count+ ; I: L8: DP @ lab8 ! ;
-: CTL0 count1 0! count2 0! count3 0! count4 0! count5 0! count6 0! count7 0! count8 0! 0 TO $LABEL ; \ ╨╛╨▒╨╜╤Г╨╗╨╡╨╜╨╕╨╡ ╤Б╤З╨╡╤В╤З╨╕╨║╨╛╨▓ ╤З╨╕╤Б╨╗╨░ ╤Б╤Б╤Л╨╗╨╛╨║ ╨╜╨░ ╨╝╨╡╤В╨║╨╕
+: CTL0 count1 0! count2 0! count3 0! count4 0! count5 0! count6 0! count7 0! count8 0! 0 TO $LABEL ; \ обнуление счетчиков числа ссылок на метки
 
 : [begin]
   >IN @ TO X>IN  DP @ TO XDP  SOURCE XSOURCE $!
@@ -399,21 +399,21 @@ I: L7 lab7 @ xln7 count7 count+ ; I: L7: DP @ lab7 ! ; I: L8 lab8 @ xln8 count8 
    XCURSTR @ CURSTR ! X>IN  >IN ! XDP DP !
    XFP 2@ SOURCE-ID REPOSITION-FILE DROP
 ;
-\ ╨┐╨╡╤А╨╡╨╛╨┐╤А╨╡╨┤╨╡╨╗╨╡╨╜╨╕╨╡ ╤Б╨╗╨╛╨▓ : ╨╕ ; ╨┐╨╛╨┤ ╨░╨▓╤В╨╛╤А╨░╤Б╨┐╨╛╨╖╨╜╨░╨▓╨░╨╜╨╕╨╡ ╨╝╨╡╤В╨╛╨║
+\ переопределение слов : и ; под автораспознавание меток
 : : : 3 TO XN [begin] ;
 
-\ ╨║╨╛╨╝╨┐╨╕╨╗╤П╤Ж╨╕╤П ╨▒╨╡╨╖ ╨║╨╛╨╝╨░╨╜╨┤╤Л RET
+\ компиляция без команды RET
 : noret  [COMPILE] [ SMUDGE ClearJpBuff 0 TO LAST-NON ;
 \ I: -;  CTL0 XN IF XN 1- TO XN [again] EXIT THEN noret ;
 : L;  CTL0 XN IF XN 1- TO XN [again] EXIT THEN POSTPONE ; ;
 : L-; CTL0 XN IF XN 1- TO XN [again] EXIT THEN noret ;
 I: ;  $LABEL IF L;  ELSE POSTPONE ; THEN ;
 I: (; $LABEL IF L-; ELSE noret THEN ;
-\ TZRS: F-╤Д╨╗╨░╨│ ╤А╨░╨▓╨╡╨╜ 1, f-╤Д╨╗╨░╨│ ╤А╨░╨▓╨╡╨╜ 0, F1|F2-╨┐╨╛ ╨Ш╨Ы╨Ш,f1F2-╨┐╨╛ ╨Ш, = - ╤А╨░╨▓╨╡╨╜╤Б╤В╨▓╨╛, # - ╨╜╨╡╤А╨░╨▓╨╡╨╜╤Б╤В╨▓╨╛.
+\ TZRS: F-флаг равен 1, f-флаг равен 0, F1|F2-по ИЛИ,f1F2-по И, = - равенство, # - неравенство.
 
 0 VALUE JRCZ
 : D-L DROP 2DROP ; \ A-Lab A-Len A-Cnt --
-: INT-L!  \ A-Lab A-Len A-Cnt --  ╨┐╤А╨╕╨╖╨╜╨░╨║ ╨╕╨╜╤В╨╡╤А╨▓╨░╨╗╨░ ╨▓ ╨╝╨╡╤В╨║╤Г ╨▓ ╨▒╨╕╤В = ╨┐╨╛╤А╤П╨┤╨║╨╛╨▓╨╛╨╝╤Г ╨╜╨╛╨╝╨╡╤А╤Г ╤Н╤В╨╛╨╣ ╨╝╨╡╤В╨║╨╕ ╨▓ ╨╛╨┐╤А-╨╕╨╕
+: INT-L!  \ A-Lab A-Len A-Cnt --  признак интервала в метку в бит = порядковому номеру этой метки в опр-ии
   ROT     \ A-Len A-Cnt A-Lab
   DP @ 4 + - ABS 0x7F >
   IF 1 ELSE 0 THEN
@@ -428,7 +428,7 @@ I: (; $LABEL IF L-; ELSE noret THEN ;
   OR      \ A-Len Len~
   SWAP !
 ;
-: INT-L@  \ A-Lab A-Len A-Cnt COD -- A-Lab COD  1/0  ╨┤╨░╤В╤М ╨╕╨╜╤В╨╡╤А╨▓╨░╨╗ ╨┤╨╗╤П ╤Б╤Б╤Л╨╗╨║╨╕ ╨╜╨░ ╨╝╨╡╤В╨║╤Г
+: INT-L@  \ A-Lab A-Len A-Cnt COD -- A-Lab COD  1/0  дать интервал для ссылки на метку
   -ROT    \ A-Lab COD   A-Len A-Cnt
   @       \ A-Lab COD   A-Len Cnt
   SWAP    \ A-Lab COD   Cnt   A-Len
@@ -477,7 +477,7 @@ ENDCASE
 : ?JzS=O  0x7F REL-Jcc  ;    I: JG   ?JzS=O  ;    I: JNLE  ?JzS=O  ;   I: J>   ?JzS=O  ;
 : ?JRCZ   1 TO JRCZ  0xE3 REL-Jcc  ;              I: JCXZ  ?JRCZ   ;   I: JECXZ ?JRCZ  ;
 : ?LOOP              0xE2 REL-Jcc  ;              I: LOOPz  ?LOOP  ;
-\ ╨▒╨╡╨╖╤Г╤Б╨╗╨╛╨▓╨╜╤Л╨╡ ╨╛╤В╨╜╨╛╤Б╨╕╤В╨╡╨╗╤М╨╜╤Л╨╡ ╨┐╨╡╤А╨╡╤Е╨╛╨┤╤Л   JMP REL8/REL32
+\ безусловные относительные переходы   JMP REL8/REL32
 : RAZ-J8/32  0 C, 0 , ;
 : COD-J8/32  IF 0xE9 C, DP @ 4 + - , ELSE 0xEB C, DP @ 1+ - C, THEN ;
 : RELJ0   D-L  RAZ-J8/32  ;
@@ -485,11 +485,11 @@ ENDCASE
 : RELJ2   0 INT-L@ SWAP DROP  COD-J8/32  ;
 I: JMP  XN CASE 3 OF RELJ0 ENDOF 2 OF RELJ1 ENDOF 1 OF RELJ2 ENDOF 0 OF RELJ2 ENDOF ENDCASE ;
 
-\ ╨▒╨╡╨╖╤Г╤Б╨╗╨╛╨▓╨╜╤Л╨╡ ╨░╨▒╤Б╨╛╨╗╤О╤В╨╜╤Л╨╡ ╨║╨╛╤Б╨▓╨╡╨╜╨╜╤Л╨╡ ╨┐╨╡╤А╨╡╤Е╨╛╨┤╤Л  ╤В╨╕╨┐╨░ r32/m32
+\ безусловные абсолютные косвенные переходы  типа r32/m32
 \ JR, J@R, J@RR - JMP REG, JMP (SM) [REG], JMP (SM) [REG] [REG]
 I: JR    4 0xFF RO   ; I: J@R   4 0xFF @RO  ; I: J@RR  4 0xFF @RRO ;
 
-\ ╨║╨╛╨╝╨░╨╜╨┤╤Л ╤Г╤Б╤В╨░╨╜╨╛╨▓╨║╨╕ ╨▒╨░╨╣╤В╨░ ╨┐╨╛ ╤Г╤Б╨╗╨╛╨▓╨╕╤О   SETcc
+\ команды установки байта по условию   SETcc
 : ROS  0x0F C, 0 SWAP RO ; : @ROS  0x0F C, 0 SWAP @RO ; : @RROS  0x0F C, 0 SWAP @RRO ;
 
 : ?R=O       0x90 ROS    ; I: R=O   ?R=O         ;
@@ -543,7 +543,7 @@ I: JR    4 0xFF RO   ; I: J@R   4 0xFF @RO  ; I: J@RR  4 0xFF @RRO ;
 : ?@RR=Z|S#O 0x9E @RROS  ; I: @RR=LE  ?@RR=Z|S#O ;  I: @RR=NG   ?@RR=Z|S#O ;
 : ?@RR=zS=O  0x9F @RROS  ; I: @RR=G   ?@RR=zS=O  ;  I: @RR=NLE  ?@RR=zS=O  ;
 
-\ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╨╕ ╤Г╤Б╨╗╨╛╨▓╨╜╤Л╤Е ╨┐╨╡╤А╨╡╤Б╤Л╨╗╨╛╨║ CMOVcc
+\ операции условных пересылок CMOVcc
 : ?ROR      0x0F C, ROR ; : ?RO@R      0x0F C, RO@R ;  : ?RO@RR      0x0F C, RO@RR ;
 : ?wROR Dw, 0x0F C, ROR ; : ?wRO@R Dw, 0x0F C, RO@R ;  : ?wRO@RR Dw, 0x0F C, RO@RR ;
 
@@ -649,10 +649,10 @@ I: JR    4 0xFF RO   ; I: J@R   4 0xFF @RO  ; I: J@RR  4 0xFF @RRO ;
 : ?Z|S#OR=@RR  0x4E ?RO@RR  ; I: LE\R=@RR ?Z|S#OR=@RR   ; I:   NG\R=@RR ?Z|S#OR=@RR   ;
 : ?zS=OR=@RR   0x4F ?RO@RR  ; I:  G\R=@RR ?zS=OR=@RR    ; I:  NLE\R=@RR ?zS=OR=@RR    ;
 
-\ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╤П ╨┐╨╛╨╗╤Г╤З╨╡╨╜╨╕╤П ╨╕╨╜╤Д╨╛╤А╨╝╨░╤Ж╨╕╨╕ ╨╛ ╨┐╤А╨╛╤Ж╨╡╤Б╤Б╨╛╤А╨╡
+\ операция получения информации о процессоре
 I: CPUID 0x0F C, 0xA2 C, ;
 
-\ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╨╕ ╤Б ╨▒╨╕╤В╨░╨╝╨╕ BSF BSR BT BTC BTR BTS
+\ операции с битами BSF BSR BT BTC BTR BTS
 \ BSF
 I: wR=L\wR  Dw, 0x0F C, 0xBC ROR    ; I: wR=L\@wR  Dw, 0x0F C, 0xBC RO@R    ; I: wR=L\@wRR  Dw, 0x0F C, 0xBC RO@RR    ;
 I: R=L\R        0x0F C, 0xBC ROR    ; I: R=L\@R        0x0F C, 0xBC RO@R    ; I: R=L\@RR        0x0F C, 0xBC RO@RR    ;
@@ -680,7 +680,7 @@ I: C=R\R1       0x0F C, 0xAB ROR    ; I: C=R\@R1       0x0F C, 0xAB RO@R    ; I:
 I: C=b#\wR1 Dw, 0x0F C, 5 0xBA ROb# ; I: C=b#\@wR1 Dw, 0x0F C, 5 0xBA @ROb# ; I: C=b#\@wRR1 Dw, 0x0F C, 5 0xBA @RROb# ;
 I: C=b#\R1      0x0F C, 5 0xBA ROb# ; I: C=b#\@R1      0x0F C, 5 0xBA @ROb# ; I: C=b#\@RR1      0x0F C, 5 0xBA @RROb# ;
 
-\ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╨╕ ╨║╨╛╤А╤А╨╡╨║╤Ж╨╕╨╕ ╤А╨╡╨╖╤Г╨╗╤М╤В╨░╤В╨╛╨▓ ╨░╤А. ╨║╨╛╨╝╨░╨╜╨┤:  AAA  AAD  AAM  AAS  DAA  DAS
+\ операции коррекции результатов ар. команд:  AAA  AAD  AAM  AAS  DAA  DAS
 I: AAA 0x37 C, ;
 I: AAD 0xD5 C, 0x0A C, ;
 I: AAM 0xD4 C, 0x0A C, ;
@@ -688,7 +688,7 @@ I: AAS 0x3F C, ;
 I: DAA 0x27 C, ;
 I: DAS 0x2F C, ;
 
-\ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╨╕ ╨╖╨░╨│╤А╤Г╨╖╨║╨╕ ╤Б╨╡╨╗╨╡╨║╤В╨╛╤А╨╛╨▓: LDS LES LFS LGS LSS
+\ операции загрузки селекторов: LDS LES LFS LGS LSS
 I: DS:wR=@wR Dw,         0xC5 RO@R ; I: DS:wR=@wRR  Dw,         0xC5 RO@RR ;
 I: DS:R=@R               0xC5 RO@R ; I: DS:R=@RR                0xC5 RO@RR ;
 
@@ -704,7 +704,7 @@ I: GS:R=@R       0x0F C, 0xB5 RO@R ; I: GS:R=@RR        0x0F C, 0xB5 RO@RR ;
 I: SS:wR=@wR Dw, 0x0F C, 0xB2 RO@R ; I: SS:wR=@wRR  Dw, 0x0F C, 0xB2 RO@RR ;
 I: SS:R=@R       0x0F C, 0xB2 RO@R ; I: SS:R=@RR        0x0F C, 0xB2 RO@RR ;
 
-\ ╨▓╨▓╨╛╨┤-╨▓╤Л╨▓╨╛╨┤ ╨╖╨╜╨░╤З╨╡╨╜╨╕╨╣ ╨╕ ╤Б╤В╤А╨╛╨║  IN INSB INSW INSD   OUT OUTSB OUTSW OUTSD
+\ ввод-вывод значений и строк  IN INSB INSW INSD   OUT OUTSB OUTSW OUTSD
 \ IN
 I: bA=Pb#     CS> 0xE4 C, C, ;
 I: wA=Pb# Dw, CS> 0xE5 C, C, ;
@@ -728,7 +728,7 @@ I: OUTSB          0x6E C,    ;
 I: OUTSW  Dw,     0x6F C,    ;
 I: OUTSD          0x6F C,    ;
 
-\ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╨╕ ╤Б╨╛ ╤Б╤В╨╡╨║╨╛╨╝: PUSH PUSHA PUSHAD PUSHF PUSHFD POP  POPA  POPAD  POPF  POPFD
+\ операции со стеком: PUSH PUSHA PUSHAD PUSHF PUSHFD POP  POPA  POPAD  POPF  POPFD
 \ PUSH PUSHA PUSHAD PUSHF PUSHFD
 I: RS=wR    Dw,   0x50 RO1   ; I: RS=R           0x50 RO1   ;
 I: RS=@wR   Dw, 6 0xFF @RO   ; I: RS=@R        6 0xFF @RO   ; I: RS=@wRR Dw, 6 0xFF @RRO ; I: RS=@RR 6 0xFF @RRO ;
@@ -745,14 +745,14 @@ I: FS=RS  0x0F C, 0xA1 C,    ; I: GS=RS  0x0F C, 0xA9 C,    ;
 I: POPA     Dw,   0x61 C,    ; I: POPAD          0x61 C,    ; I: POPF    Dw,   0x9D C,   ; I: POPFD    0x9D C,   ;
                              (  I: }f             0x61 C,    ; )
 
-\ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╨╕ ╨╕╨╖╨╝╨╡╨╜╨╡╨╜╨╕╤П ╤А╨░╨╖╤А╤П╨┤╨╜╨╛╤Б╤В╨╕ ╨┐╤Г╤В╨╡╨╝ ╤А╨░╤Б╤И╨╕╤А╨╡╨╜╨╕╤П ╨╖╨╜╨░╨║╨░ CBW CWDE CWD CDQ
+\ операции изменения разрядности путем расширения знака CBW CWDE CWD CDQ
 I: wA=bA 0x98 C, ; I: A=wA Dw, 0x98 C, ; I: wDA=wA Dw, 0x99 C, ; I: DA=A 0x99 C, ;
 
-\ ╨╛╨┐╨╡╤А╨░╤Ж╨╕╨╕ ╨╜╨░╨┤ ╤Д╨╗╨░╨│╨░╨╝╨╕ LAHF SAHF CLC STC CMC CLD STD
+\ операции над флагами LAHF SAHF CLC STC CMC CLD STD
 I: AH=F 0x9F C, ; I: F=AH 0x9E C, ; I: CF=0 0xF8 C, ; I: CF=1 0xF9 C, ;
 I: CF~  0xF5 C, ; I: DF=0 0xFC C, ; I: DF=1 0xFD C, ;
 
-\ ╨╛╨▒╤А╨░╨▒╨╛╤В╨║╨░ ╨┐╤А╨╡╤А╤Л╨▓╨░╨╜╨╕╨╣ INT INT0 INT3 IRET CLI STI
+\ обработка прерываний INT INT0 INT3 IRET CLI STI
 I: INT   CS> 0xCD C, C, ;
 I: INT0      0xCE C,    ;
 I: INT3      0xCC C,    ;
@@ -761,14 +761,14 @@ I: IRETD     0xCF C,    ;
 I: IF=0      0xFA C,    ;
 I: IF=1      0xFB C,    ;
 
-\ ╨║╨╛╨╝╨░╨╜╨┤╤Л ╤З╤В╨╡╨╜╨╕╤П 64-╤А╨░╨╖╤А╤П╨┤╨╜╨╛╨│╨╛ ╤Б╤З╨╡╤В╤З╨╕╨║╨░ ╨╝╨╡╤В╨╛╨║ ╤А╨╡╨░╨╗╤М╨╜╨╛╨│╨╛ ╨▓╤А╨╡╨╝╨╡╨╜╨╕  RDTSC ╨╕ RDTSCP
+\ команды чтения 64-разрядного счетчика меток реального времени  RDTSC и RDTSCP
 I: DA=TSC   0x0F C, 0x31 C, ;
-\ ╤Б╨▒╤А╨╛╤Б ╨║╨╛╨╜╨▓╨╡╨╣╨╡╤А╨░, ╨▓ ╤А╨╡╨│. EDX(hi) EAX(lo) ╤Б╨╛╤Б╤В╨╛╤П╨╜╨╕╨╡ TSC, ╨▓ ╤А╨╡╨│. ECX ╨╜╨╛╨╝╨╡╤А ╨╗╨╛╨│. ╨┐╤А╨╛╤Ж-╤А╨░
+\ сброс конвейера, в рег. EDX(hi) EAX(lo) состояние TSC, в рег. ECX номер лог. проц-ра
 I: DAC=TSCP 0x0F C, 0x1 C, 0xF9 C, ;
-\ ╨┐╨╡╤А╨╡╤Б╤Л╨╗╨║╨╕ - ╤Б╨╕╤Б╤В╨╡╨╝╨╜╤Л╨╣ ╨▓╨░╤А╨╕╨░╨╜╤В
-\ ╤Б╨╕╤Б╤В╨╡╨╝╨╜╤Л╨╡ ╤А╨╡╨│╨╕╤Б╤В╤А╤Л
+\ пересылки - системный вариант
+\ системные регистры
 0 ITO CR0 2 ITO CR2 3 ITO CR3 4 ITO CR4
-\ ╨╛╤В╨╗╨░╨┤╨╛╤З╨╜╤Л╨╡ ╤А╨╡╨│╨╕╤Б╤В╤А╤Л
+\ отладочные регистры
 0 ITO DR0 1 ITO DR1 2 ITO DR2 3 ITO DR3 6 ITO DR6 7 ITO DR7
 
 I: R=CR 0x0F C, 0x20 ROR1 ;
@@ -776,7 +776,7 @@ I: CR=R 0x0F C, 0x22 ROR  ;
 I: R=DR 0x0F C, 0x21 ROR1 ;
 I: DR=R 0x0F C, 0x23 ROR  ;
 
-\ ╨║╨╛╨╝╨░╨╜╨┤╤Л ╨╖╨░╤Й╨╕╤В╤Л ╨┐╨░╨╝╤П╤В╨╕ SGDT SIDT STR LGDT LIDT LTR CLTS ARPL LAR LSL VERR VERRW LMSW SMSW
+\ команды защиты памяти SGDT SIDT STR LGDT LIDT LTR CLTS ARPL LAR LSL VERR VERRW LMSW SMSW
 I: @RR=GDTR        0x0F C, 0 0x01 @RRO  ;  \ LGDT
 I: @RR=IDTR        0x0F C, 1 0x01 @RRO  ;  \ LIDT
 I: GDTR=@RR        0x0F C, 2 0x01 @RRO  ;  \ LGDT
@@ -830,16 +830,16 @@ I: SYSENTER 0x0F C, 0x34 C,  ;  \ SYSENTER
 I: SYSEXIT  0x0F C, 0x35 C,  ;  \ SYSEXIT
 I: UD2      0x0F C, 0x0B C,  ;  \ UD2
 
-\ ╨Т╨Ю╨Ч╨Т╨а╨Р╨в ╨Ш╨Ч ╨Я╨Ю╨Ф╨Я╨а╨Ю╨У╨а╨Р╨Ь╨Ь
+\ ВОЗВРАТ ИЗ ПОДПРОГРАММ
 I: ret      0xC3 C, ;
 : ret,      0xC3 C, ;
 
-\ ╨Т╨л╨Ч╨Ю╨Т╨л ╨Я╨Ю╨Ф╨Я╨а╨Ю╨У╨а╨Р╨Ь╨Ь
+\ ВЫЗОВЫ ПОДПРОГРАММ
 I: ^@  CS> 0xE8 C, DP @ 4 + - , ;  \ CALL REL32
 :  ^@, CS> 0xE8 C, DP @ 4 + - , ;  \ CALL ADDR
 I: ^R      0xFF C, 0xD0 RO1     ;  \ CALL R
 
-\ ╨Ш╨Э╨б╨в╨а╨г╨Ъ╨ж╨Ш╨Ш ╨б╨Ю╨Я╨а╨Ю╨ж╨Х╨б╨б╨Ю╨а╨Р
+\ ИНСТРУКЦИИ СОПРОЦЕССОРА
 I: 0=@wR  0 0xDF @RO ; \ FILD m16int
 I: 0=@R   0 0xDB @RO ; \ FILD m32int
 I: 0=@dR  5 0xDF @RO ; \ FILD m64int

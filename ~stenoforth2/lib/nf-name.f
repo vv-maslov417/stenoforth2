@@ -1,14 +1,16 @@
 \ stenoforth32
 
-\ ╨Я╤А╨╡╨╛╨▒╤А╨░╨╖╨╛╨▓╨░╤В╨╡╨╗╤М ╨╗╨╡╨║╤Б╨╡╨╝ 's','ss','sss','ssss' [s-╨╗╤О╨▒╨╛╨╣ ascii char] ╨▓ ╨╛╨┤╨╕╨╜╨░╤А╨╜╨╛╨╡ ╤З╨╕╤Б╨╗╨╛
+\ Преобразователь лексем 's','ss','sss','ssss' [s-любой ascii char] в одинарное число
 : NOTFOUND { a u } \ -- n
-  a C@ [CHAR] ' = a u + 1- C@ [CHAR] ' = AND u 3 6 1+ WITHIN AND 0= \ ╤А╨░╤Б╨┐╨╛╨╖╨╜╨░╨▓╨░╤В╨╡╨╗╤М
+  a C@ [CHAR] ' = a u + 1- C@ [CHAR] ' = AND u 3 6 1+ WITHIN AND 0= \ распознаватель
   IF a u NOTFOUND EXIT THEN
-  0 a 1+ a u + 2- DO 8 LSHIFT I C@ + -1 +LOOP STATE @ IF LIT, THEN  \ ╨│╨╡╨╜╨╡╤А╨░╤В╨╛╤А
+  0 a 1+ a u + 2- DO 8 LSHIFT I C@ + -1 +LOOP STATE @ IF LIT, THEN  \ генератор
 ;
 
 : LOAD-LEX \ a u --
-   S, BL C,    \ 0 C, ******
+   S,
+   \ BL C,
+   0 C, \ ******
 ;
 : load-text ( -- a u )
   5 ALLOT DP @ >R
@@ -31,6 +33,7 @@
 : LOAD-TEXT \ a u --
   load-text DLIT,
 ;
+
 : load-str ( -- a u )
   5 ALLOT DP @ >R
   BEGIN NextWord ( -- a u )
@@ -55,7 +58,7 @@
   5 ALLOT DP @ >R
   BEGIN
        REFILL DROP
-       0xD PARSE 2DUP DROP C@ 0xF9 = \  ╨╜╨╡╨║╨╗╨░╨▓╨╕╨░╤В╤Г╤А╨╜╤Л╨╣ ╤Б╨╕╨╝╨▓╨╛╨╗ 'тИЩ'
+       0xD PARSE 2DUP DROP C@ 0xF9 = \  неклавиатурный символ '∙'
           IF   2DROP 1
           ELSE LOAD-LEX 0xA C, 0xD C, 0
           THEN
@@ -63,27 +66,27 @@
   DP @ R@ 5 - DP ! 0xE9 C, DUP R@ - ,
   DUP DP ! R@ SWAP R> - 1-
 ;
-\ ╨Ь╨╜╨╛╨│╨╛╤Б╤В╤А╨╛╤З╨╜╤Л╨╡ ╤Б╤В╤А╨╛╨║╨╕ ╨┤╨╗╤П ╨┐╨╡╤З╨░╤В╨╕
+\ Многострочные строки для печати
 : LOAD-TXT  load-txt DLIT, ;
 \ ( "name" "text" -- )
 : txt: : LOAD-TXT POSTPONE ; ;
 : text: : LOAD-TXT POSTPONE ; ;
 
-\ ╨б╨╗╨╛╨▓╨░-╤Б╤В╤А╨╛╨║╨╕ ╨╝╨╜╨╛╨│╨╛╤Б╤В╤А╨╛╤З╨╜╤Л╨╡ - ╨┤╨╛╨┐╤Г╤Б╨║╨░╤О╤В ╨║╨╛╨╝╨╝╨╡╨╜╤В╨░╤А╨╕╨╕ ╨▓╨╕╨┤╨░ \ .....
+\ Слова-строки многострочные - допускают комментарии вида \ .....
 : T:   ( name "text" -- ) : LOAD-TEXT POSTPONE ; ;
 : t:   ( name "text" -- ) : LOAD-STR  POSTPONE ; ;
-\ ╨в╨╡╨║╤Б╤В ╨▒╨╡╨╖ ╨╕╨╖╨╝╨╡╨╜╨╡╨╜╨╕╤П ╤Д╨╛╤А╨╝╨░╤В╨╕╤А╨╛╨▓╨░╨╜╨╕╤П - ╨╝╨╜╨╛╨│╨╛╤Б╤В╤А╨╛╤З╨╜╤Л╨╡ ╤Б╤В╤А╨╛╨║╨╕
+\ Текст без изменения форматирования - многострочные строки
 
-\ ╨Ь╨░╨║╤А╨╛╤Б╤Л ╨╝╨╜╨╛╨│╨╛╤Б╤В╤А╨╛╤З╨╜╤Л╨╡ - ╨┤╨╛╨┐╤Г╤Б╨║╨░╤О╤В ╨║╨╛╨╝╨╝╨╡╨╜╤В╨░╤А╨╕╨╕ ╨▓╨╕╨┤╨░ \ .....
+\ Макросы многострочные - допускают комментарии вида \ .....
 : M:  : IMMEDIATE LOAD-TEXT POSTPONE EVALUATE POSTPONE ; ;
 : m:  : IMMEDIATE LOAD-STR  POSTPONE EVALUATE POSTPONE ; ;
 : tx: : IMMEDIATE LOAD-TXT  POSTPONE EVALUATE POSTPONE ; ;
 
-\ ╨╖╨░╨╝╤Л╨║╨░╨╜╨╕╤П
+\ замыкания
 : xts ( a u -- xt )
   DP @ >R 1024 ALLOCATE THROW DUP >R DP !
   TRUE STATE ! EVALUATE RET, FALSE STATE !
   R@ DP @ R> - RESIZE THROW  R> DP !
 ;
-\ ╨╛╨┐╤А╨╡╨┤╨╡╨╗╨╡╨╜╨╕╨╡ ╤Б╨╗╨╛╨▓╨░-╨╖╨░╨╝╤Л╨║╨░╨╜╨╕╤П C: Name .... ;
+\ определение слова-замыкания C: Name .... ;
 : C: : IMMEDIATE LOAD-TEXT ` xts POSTPONE ; ;
