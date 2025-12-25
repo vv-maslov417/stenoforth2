@@ -1,6 +1,6 @@
 \ stenoforth32
 
-\ Ø•‡•¢Æ§ Á†·‚Æ ®·ØÆ´Ïß„•¨ÎÂ ®¨•≠ ·´Æ¢ ¢ ≠®¶≠®© ‡•£®·‚‡
+\ –ø–µ—Ä–µ–≤–æ–¥ —á–∞—Å—Ç–æ –∏—Å–ø–æ–ª—å–∑—É–µ–º—ã—Ö –∏–º–µ–Ω —Å–ª–æ–≤ –≤ –Ω–∏–∂–Ω–∏–π —Ä–µ–≥–∏—Å—Ç—Ä
 : 2LIT, SWAP LIT, LIT, ;
 SYNONYM c@                    C@
 SYNONYM w@                    W@
@@ -10,19 +10,8 @@ SYNONYM c,                    C,
 SYNONYM w,                    W,
 SYNONYM d+                    D+
 SYNONYM d-                    D-
-SYNONYM d*                    D*
-SYNONYM d/                    D/
-\ SYNONYM dmax                  DMAX
-\ SYNONYM dmin                  DMIN
-SYNONYM dor                   DOR
-SYNONYM dxor                  DXOR
-SYNONYM dand                  DAND
-SYNONYM dinvert               DINVERT
-SYNONYM dlshift               DLSHIFT
-SYNONYM drshift               DRSHIFT
-SYNONYM d0<>                  D0<>
-SYNONYM dnegate               DNEGATE
-SYNONYM dabs                  DABS
+\ SYNONYM d*                    D*
+\ SYNONYM d/                    D/
 
 SYNONYM dup                   DUP
 SYNONYM 2dup                  2DUP
@@ -58,8 +47,6 @@ SYNONYM r0                    R0
 
 SYNONYM char                  CHAR
 SYNONYM [char]                [CHAR]
-SYNONYM .bl                   .BL
-SYNONYM .sn                   .SN
 SYNONYM bl                    BL
 SYNONYM space                 SPACE
 SYNONYM spaces                SPACES
@@ -132,7 +119,7 @@ SYNONYM user                  USER
 SYNONYM user-value            USER-VALUE
 SYNONYM user-create           USER-CREATE
 SYNONYM user-allot            USER-ALLOT
-SYNONYM to                    TO
+\ SYNONYM to                    TO
 SYNONYM allocate              ALLOCATE
 SYNONYM resize                RESIZE
 SYNONYM free                  FREE
@@ -208,6 +195,7 @@ SYNONYM id.                   ID.
 SYNONYM name>                 NAME>
 SYNONYM name>f                NAME>F
 SYNONYM name>c                NAME>C
+
 SYNONYM seet                  SEET
 SYNONYM set-opt               SET-OPT
 SYNONYM dis-opt               DIS-OPT
@@ -221,24 +209,24 @@ SYNONYM resume                RESUME
 SYNONYM pause                 PAUSE
 
 SYNONYM >in                   >IN
-SYNONYM x>in                  X>IN
-SYNONYM xdp                   XDP
+\ SYNONYM x>in                  X>IN
+\ SYNONYM xdp                   XDP
 SYNONYM source                SOURCE
-SYNONYM xsource               XSOURCE
+\ SYNONYM xsource               XSOURCE
 SYNONYM source-id             SOURCE-ID
 SYNONYM curstr                CURSTR
-SYNONYM xcurstr               XCURSTR
+\ SYNONYM xcurstr               XCURSTR
 SYNONYM count                 COUNT
-SYNONYM xfp                   XFP
+\ SYNONYM xfp                   XFP
 SYNONYM tib                   TIB
 SYNONYM #tib                  #TIB
 SYNONYM file-position         FILE-POSITION
 SYNONYM reposition-file       REPOSITION-FILE
-SYNONYM xn                    XN
-SYNONYM $label                $LABEL
+\ SYNONYM xn                    XN
+\ SYNONYM $label                $LABEL
 SYNONYM randomize             RANDOMIZE
 SYNONYM choose                CHOOSE
 SYNONYM i:                    I:
 SYNONYM export                EXPORT
-SYNONYM //                    \
-SYNONYM ///                   \EOF
+\ SYNONYM //                    \
+\ SYNONYM ///                   \EOF

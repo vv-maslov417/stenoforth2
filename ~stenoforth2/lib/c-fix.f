@@ -7,14 +7,14 @@ m: c EMIT ;                         m: C CASE ;                        m: _ ALLO
 m: d DUP ;                          m: D ?DO ;                         m: ^ XOR ;
 m: e ELSE ;                         m: E ENDCASE ;                     m: & AND ;
 m: f ENDOF ;                        m: F FILL ;                        m: ~ INVERT ;
-m: g rnd ;                          m: G aDO ;                         m: | OR ;
+m: g +! ;                           m: G aDO ;                         m: | OR ;
 m: h HERE ;                         m: H WITHIN ;                      m: % MOD ;
 m: i 1+ ;                                                              m: : -> ;
 m: j 1- ;                                                              m: ; EXIT ;
-m: k KEY ;                          m: K COMPARE ;
-m: l LSHIFT ;                       m: L LOOP ;
-m: m MIN ;                          m: M MAX ;
-m: n NEGATE ;                       m: N +LOOP ;
+m: k KEY ;                          m: K COMPARE ;                     m: \ CR ;
+m: l LSHIFT ;                       m: L LOOP ;                        m: ' C, ;
+m: m MIN ;                          m: M MAX ;                         m: " BL ;
+m: n NEGATE ;                       m: N +LOOP ;                       m: ` S, ;
 m: o OF ;                           m: O ERASE ;
 m: p DEPTH ;                        m: P randomize ;
 m: q 1+! ;                          m: Q LEAVE ;
@@ -27,7 +27,7 @@ m: w C! ;                           m: W WHILE ;
 m: x DROP ;                         m: X EXECUTE ;
 m: y $ -4 @P=A A^A $ -4 Pa ; ( 0 )  m: Y $ -4 @P=A $ 1 A=# $ -4 Pa ; ( 1 )
 m: z 0<> ;                          m: Z 0= ;
-m: 1   ; m: 2 ¡ ; m: 3 ¢ ; m: 4 £ ; m: 5 ¤ ; m: 6 ¥ ; m: 7 ñ ; m: 8 ¦ ; m: 9 § ;
+m: 1 Ð° ; m: 2 Ð± ; m: 3 Ð² ; m: 4 Ð³ ; m: 5 Ð´ ; m: 6 Ðµ ; m: 7 Ñ‘ ; m: 8 Ð¶ ; m: 9 Ð· ;
 EXPORT
 m: s| {{ syn-fixpoint ;
 m: |s }} ;
@@ -37,7 +37,7 @@ m: |s }} ;
 ` s| a 1+ u 1- aDO I 1 EVALUATE LOOP ` |s ;
 
 MODULE: valuenames
-m: 1  \ ; m: 2 ¡\ ; m: 3 ¢\ ; m: 4 £\ ; m: 5 ¤\ ; m: 6 ¥\ ; m: 7 ñ\ ; m: 8 ¦\ ; m: 9 §\ ;
+m: 1 Ð°\ ; m: 2 Ð±\ ; m: 3 Ð²\ ; m: 4 Ð³\ ; m: 5 Ð´\ ; m: 6 Ðµ\ ; m: 7 Ñ‘\ ; m: 8 Ð¶\ ; m: 9 Ð·\ ;
 EXPORT
 m: vs| {{ valuenames ;
 m: |vs }} ;
@@ -49,7 +49,7 @@ m: |vs }} ;
 m: |1 \1 ; m: |2 \12 ; m: |3 \123 ; m: |4 \1234 ; m: |5 \12345 ; m: |6 \123456 ; m: |7 \1234567 ; m: |8 \12345678 ; m: |9 \123456789 ;
 
 MODULE: mvaluenames
-m: 1  % ; m: 2 ¡% ; m: 3 ¢% ; m: 4 £% ; m: 5 ¤% ; m: 6 ¥% ; m: 7 ñ% ; m: 8 ¦% ; m: 9 §% ;
+m: 1 Ð°% ; m: 2 Ð±% ; m: 3 Ð²% ; m: 4 Ð³% ; m: 5 Ð´% ; m: 6 Ðµ% ; m: 7 Ñ‘% ; m: 8 Ð¶% ; m: 9 Ð·% ;
 EXPORT
 m: mvs| {{ mvaluenames ;
 m: |mvs }} ;

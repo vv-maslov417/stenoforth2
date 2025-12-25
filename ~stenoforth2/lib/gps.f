@@ -1,4 +1,4 @@
-\ ®¡¬¥­ ¡ ©â ¬¨ ¬¥¦¤ã ¤¢ã¬ï  ¤à¥á ¬¨
+\ Ð¾Ð±Ð¼ÐµÐ½ Ð±Ð°Ð¹Ñ‚Ð°Ð¼Ð¸ Ð¼ÐµÐ¶Ð´Ñƒ Ð´Ð²ÑƒÐ¼Ñ Ð°Ð´Ñ€ÐµÑÐ°Ð¼Ð¸
 : cswapa \ a1 a2 --
   a| b=[p cl=[b dl=[a [b=dl [a=cl |a 2\
 ;
@@ -38,7 +38,7 @@
     2dup 2>r over + swap 0 -rot 2r> variants 2drop 2drop
 ;
 
-\ eof
+\eof
 0 to notype
 s" 1111444466666666" 2DUP VARIANTS .( variants: ) . type cr cr
 

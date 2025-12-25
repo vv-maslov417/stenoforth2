@@ -99,6 +99,26 @@ lhere @ u + 4 + DUP dtyp ! C! 0 lhere @ u + 5 + C!
                  THEN
        fl UNTIL
 ;
+(
+: lsearch { a u a1 u1 \ ab ae d fb fe }
+  BEGIN a d + C@ 0<> fb 0= AND
+    IF a d + TO ab 1 TO fb
+    ELSE fb a d + C@ 0= AND a d + 1- C@ 0<> AND
+      IF a d + TO ae 0 TO fb ab ae ab - a1 u1 COMPARE 0=
+         IF ab ae ab - TRUE 1 TO fe THEN
+      THEN
+    THEN
+    d 1+ TO d d u > fe OR
+  UNTIL fe 0= IF a u fe THEN ;
+
+: lsearch  \ s1 s2 -- s3 f
+  >R HERE SWAP R@ S, 0 C, R@ 1+ SEARCH
+  IF DROP R> TRUE ELSE RDROP FALSE THEN ;
+
+: lsearch \ c-addr1 u1 c-addr2 u2  -- c-addr3 u3 flag
+  HERE { a2 u2 h } a2 u2 S, 0 C,  h u2 1+ SEARCH
+  IF DROP u2 TRUE ELSE  FALSE THEN ;
+)
 : l' ( l' name -- xt ) TRUE locxt ! ; IMMEDIATE \ gives xt for name
 USER st-wr  0 st-wr !
 : -> 1 st-wr ! ; IMMEDIATE

@@ -10,6 +10,7 @@
 \ cdq    pushad  popad  cf=0    cf=1  df=0   df=1  cpuid  dac=tscp nop     @b@    @w@     @d@    cmpb    cmpw   cmpd
 \ rep    repn    xlat   ^r      r=br  r=[br  br=[r br=[r? rl=LE    rl=GE   rl=Z   rl=z    rl=Sg  rl=sg   rh=LE  rh=GE
 \ rh=Z   rh=z    rh=Sg  rh=sg   [r=LE [r=GE  [r=Z  [r=z   [r=Sg    [r=sg   r=rl   rl=[r   [r=rl  rl=[r?  [r=rl? r=ar
+\ r=n?  [r=n? sm [r=n?
 
 module: asmforth
 : cinstr  | s\ a\ u\ | \ -- tf
@@ -101,34 +102,64 @@ gen: 3 nregs R\ 1 nregs r\ a 2+ C@ cops1 op\ op 0xAF = if 0x0F c, then
 \ [r=rl
 rec: '[' 0 spos? 1 regs? and '=' 2 spos? and 3 regs? and 'l' 4 spos? and u 5 = and
 gen: 0x88 c, 3 nregs 3 lshift 1 nregs or c, ;
-\ r<< r>>
+\ n r<< n r>>
 rec: 0 regs? '>>' 1 2spos? '<<' 1 2spos? dup pc\ or and u 3 = and
 gen: 0xC1 c, pc if 0xE0 else 0xE8 then 0 nregs or c, c, ;
-\ rc<< rc>>
+\ n rc<< n rc>>
 rec: 0 regs? 'c' 1 spos? and '>>' 2 2spos? '<<' 2 2spos? dup pc\ or and u 4 = and
 gen: 0xC1 c, pc if 0xD0 else 0xD8 then 0 nregs or c, c, ;
-\ [r<< [r>>
+\ n sm [r<<  n [r<< n sm [r>> n [r>>
 rec: '[' 0 spos? 1 regs? and '>>' 2 2spos? '<<' 2 2spos? dup pc\ or and u 4 = and
-gen: 0xC1 c, 1 nregs 4 <>
+gen: depth 2 =
+  if 0xC1 c, 1 nregs 4 <>
      if   pc if 0x60 else 0x68 then 1 nregs or c,
-     else pc if 0x60 else 0x68 then 1 nregs or c, 0x24 c, then c, c, ;
-\ [rc<< [rc>>
+     else pc if 0x60 else 0x68 then 1 nregs or c, 0x24 c, then c, c,
+   else
+     0xC1 c, 1 nregs 4 <> 1 nregs 5 <> and
+     if   pc if 0x20 else 0x28 then 1 nregs or c, c,
+     else 1 nregs 5 = if   pc if 0x65 else 0x6D then c, 0 c,
+                      else pc if 0x24 else 0x2C then c, 0x24 c,
+                      then c,
+     then
+   then ;
+\ n sm [rc<< n [r<< n sm [rc>> n [r>>
 rec: '[' 0 spos? 1 regs? and 'c' 2 spos? and
      '>>' 3 2spos? '<<' 3 2spos? dup pc\ or and u 5 = and
-gen: 0xC1 c, pc if 0x50 else 0x58 then
-     1 nregs or c, 1 nregs 4 = if 0x24 c, then c, c, ;
-\ ra<< ra>>
+gen: depth 2 =
+  if 0xC1 c, 1 nregs 4 <>
+     if   pc if 0x50 else 0x58 then 1 nregs or c,
+     else pc if 0x50 else 0x58 then 1 nregs or c, 0x24 c, then c, c,
+   else
+     0xC1 c, 1 nregs 4 <> 1 nregs 5 <> and
+     if   pc if 0x10 else 0x18 then 1 nregs or c, c,
+     else 1 nregs 5 = if   pc if 0x55 else 0x5D then c, 0 c, c,
+                      else pc if 0x14 else 0x1C then c, 0x24 c, c,
+                      then
+     then
+   then ;
+\ n ra<< n ra>>
 rec: 0 regs? 'a' 1 spos? and '>>' 2 2spos? '<<' 2 2spos? dup pc\ or and u 4 = and
 gen: 0xC1 c, pc if 0xE0 else 0xF8 then 0 nregs or c, c, ;
-\ [ra<< [ra>>
+
+\ n sm [ra<< n [ra<< n sm [ra>> n [ra>>
 rec: '[' 0 spos? 1 regs? and 'a' 2 spos? and
      '>>' 3 2spos? '<<' 3 2spos? dup pc\ or and u 5 = and
-gen: 0xC1 c, pc if 0x60 else 0x78 then
-     1 nregs or c, 1 nregs 4 = if 0x24 c, then c, c, ;
-\ rOi  |&^+-=*
+gen: depth 2 =
+  if 0xC1 c, 1 nregs 4 <>
+     if   pc if 0x50 else 0x78 then 1 nregs or c,
+     else pc if 0x50 else 0x78 then 1 nregs or c, 0x24 c, then c, c,
+   else
+     0xC1 c, 1 nregs 4 <> 1 nregs 5 <> and
+     if   pc if 0x10 else 0x38 then 1 nregs or c, c,
+     else 1 nregs 5 = if   pc if 0x55 else 0x7D then c, 0 c, c,
+                      else pc if 0x14 else 0x3C then c, 0x24 c, c,
+                      then
+     then
+   then ;
+\ n rOi rOn  |&^+-=*
 rec: 0 n\ 0 regs? 1 oper2? and 'i' 2 spos? st\ st if 1 and u 3 = and else a 2+ u 2- number? nip swap -> n and u 14 < and u 2 > and then
 gen: 1 spos cops2 0 nregs '*' 1 spos? if dup 3 lshift or then or c, st 0= if n then , ;
-\ [rOi  n sm [rOi  n [rOi  [rOn  sm [rOn  |&^+-=
+\ n sm [rOi  n [rOi  [rOn  sm [rOn  |&^+-=
 rec: 0 n\ 0 st\ '[' 0 spos? 1 regs? and 2 oper3? and 'i' 3 spos? -> st  ( n sm | n )
      st if 1 and u 4 = and  else a 3 + u 3 - number? nip swap -> n and u 15 < and u 3 > and then
 gen: st if   depth 2 = if   2 spos cops3 1 nregs or c, 1 nregs 4 = if 0x24 c, then c,
@@ -136,7 +167,7 @@ gen: st if   depth 2 = if   2 spos cops3 1 nregs or c, 1 nregs 4 = if 0x24 c, th
         else depth if   2 spos cops3 1 nregs or c, 1 nregs 4 = if 0x24 c, then c,
                    else 1 nregs 5 = if 2 spos cops3 5 or c, 0 c, else 2 spos cops4 1 nregs or c, then 1 nregs 4 = if 0x24 c, then then n ,
         then ;
-\ r=r*i
+\ n r=r*i  r=r*n
 rec: 0 n\ 0 regs? '=' 1 spos? and 2 regs? and '*' 3 spos? and 'i' 4 spos? st\
      st if 1 and u 5 = and else a 4 + u 4 - number? nip swap -> n and u 16 < and u 4 > and then
 gen: '*' cops2 0 nregs 3 lshift or 2 nregs or c, st 0= if n then , ;
@@ -146,11 +177,11 @@ gen: 0 nregs  R\ 3 nregs r\ a 1+ w@ copsa R 3 lshift r or or c, ;
 \ rc+[r rc-[r
 rec: 0 regs? 'c+' 1 2spos? 'c-' 1 2spos? or and '[' 3 spos? and 4 regs? and u 5 = and
 gen: a 1+ W@ copsb 0 nregs 3 lshift or 4 nregs or c, 4 nregs 4 = if 0x24 c, then c, ;
-\ rc+i rc-i
+\ n rc+i n rc-i  rc+n rc-n
 rec: 0 n\ 0 regs? 'c+' 1 2spos? 'c-' 1 2spos? or and 'i' 3 spos? st\ st if 1 and u 4 = and
      else a 3 + u 3 - number? nip swap -> n and u 15 < and u 3 > and then
 gen: a 1+ w@ copsd 0 nregs or c, st 0= if n then , ;
-\ [rc+i [rc-i
+\ n [rc+i n [rc-i [rc+n [rc-n
 rec: 0 n\ '[' 0 spos? 1 regs? and 'c+' 2 2spos? 'c-' 2 2spos? or and
       'i' 4 spos? st\ st if 1 and u 5 = and else a 4 + u 4 - number? nip swap -> n and u 16 < and u 4 > and then
 gen: a 2+ W@ copse 1 nregs or c, 1 nregs 4 = if 0x24 c, then c, st 0= if n then , ;
@@ -186,12 +217,18 @@ gen: 0x39 c, 1 nregs R\ 3 nregs r\ depth if 0x40 else R 5 = if 0x40 else 0x0 the
 rec: '[' 0 spos? 1 regs? and '=' 2 spos? and 3 regs? and 'l?' 4 2spos? and u 6 = and
 gen: 0x38 c, 1 nregs R\ 3 nregs r\ depth if 0x40 else R 5 = if 0x40 else 0x0 then then
      r 3 lshift or R or c, R 4 = if 0x24 c, then depth if c, else R 5 = if 0 c, then then ;
-\ r=i?
+\ r=number?
 rec: 0 regs? '=' 1 spos? and a 2+ u 3 - number? nip swap n\ and '?' u 1- spos? and u 3 > u 15 < and and
 gen: 0x81 c, 0xF8 0 nregs or c, n , ;
-\ [r=i?
+\ number r=i?
+rec: 0 regs? '=' 1 spos? and 'i?' 2 2spos? and u 4 = and
+gen: 0x81 c, 0xF8 0 nregs or c, , ;
+\ sm [r=number?  [r=number?
 rec: '[' 0 spos? 1 regs? and '=' 2 spos? and a 3 + u 4 - number? nip swap n\ and '?' u 1- spos? and u 4 > u 16 < and and
-gen: 0x81 c, 0x78 1 nregs or c, 1 nregs 4 = if 0x24 c, then c, n , ;
+gen: 0x81 c, depth 1 = if 0x78 else 0x38 then 1 nregs or c, 1 nregs 4 = if 0x24 c, then depth 1 = if c, then n , ;
+\ number sm [r=i?  number [r=i?
+rec: '[' 0 spos? 1 regs? and '=' 2 spos? and 'i?' 3 2spos? and u 5 = and
+gen: 0x81 c, depth 2 = if 0x78 else 0x38 then 1 nregs or c, 1 nregs 4 = if 0x24 c, then depth 2 = if c, then , ;
 \ rO@ +-=
 rec: 0 regs? '+' 1 spos? '-' 1 spos? '=' 1 spos? or or and '@' 2 spos? and u 3 = and
 gen: 1 spos case '+' of 0x3 endof '-' of 0x2B endof '=' of 0x8B endof endcase c, 5 0 nregs 3 lshift or c, , ;

@@ -1,10 +1,10 @@
 \ stenoforth32
 
-\ Преобразователь лексем 's','ss','sss','ssss' [s-любой ascii char] в одинарное число
+\ ╨Я╤А╨╡╨╛╨▒╤А╨░╨╖╨╛╨▓╨░╤В╨╡╨╗╤М ╨╗╨╡╨║╤Б╨╡╨╝ 's','ss','sss','ssss' [s-╨╗╤О╨▒╨╛╨╣ ascii char] ╨▓ ╨╛╨┤╨╕╨╜╨░╤А╨╜╨╛╨╡ ╤З╨╕╤Б╨╗╨╛
 : NOTFOUND { a u } \ -- n
-  a C@ [CHAR] ' = a u + 1- C@ [CHAR] ' = AND u 3 6 1+ WITHIN AND 0= \ распознаватель
+  a C@ [CHAR] ' = a u + 1- C@ [CHAR] ' = AND u 3 6 1+ WITHIN AND 0= \ ╤А╨░╤Б╨┐╨╛╨╖╨╜╨░╨▓╨░╤В╨╡╨╗╤М
   IF a u NOTFOUND EXIT THEN
-  0 a 1+ a u + 2- DO 8 LSHIFT I C@ + -1 +LOOP STATE @ IF LIT, THEN  \ генератор
+  0 a 1+ a u + 2- DO 8 LSHIFT I C@ + -1 +LOOP STATE @ IF LIT, THEN  \ ╨│╨╡╨╜╨╡╤А╨░╤В╨╛╤А
 ;
 
 : LOAD-LEX \ a u --
@@ -58,7 +58,7 @@
   5 ALLOT DP @ >R
   BEGIN
        REFILL DROP
-       0xD PARSE 2DUP DROP C@ 0xF9 = \  неклавиатурный символ '∙'
+       0xD PARSE 2DUP DROP C@ 0xF9 = \  ╨╜╨╡╨║╨╗╨░╨▓╨╕╨░╤В╤Г╤А╨╜╤Л╨╣ ╤Б╨╕╨╝╨▓╨╛╨╗ 'тИЩ'
           IF   2DROP 1
           ELSE LOAD-LEX 0xA C, 0xD C, 0
           THEN
@@ -66,27 +66,27 @@
   DP @ R@ 5 - DP ! 0xE9 C, DUP R@ - ,
   DUP DP ! R@ SWAP R> - 1-
 ;
-\ Многострочные строки для печати
+\ ╨Ь╨╜╨╛╨│╨╛╤Б╤В╤А╨╛╤З╨╜╤Л╨╡ ╤Б╤В╤А╨╛╨║╨╕ ╨┤╨╗╤П ╨┐╨╡╤З╨░╤В╨╕
 : LOAD-TXT  load-txt DLIT, ;
 \ ( "name" "text" -- )
 : txt: : LOAD-TXT POSTPONE ; ;
 : text: : LOAD-TXT POSTPONE ; ;
 
-\ Слова-строки многострочные - допускают комментарии вида \ .....
+\ ╨б╨╗╨╛╨▓╨░-╤Б╤В╤А╨╛╨║╨╕ ╨╝╨╜╨╛╨│╨╛╤Б╤В╤А╨╛╤З╨╜╤Л╨╡ - ╨┤╨╛╨┐╤Г╤Б╨║╨░╤О╤В ╨║╨╛╨╝╨╝╨╡╨╜╤В╨░╤А╨╕╨╕ ╨▓╨╕╨┤╨░ \ .....
 : T:   ( name "text" -- ) : LOAD-TEXT POSTPONE ; ;
 : t:   ( name "text" -- ) : LOAD-STR  POSTPONE ; ;
-\ Текст без изменения форматирования - многострочные строки
+\ ╨в╨╡╨║╤Б╤В ╨▒╨╡╨╖ ╨╕╨╖╨╝╨╡╨╜╨╡╨╜╨╕╤П ╤Д╨╛╤А╨╝╨░╤В╨╕╤А╨╛╨▓╨░╨╜╨╕╤П - ╨╝╨╜╨╛╨│╨╛╤Б╤В╤А╨╛╤З╨╜╤Л╨╡ ╤Б╤В╤А╨╛╨║╨╕
 
-\ Макросы многострочные - допускают комментарии вида \ .....
+\ ╨Ь╨░╨║╤А╨╛╤Б╤Л ╨╝╨╜╨╛╨│╨╛╤Б╤В╤А╨╛╤З╨╜╤Л╨╡ - ╨┤╨╛╨┐╤Г╤Б╨║╨░╤О╤В ╨║╨╛╨╝╨╝╨╡╨╜╤В╨░╤А╨╕╨╕ ╨▓╨╕╨┤╨░ \ .....
 : M:  : IMMEDIATE LOAD-TEXT POSTPONE EVALUATE POSTPONE ; ;
 : m:  : IMMEDIATE LOAD-STR  POSTPONE EVALUATE POSTPONE ; ;
 : tx: : IMMEDIATE LOAD-TXT  POSTPONE EVALUATE POSTPONE ; ;
 
-\ замыкания
+\ ╨╖╨░╨╝╤Л╨║╨░╨╜╨╕╤П
 : xts ( a u -- xt )
   DP @ >R 1024 ALLOCATE THROW DUP >R DP !
   TRUE STATE ! EVALUATE RET, FALSE STATE !
   R@ DP @ R> - RESIZE THROW  R> DP !
 ;
-\ определение слова-замыкания C: Name .... ;
+\ ╨╛╨┐╤А╨╡╨┤╨╡╨╗╨╡╨╜╨╕╨╡ ╤Б╨╗╨╛╨▓╨░-╨╖╨░╨╝╤Л╨║╨░╨╜╨╕╤П C: Name .... ;
 : C: : IMMEDIATE LOAD-TEXT ` xts POSTPONE ; ;
