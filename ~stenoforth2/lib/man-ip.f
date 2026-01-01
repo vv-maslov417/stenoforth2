@@ -3,6 +3,12 @@
 m: aDO  OVER + SWAP ?DO ;     \ макрос ( BOUND ?DO )
 m: I+  ( n -- )  R@ + RP@ ! ; \ макрос - увеличение счетчика цикла
 
+: >=  @P=A? A=GE sA=sbA -A NIP ;
+: <=  @P=A? A=LE sA=sbA -A NIP ;
+
+: 0>= A|A A=GE sA=sbA -A ;
+: 0<= A|A A=LE sA=sbA -A ;
+
 : .0b ( n -- ) 2 BASE ! .0 DECIMAL ;
 : .0h ( n -- ) HEX .0 DECIMAL ;
 : .BL ( n -- ) >R 0 <# #S R@ SIGN '-' EMIT #> R> OVER SWAP - 0 MAX DUP IF 0 DO BL EMIT LOOP ELSE DROP THEN TYPE ;
