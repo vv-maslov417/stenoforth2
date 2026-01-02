@@ -29,9 +29,9 @@ m: oper?  a + c@ soper  cinstr ;      \ pos oper -- flag
 m: oper1? a + c@ soper1 cinstr ;
 m: oper2? a + c@ soper2 cinstr ;
 m: oper3? a + c@ soper3 cinstr ;
-m: spos?  a + c@ = ;                  \ sym pos -- flag
+
 m: 2spos? a + w@ = ;                  \ 2symop pos -- flag
-m: spos   a + c@ ;                    \ pos -- char
+
 
 : cops  \ symb -- cop
   case '|' of 0x0B endof '&' of 0x23 endof '^' of 0x33 endof

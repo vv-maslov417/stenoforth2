@@ -29,7 +29,7 @@ REQUIRE immediate    ~stenoforth2\lib\w-fix.f        \ перевод имен �
 REQUIRE f.           ~stenoforth2\lib\r-flo.f        \ перевод имен из верхнего регистра в нижний для слов с плав. точкой
 REQUIRE SEE          ~stenoforth2\lib\disasm.f       \ доработанный SEE(дает размер кода и число инструкций)
 REQUIRE syndop       ~stenoforth2\lib\dopsyn.f       \ доп. синонимы
-REQUIRE t>T          ~stenoforth2\lib\dopsyn.f       \
+REQUIRE t>T          ~stenoforth2\lib\dopassm.f      \
 REQUIRE |a           ~stenoforth2\lib\short-asm.f    \ часто используемые инструкции процессора, параметризуемые со стека данных и из их имён
 REQUIRE VARIANTS     ~stenoforth2\lib\gps.f          \ генератор перестановок символов в строке
 

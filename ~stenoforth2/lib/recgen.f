@@ -1,4 +1,5 @@
-m: rec: 0 WARNING ! : NOTFOUND u\ a\ ;
+m: rec: 0 WARNING ! : NOTFOUND u\ a\
+   spos[ a + c@ ] spos?[ spos = ] ;  \ 4 spos -- char   'a' 4 spos?  -- flag
 m: gen: 0= IF a u NOTFOUND EXIT THEN ;
 
 \ непоср.значение переменной name' на стек
