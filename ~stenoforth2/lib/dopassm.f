@@ -5,8 +5,8 @@ rec: a u + 1- c@ smb\  0 nmb\
      smb 'd' = smb 'b' = or smb 'h' = or
      decimal    'd' dc
      0x2 base ! 'b' dc or
-     hex        'h' dc or and u 1 > and
-gen: nmb >CS decimal ;
+     hex        'h' dc or and u 1 > and decimal
+gen: nmb >CS ;
 
 \ saving registers in memory
 m: A>a [ a) a >CS ] @=A ; m: B>b [ b) b >CS ] @=B ;
