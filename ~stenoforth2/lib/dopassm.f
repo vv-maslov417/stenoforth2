@@ -1,12 +1,13 @@
 \ stenoforth32
 
-rec: a u + 1- c@ smb\  0 nmb\
-     dc[ smb = if a u 1- number? 3\31 -> nmb else 0 then ]
-     smb 'd' = smb 'b' = or smb 'h' = or
-     decimal    'd' dc
-     0x2 base ! 'b' dc or
-     hex        'h' dc or and u 1 > and decimal
-gen: nmb >CS ;
+m: beg-nmb a u + 1- c@ = if a u 1- number? 3\31 nmb\
+   else 0 decimal then u 1 > and ;
+m: end-nmb nmb >CS decimal ;
+
+rec: 'h' hex        beg-nmb  gen: end-nmb ;
+rec: 'd' decimal    beg-nmb  gen: end-nmb ;
+rec: 'b' 0x2 base ! beg-nmb  gen: end-nmb ;
+
 
 \ saving registers in memory
 m: A>a [ a) a >CS ] @=A ; m: B>b [ b) b >CS ] @=B ;
