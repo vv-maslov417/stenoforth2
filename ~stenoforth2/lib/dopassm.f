@@ -32,3 +32,15 @@ m: t>A [ t >CS ] A=@ ; m: t>B [ t >CS ] B=@ ; m: t>C [ t >CS ] C=@ ;
 m: t>D [ t >CS ] D=@ ; m: t>S [ t >CS ] S=@ ; m: t>T [ t >CS ] T=@ ;
 m: a1>A [ a1 >CS ] A=@ ; m: b1>B [ b1 >CS ] B=@ ; m: c1>C [ c1 >CS ] C=@ ;
 m: d1>D [ d1 >CS ] D=@ ; m: s1>S [ s1 >CS ] S=@ ; m: t1>T [ t1 >CS ] T=@ ;
+m: s1>C [ s1 >CS ] C=@ ;
+
+\ stack local variables
+: uc>rg 0x758B W, C, ;
+: rg>da 0x3589 W,  , ;
+: dpad  0xBD   C,  , ;
+
+: sman1 si1\ 1703792 so1\ 1 ?DO si1 uc>rg si1 4 - -> si1 so1 rg>da so1 4 - -> so1 LOOP so1 4 + dpad ;
+
+rec: '_' a c@ = a 1+ u 1- number? nip nip and u 1 > and u 4 < and
+gen: STATE @ 0= IF HERE hered\ THEN a 1+ u 1- number? 2drop n1\
+     n1 n1 2- 4 * sman1 STATE @ 0= IF RET, hered execute THEN ;
