@@ -213,6 +213,7 @@ USER st-wr  0 st-wr !
   L{ ` DUP ` adr@ RET,
   udhere + TO udhere }L
 ;
+
 \ vectors
 : NOTFOUND ( a u --  ) \ vector "name^"
   '^' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere ldhere LIT, ` !

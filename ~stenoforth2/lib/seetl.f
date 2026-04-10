@@ -9,7 +9,7 @@ DAC=TSCP DUP A=D 2DUP -> t1 A=C DUP -> pr1
 xt ^A
 DAC=TSCP DUP A=D -> t2 A=C DUP -> pr2
 t2 t1 D- -> tics
-CR ." pr: " pr1 . pr2 . CR
+." pr: " pr1 . pr2 . CR
 tics 10. D* 36. D/ -> ns
 ns      1000. D/ DROP -> mcs
 mcs     1000 / -> ms
@@ -23,7 +23,7 @@ DAC=TSCP DUP A=D -> t1 A=C DUP -> pr1
 xt ^A
 DAC=TSCP DUP A=D -> t2 A=C DUP -> pr2
 t2 t1 D- -> tics
-CR ." pr: " pr1 . pr2 . CR
+." pr: " pr1 . pr2 . CR
 tics 10. D* 36. D/  -> ns
 ns      1000. D/ DROP -> mcs
 mcs     1000 / -> ms

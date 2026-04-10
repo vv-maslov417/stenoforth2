@@ -726,7 +726,7 @@ M: XR!
 : NOTFOUND   S" @w?=b#\?"    IDN 2 RG!             ` @wR=b#?    ;  \ CMP [wR], b#
 : NOTFOUND   S" @w??=b#\?"   IDN 2 RG! 3 RG!       ` @wRR=b#?   ;  \ CMP [wR][wR], b#
 
-: NOTFOUND   S" @??=LE"      IDN 1 RG! 2 RG!       ` @RR=LE     ;
+\ : NOTFOUND   S" @??=LE"      IDN 1 RG! 2 RG!       ` @RR=LE     ;
 : NOTFOUND   S" O\\w?=?"     IDN 3 RG! 5 RG!       ` O\wR=R     ;
 
 : NOTFOUND   S" A=?\?=?"     IDN 2 RG! 5 RG!       ` A=R?=R     ;
@@ -770,17 +770,22 @@ M: XR!
 
 \ УСТАНОВКА БАЙТА ПО УСЛОВИЮ
 : NOTFOUND   S" ?=LE"        IDN 0 RG!             ` R=LE       ;  \ SETLE RL
-: NOTFOUND   S" @?=LE"       IDN 1 RG!             ` @R=LE      ;  \ SETLE [RL]
 : NOTFOUND   S" ?=GE"        IDN 0 RG!             ` R=GE       ;  \ SETGE RL
-: NOTFOUND   S" @?=GE"       IDN 1 RG!             ` @R=GE      ;  \ SETGE [RL]
 : NOTFOUND   S" ?=Z"         IDN 0 RG!             ` R=Z        ;  \ SETZ RL
 : NOTFOUND   S" ?=NZ"        IDN 0 RG!             ` R=NZ       ;  \ SETz RL
-: NOTFOUND   S" @?=Z"        IDN 1 RG!             ` @R=Z       ;  \ SETZ [RL]
-: NOTFOUND   S" @?=NZ"       IDN 1 RG!             ` @R=NZ      ;  \ SETz [RL]
 : NOTFOUND   S" ?=E"         IDN 0 RG!             ` R=E        ;
 : NOTFOUND   S" ?=NE"        IDN 0 RG!             ` R=NE       ;
 : NOTFOUND   S" ?=G"         IDN 0 RG!             ` R=G        ;
 : NOTFOUND   S" ?=L"         IDN 0 RG!             ` R=L        ;
+
+: NOTFOUND   S" @?=LE"       IDN 1 RG!             ` @R=LE      ;  \ SETLE [RL]
+: NOTFOUND   S" @?=GE"       IDN 1 RG!             ` @R=GE      ;  \ SETGE [RL]
+: NOTFOUND   S" @?=Z"        IDN 1 RG!             ` @R=Z       ;  \ SETZ [RL]
+: NOTFOUND   S" @?=NZ"       IDN 1 RG!             ` @R=NZ      ;  \ SETz [RL]
+: NOTFOUND   S" @?=E"        IDN 1 RG!             ` @R=E       ;
+: NOTFOUND   S" @?=NE"       IDN 1 RG!             ` @R=NE      ;
+: NOTFOUND   S" @?=G"        IDN 1 RG!             ` @R=G       ;
+: NOTFOUND   S" @?=L"        IDN 1 RG!             ` @R=L       ;
 
 \ ПЕРЕСТАНОВКА БАЙТОВ
 : NOTFOUND   S" ?0123"       IDN 0 RG!             ` R0123      ;  \ BSWAP

@@ -32,7 +32,7 @@ REQUIRE syndop       ~stenoforth2\lib\dopsyn.f       \ доп. синонимы
 REQUIRE t>T          ~stenoforth2\lib\dopassm.f      \
 REQUIRE |a           ~stenoforth2\lib\short-asm.f    \ часто используемые инструкции процессора, параметризуемые со стека данных и из их имён
 REQUIRE VARIANTS     ~stenoforth2\lib\gps.f          \ генератор перестановок символов в строке
-
+REQUIRE /s           ~stenoforth2\lib\stack-loc.f
 
 S" f:\spf429\devel\~stenoforth2\bin\spf486.exe" SAVE
 

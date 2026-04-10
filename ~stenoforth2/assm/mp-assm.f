@@ -11,9 +11,9 @@
 : ITO CREATE , IMMEDIATE DOES> @ >CS ;
 
 \ регистры общего назначения
-\    EAX      ECX      EDX      EBX     ESP     EBP     ESI     EDI
+\     EAX       ECX       EDX       EBX      ESP      EBP      ESI      EDI
 0 ITO EA  1 ITO EC  2 ITO ED  3 ITO EB 4 ITO EX 5 ITO EP 6 ITO ES 7 ITO ET
-4 ITO AH 5 ITO CH 6 ITO DH 7 ITO BH
+
 
 \ регистры MM
 \   MMX0     MMX1     MMX2     MMX3     MMX4     MMX5     MMX6     MMX7
@@ -40,7 +40,7 @@ I: $ HEX NextWord NUMBER? DROP D>S >CS DECIMAL ;  \ decimal
 : SM, ?CS 0= IF  CS> C, THEN ;
 : ?P 5 = IF 0x40 ELSE 0x00 THEN ;
 : ?X 4 = IF 0x24 C, THEN ;
-: RRM  3 LSHIFT OR ;
+: RRM  3 LSHIFT OR ;     
 : RRM! RRM C, ;
 : RRL! SWAP RRM C, ;
 : RRML! RRM OR C, ;
@@ -490,7 +490,9 @@ I: JMP  XN CASE 3 OF RELJ0 ENDOF 2 OF RELJ1 ENDOF 1 OF RELJ2 ENDOF 0 OF RELJ2 EN
 I: JR    4 0xFF RO   ; I: J@R   4 0xFF @RO  ; I: J@RR  4 0xFF @RRO ;
 
 \ команды установки байта по условию   SETcc
-: ROS  0x0F C, 0 SWAP RO ; : @ROS  0x0F C, 0 SWAP @RO ; : @RROS  0x0F C, 0 SWAP @RRO ;
+: ROS   0x0F C, CS> TO R1 C, 0xC0 R1 OR C, ; 
+: @ROS  0x0F C, CS> TO R1 C, R1 C, ;
+
 
 : ?R=O       0x90 ROS    ; I: R=O   ?R=O         ;
 : ?R=o       0x91 ROS    ; I: R=NO  ?R=o         ;
@@ -525,23 +527,6 @@ I: JR    4 0xFF RO   ; I: J@R   4 0xFF @RO  ; I: J@RR  4 0xFF @RRO ;
 : ?@R=S=O    0x9D @ROS   ; I: @R=GE  ?@R=S=O     ;  I: @R=NL   ?@R=S=O     ;
 : ?@R=Z|S#O  0x9E @ROS   ; I: @R=LE  ?@R=Z|S#O   ;  I: @R=NG   ?@R=Z|S#O   ;
 : ?@R=zS=O   0x9F @ROS   ; I: @R=G   ?@R=zS=O    ;  I: @R=NLE  ?@R=zS=O    ;
-
-: ?@RR=O     0x90 @RROS  ; I: @RR=O   ?@RR=O     ;
-: ?@RR=o     0x91 @RROS  ; I: @RR=NO  ?@RR=o     ;
-: ?@RR=C     0x92 @RROS  ; I: @RR=B   ?@RR=C     ;  I: @RR=C    ?@RR=C     ; I: @RR=NAE ?@RR=C  ;
-: ?@RR=c     0x93 @RROS  ; I: @RR=AE  ?@RR=c     ;  I: @RR=NB   ?@RR=c     ; I: @RR=NC  ?@RR=c  ;
-: ?@RR=Z     0x94 @RROS  ; I: @RR=E   ?@RR=Z     ;  I: @RR=Z    ?@RR=Z     ;
-: ?@RR=z     0x95 @RROS  ; I: @RR=NZ  ?@RR=z     ;  I: @RR=NE   ?@RR=z     ;
-: ?@RR=C|Z   0x96 @RROS  ; I: @RR=BE  ?@RR=C|Z   ;  I: @RR=NA   ?@RR=C|Z   ;
-: ?@RR=cz    0x97 @RROS  ; I: @RR=A   ?@RR=cz    ;  I: @RR=NNBE ?@RR=cz    ;
-: ?@RR=S     0x98 @RROS  ; I: @RR=S   ?@RR=S     ;
-: ?@RR=s     0x99 @RROS  ; I: @RR=NS  ?@RR=s     ;
-: ?@RR=P     0x9A @RROS  ; I: @RR=P   ?@RR=P     ;  I: @RR=PE   ?@RR=P     ;
-: ?@RR=p     0x9B @RROS  ; I: @RR=PO  ?@RR=p     ;  I: @RR=NP   ?@RR=p     ;
-: ?@RR=S#O   0x9C @RROS  ; I: @RR=L   ?@RR=S#O   ;  I: @RR=NGE  ?@RR=S#O   ;
-: ?@RR=S=O   0x9D @RROS  ; I: @RR=GE  ?@RR=S=O   ;  I: @RR=NL   ?@RR=S=O   ;
-: ?@RR=Z|S#O 0x9E @RROS  ; I: @RR=LE  ?@RR=Z|S#O ;  I: @RR=NG   ?@RR=Z|S#O ;
-: ?@RR=zS=O  0x9F @RROS  ; I: @RR=G   ?@RR=zS=O  ;  I: @RR=NLE  ?@RR=zS=O  ;
 
 \ операции условных пересылок CMOVcc
 : ?ROR      0x0F C, ROR ; : ?RO@R      0x0F C, RO@R ;  : ?RO@RR      0x0F C, RO@RR ;

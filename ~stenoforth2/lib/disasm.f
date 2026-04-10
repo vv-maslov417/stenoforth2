@@ -1,4 +1,4 @@
-\ stenoforth32
+ \ stenoforth32
 
 \ ?????????? ????????????? ( ?????? ?????????? ?????????? ? ??????? ???? ????)
 
@@ -1616,11 +1616,11 @@ DUP FIND-REST-END ['] REST-AREA CATCH DROP ;
    A w@ 0x89C3 <> A w@ 0x8BC3 <> and A w@ 0xC3C3 <> and A w@ 0xE8C3 <> and A c@ 0xC3 = and
      if
         A INST  cr
-        A a - 1+ . ." bytes, " n 1+ . ." instructions"
+     decimal   A a - 1+ . ." bytes, " n 1+ . ." instructions"
         drop    cr exit
      else
-        A w@ 0x00 = A c@ 0x55 =
-        A c@ 0xAF = or or
+        A w@ 0x00 = \ A c@ 0x55 =
+        A c@ 0xAF = or \ or
         if
         A a - . ." bytes, " n . ." instructions"
         cr exit then

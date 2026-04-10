@@ -41,3 +41,7 @@ m: I+  ( n -- )  R@ + RP@ ! ; \ макрос - увеличение счетчи
 ;
 \ a n -- a n
 : SP>MEM CELLS { a n } a n SPMOVE n SPDROP a n ;
+
+: s. DEPTH .SN CR ;
+
+m: begt 1000000 0 do ;  m: endt loop ;
