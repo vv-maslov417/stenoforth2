@@ -1,3 +1,0 @@
-: SYNONYM see SEE ;
-
-: syndop ;
