@@ -58,7 +58,7 @@
   5 ALLOT DP @ >R
   BEGIN
        REFILL DROP
-       0xD PARSE 2DUP DROP C@ 0xF9 = \  неклавиатурный символ '∙'
+       0xD PARSE OVER C@ 0xF9 = \  неклавиатурный символ '∙'
           IF   2DROP 1
           ELSE LOAD-LEX 0xA C, 0xD C, 0
           THEN

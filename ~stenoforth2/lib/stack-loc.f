@@ -34,11 +34,14 @@ m: |st }} ;
 : cins? \ a u char -- flg   в строке a u символ char есть?
   |3 [y12GIb3=?xTQtL ;
 
+0 value offset 0 value flof
+
 m: /s  T=RS ;  \ чтобы не убирать параметры со стека
 
 \ число параметров на входе
 rec: '_' 0 spos? a 1+ u 1- number? nip swap nmbz\ and u 1 > and
 gen: 0x57 c, 0x8D c, 0x7D c, nmbz 2- 4 * c, ;
+
 
 \ строка символов параметров и операторов
 rec: 0 nmb\ '/' 0 spos? u 1 > and
@@ -46,7 +49,7 @@ gen: a 1+ u 1-
         aDO I a 1+ u 1- + > IF LEAVE THEN
             I 1 number? nip nip
             IF S" +-*/%|&^Mmrl><=#:" I 1+ c@ cins?
-               IF I c@ '0' - -> nmb I 1+ c@
+               IF 0 TO flof I c@ '0' - -> nmb I 1+ c@
                   CASE
                   '+' of 0x03 c, 0x47 c, nmb 1- -4 * c, endof
                   '-' of 0x2B c, 0x47 c, nmb 1- -4 * c, endof
@@ -67,8 +70,11 @@ gen: a 1+ u 1-
                   ':' of 0x89 c, 0x47 c, nmb 1- -4 * c, ` drop endof \ присвоение
 
                   ENDCASE 1 I+
-               ELSE ` dup 0x8B c, 0x47 c, i c@ '0' - 1- -4 * c, THEN
-            ELSE ` st| I 1 EVALUATE  ` |st
+               ELSE  0x89 c, 0x45 c, offset 4 - DUP TO offset c, 0x8B c, 0x47 c, i c@ '0' - 1- -4 * c,
+                    \ ` dup 0x8B c, 0x47 c, i c@ '0' - 1- -4 * c,
+               THEN
+            ELSE flof 0= if 0x8D c, 0x6D c, offset c, 1 TO flof  then
+                 ` st| I 1 EVALUATE  ` |st
             THEN
         LOOP ;
 
@@ -77,4 +83,5 @@ rec: '/' u 2- spos? a u 2- number? nip swap n\ and
      u 2 > and  a u + 1- 1 number? nip swap m\ and
 gen: m 1+ 1 ?do 0x8B c, 0x5D c, m i - 4 * c,
                 0x89 c, 0x5D c, n i - 4 * c, loop
-                0x8D c, 0x6D c, n m - 4 * c, 0x5F c, ;
+                0x8D c, 0x6D c, n m - 4 * c, 0x5F c,
+                0 TO offset 0 TO flof ;
