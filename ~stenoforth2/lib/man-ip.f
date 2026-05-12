@@ -11,8 +11,8 @@ m: I+  ( n -- )  R@ + RP@ ! ; \ макрос - увеличение счетчи
 
 : .0b ( n -- ) 2 BASE ! .0 DECIMAL ;
 : .0h ( n -- ) HEX .0 DECIMAL ;
-: .BL ( n -- ) >R 0 <# #S R@ SIGN '-' EMIT #> R> OVER SWAP - 0 MAX DUP IF 0 DO BL EMIT LOOP ELSE DROP THEN TYPE ;
-
+\ : .BL ( n -- ) >R 0 <# #S R@ ( SIGN '-' EMIT) #> R> OVER SWAP - 0 MAX DUP IF 0 DO BL EMIT LOOP ELSE DROP THEN TYPE ;
+: .BL ( n -- ) >R 0 <# #S #> R> OVER - 0 MAX DUP IF 0 DO BL EMIT LOOP ELSE DROP THEN TYPE ;
 : sqrt  ( n -- sqrt  ) DS>F FSQRT F>DS ;
 : sqrt- ( n -- sqrt- ) DUP sqrt DUP DUP * ROT > -1 AND + ;
 

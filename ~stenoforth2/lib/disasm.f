@@ -290,11 +290,30 @@ C" NEAR_NFA" FIND NIP 0=
               SWAP DUP [REG32] [INDEX]
         THEN ;
 
+: (?BYTE-PTR) ( x.op -- )
+  \ ModR/M should be already confirmed
+  \ to be a memory operand (not a register)
+  CASE
+    0x80 OF ENDOF \ *** r/m8, imm8 (ADD, OR, ADC, etc.)
+    0xC0 OF ENDOF \ *** r/m8, imm8 (ROL, ROR, etc.)
+    0xD0 OF ENDOF \ *** r/m8, 1 (ROL, ROR, etc.)
+    0xD2 OF ENDOF \ *** r/m8, CL (ROL, ROR, etc.)
+    0xC6 OF ENDOF \ MOV r/m8, imm8
+    0xF6 OF ENDOF \ *** r/m8, imm8 (TEST, NOT, NEG, etc.)
+    \ 0xFE OF ENDOF \ *** r/m8, imm8 (INC, DEC) \ it's handled in `R/M8`
+    DROP EXIT
+  ENDCASE
+  .S" BYTE PTR "
+  \ Note: `MVX` ( 0F B6/B7 ) checks by itself for the "BYTE PTR" option
+  \ for the source memory address (if any)
+;
 
 : MOD-R/M32     ( ADR R/M MOD -- ADR' )
                 DUP 3 =
                 IF    DROP  REG                         \ MOD = 3, REGISTER CASE
-                ELSE  OVER 4 =
+                ELSE
+                      2 PICK 2- C@ (?BYTE-PTR)
+                      OVER 4 =
                       IF NIP SIB                        \ R/M = 4, SIB CASE
                       ELSE  2DUP 0= SWAP 5 = AND        \ MOD = 0, R/M = 5,
                             IF 2DROP DISP32             \ DISP32 CASE
@@ -326,7 +345,15 @@ C" NEAR_NFA" FIND NIP 0=
           THEN ;
 
 
-: R/M8      0 TO SIZE MOD-R/M ;
+\ : R/M8      0 TO SIZE MOD-R/M ;
+: R/M8 ( addr1 x.operand -- addr2 )
+  DUP 6 RSHIFT 3 <> IF \ a memory operand (not a register)
+     .S" BYTE PTR "
+  THEN
+  0 TO SIZE  MOD-R/M
+;
+
+
 : R/M16/32  1 TO SIZE MOD-R/M ;
 : R/M16     TRUE TO 16-BIT-DATA R/M16/32 ;
 

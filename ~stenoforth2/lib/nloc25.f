@@ -246,5 +246,3 @@ I: | CS0
    AGAIN ;
 : .s CR DEPTH .SN CR S0 @ SP! ;
 : .sd DEPTH 0 DO I ROLL LOOP DEPTH 0 DO SWAP D. 2 +LOOP CR ;
-
-\ : ss1 | a\ b\ | a b ; SEE ss1
