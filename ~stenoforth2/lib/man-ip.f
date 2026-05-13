@@ -11,8 +11,12 @@ m: I+  ( n -- )  R@ + RP@ ! ; \ макрос - увеличение счетчи
 
 : .0b ( n -- ) 2 BASE ! .0 DECIMAL ;
 : .0h ( n -- ) HEX .0 DECIMAL ;
-\ : .BL ( n -- ) >R 0 <# #S R@ ( SIGN '-' EMIT) #> R> OVER SWAP - 0 MAX DUP IF 0 DO BL EMIT LOOP ELSE DROP THEN TYPE ;
-: .BL ( n -- ) >R 0 <# #S #> R> OVER - 0 MAX DUP IF 0 DO BL EMIT LOOP ELSE DROP THEN TYPE ;
+
+: .BL { n s }
+    n ABS 0 <# #S #> s OVER - 0 MAX DUP
+    IF 0 DO BL EMIT LOOP n 0< IF '-' EMIT THEN
+    ELSE DROP THEN TYPE
+;
 : sqrt  ( n -- sqrt  ) DS>F FSQRT F>DS ;
 : sqrt- ( n -- sqrt- ) DUP sqrt DUP DUP * ROT > -1 AND + ;
 
@@ -26,7 +30,9 @@ m: I+  ( n -- )  R@ + RP@ ! ; \ макрос - увеличение счетчи
 : DLSHIFT ( d n -- 'd ) $ 4 D=@P $ 32 C=# C-A D>> C=A @P<< $ 4 @P<< @P|D DROP ;
 : DRSHIFT ( d n -- 'd ) D=@P $ 32 C=# C-A D<< C=A @P>> $ 4 @P>> $ 4 @P|D DROP ;
 : D0<>    ( d -- f ) D0= INVERT ;
+: 1+c!    ( c-addr --) @bA++ DROP ;
 : 1-!     ( addr --) @A-- DROP ;
+: 1-c!    ( c-addr --) @bA-- DROP ;
 : -!      ( n addr -- ) D=@P -D @A+D $ 4 A=@P $ 8 Pa ;
 
 \ убрать со стека n байтов
@@ -43,5 +49,3 @@ m: I+  ( n -- )  R@ + RP@ ! ; \ макрос - увеличение счетчи
 : SP>MEM CELLS { a n } a n SPMOVE n SPDROP a n ;
 
 : s. DEPTH .SN CR ;
-
-m: begt 1000000 0 do ;  m: endt loop ;

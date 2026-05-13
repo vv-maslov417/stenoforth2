@@ -12,7 +12,7 @@ SYNONYM d+                    D+
 SYNONYM d-                    D-
 \ SYNONYM d*                    D*
 \ SYNONYM d/                    D/
-
+SYNONYM .bl                   .BL
 SYNONYM dup                   DUP
 SYNONYM 2dup                  2DUP
 SYNONYM drop                  DROP

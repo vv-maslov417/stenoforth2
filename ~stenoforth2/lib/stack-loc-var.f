@@ -18,13 +18,13 @@ m: l LSHIFT ;                       m: L LOOP ;                        m: $ SPAC
 m: m MIN ;                          m: M MAX ;
 m: n NEGATE ;                       m: N +LOOP ;
 m: o OF ;                           m: O ERASE ;
-m: p CHOOSE ;                       m: P randomize ;
+m: p DEPTH ;                        m: P randomize ;
 m: q 1+! ;                          m: Q LEAVE ;
 m: r RSHIFT ;                       m: R REPEAT ;
 m: s I+ ;                           m: S SEARCH ;
 m: t THEN ;                         m: T TRUE ;
 m: u EVALUATE ;                     m: U UNTIL ;
-m: v 2* ;                           m: V MOVE ;
+m: v CHOOSE ;                       m: V MOVE ;
 m: w C! ;                           m: W WHILE ;
 m: x DROP ;                         m: X EXECUTE ;
 m: y FALSE ;                        m: Y TRUE NEGATE ;

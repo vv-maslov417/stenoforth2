@@ -392,7 +392,7 @@ i: nop      0x90 c, ;  i: cdq  0x99 c, ;
 i: rep      0xF3 c, ;  i: repn 0xF2 c, ;         i: stosb 0xAA c, ;  \ [edi]=al     df=0(a+) df=1(a-)
 i: @b@      0xA4 c, ;  i: @w@  0x66 c, 0xA5 c, ; i: @d@   0xA5 c, ;  \ [esi]=[edi]  df=0(a+) df=1(a-)
 i: cmpb     0xA6 c, ;  i: cmpw 0x66 c, 0xA7 c, ; i: cmpd  0xA7 c, ;  \ [esi]=[edi]? df=0(a+) df=1(a-)
-i: xlat     0xD7 c, ; \ ????????? ????? ? AL ?? ??????? ? ??????? ? EBX ?? ????????? ? AL
+i: xlat     0xD7 c, ;
 
 export
 m: A|  {{   asmforth ; m: |A  }}    ;
