@@ -1646,8 +1646,8 @@ DUP FIND-REST-END ['] REST-AREA CATCH DROP ;
      decimal   A a - 1+ . ." bytes, " n 1+ . ." instructions"
         drop    cr exit
      else
-        A w@ 0x00 = \ A c@ 0x55 =
-        A c@ 0xAF = or \ or
+        A w@ 0x00 = A c@ 0x55 =      \ +++  \ A c@ 0x55 =
+        A c@ 0xAF = or or            \ +++  \ or
         if
         A a - . ." bytes, " n . ." instructions"
         cr exit then

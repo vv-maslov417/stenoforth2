@@ -29,3 +29,13 @@ I: ` POSTPONE POSTPONE ;
 
 \ проверить на пустоту fl=1 - стек пуст
 : ?CS ( -- fl) CS-DEPTH 0= ;
+
+100 STACK ST-L
+
+: >L ( x -- | cs: -- x) ST-L CELL OVER +! @ ! ;
+: L@ ( cs: x -- x | -- x) ST-L @ @ ;
+: L-DROP ( cs: x --) ST-L DUP DUP @ = INVERT IF CELL NEGATE SWAP +! THEN ;
+: L> ( cs: x -- | -- x) L@ L-DROP ;
+: L0 ( cs: n*x --) ST-L DUP ! ;
+: L-DEPTH ( cs: n*x -- n*x | -- n) ST-L DUP @ SWAP - CELL /  ;
+: ?L ( -- fl) L-DEPTH 0= ;
