@@ -55,7 +55,7 @@ gen: STATE @ 0= IF HERE hered\ THEN a 1+ u 1- number? 2drop n1\
 : rg>da 0x3589 W,  , ;
 : dpad  0xBD   C,  , ;
 
-\ m/n m - число параметров убрать снизу n - число параметров оставить сверху
+\ m/n m - ?? ?????? ???? ??? n - ?? ?????? ?????? ????
 : sman  si\ so\ 1 ?do si uc>rg si 4 - -> si so rg>dc so 4 - -> so loop so 4 + dpdd ;
 rec: 0 spos '1' '9' 1+ within '/' 1 spos? and 2 spos '1' '9' 1+ within and u 3 = and
 gen: 0 spos '0' - m\ 2 spos '0' - n\  n n m + 2- 4 * n 2- 4 * sman ;

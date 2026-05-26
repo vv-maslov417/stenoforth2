@@ -2,7 +2,7 @@ m: rec: 0 WARNING ! : NOTFOUND u\ a\
    spos[ a + C@ ] spos?[ spos = ] ;
 m: gen: 0= IF a u NOTFOUND EXIT THEN ;
 
-\ непоср.значение переменной name' на стек
+\ ??????.?????? ???????? name' ?? ??
 rec: a C@ ''' <> a u + 1- C@ ''' = AND
 gen: [ 16 ] ar] lvoc a u 1- lsearch 2DROP 7 + C@ typ\
      a ar u 1- MOVE '`' ar u + 1- C! ar u EVALUATE ar 16 ERASE

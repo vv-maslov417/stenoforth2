@@ -1,7 +1,7 @@
 \ stenoforth32
 
-m: aDO  OVER + SWAP ?DO ;     \ макрос ( BOUND ?DO )
-m: I+  ( n -- )  R@ + RP@ ! ; \ макрос - увеличение счетчика цикла
+m: aDO  OVER + SWAP ?DO ;     \ ????? ( BOUND ?DO )
+m: I+  ( n -- )  R@ + RP@ ! ; \ ????? - ?????? ????? ???
 
 : >=  @P=A? A=GE sA=sbA -A NIP ;
 : <=  @P=A? A=LE sA=sbA -A NIP ;
@@ -35,11 +35,11 @@ m: I+  ( n -- )  R@ + RP@ ! ; \ макрос - увеличение счетчи
 : 1-c!    ( c-addr --) @bA-- DROP ;
 : -!      ( n addr -- ) D=@P -D @A+D $ 4 A=@P $ 8 Pa ;
 
-\ убрать со стека n байтов
+\ ???? ? ??? n ????
 : SPDROP ( p*n n -- )
   P+A DROP
 ;
-\ переместить n байтов со стека в память
+\ ???????? n ???? ? ??? ? ??????
 : SPMOVE ( p*n addr n -- p*n )
   $ 4 B=aP D=A D+@P
   L1: $ -4 Da C=@B @D=C $ 4 Ba $ 4 A-#
