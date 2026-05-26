@@ -1,6 +1,3 @@
-*.*    working-tree-encoding=CP866    eol=CRLF
-*.* text=auto
 # Бинарные файлы — без преобразований
 *.exe binary
-git add --renormalize 
-git commit -m 
+
