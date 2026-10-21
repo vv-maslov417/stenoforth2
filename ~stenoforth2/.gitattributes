@@ -1,6 +1,2 @@
-*.f text eol=lf encoding=cp866
-*.md text eol=lf encoding=cp866
-*.hlp text eol=lf encoding=cp866
-# Бинарные файлы — без преобразований
-*.exe binary
-
+# Auto detect text files and perform LF normalization
+* text=auto
