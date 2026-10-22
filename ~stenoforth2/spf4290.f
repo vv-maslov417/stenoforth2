@@ -32,8 +32,8 @@ REQUIRE syndop       ~stenoforth2-1\lib\dopsyn.f         \ доп. синони�
 REQUIRE t>T          ~stenoforth2-1\lib\dopassm.f        \ сохранение регистров в памяти и восстановление их из памяти
 REQUIRE |a           ~stenoforth2-1\lib\short-asm.f      \ часто используемые инструкции процессора, параметризуемые со стека данных и из их имён
 REQUIRE VARIANTS     ~stenoforth2-1\lib\gps.f            \ генератор перестановок символов в строках
-REQUIRE in           ~stenoforth2-1\lib\stat-loc.f       \ статичские локальные переменные
-REQUIRE valuen       ~stenoforth2-1\lib\cfixo.f
+REQUIRE in           ~stenoforth2-1\lib\stat-loc.f       \ статичские локальные переменные в общем пространстве кода, многопоточные
+REQUIRE valuen       ~stenoforth2-1\lib\cfixo.f          \ сжатая форма стат. лок. переменные в общем пространстве кода
 REQUIRE skip-next    ~stenoforth2-1\lib\dop-words.f      \ анти-комментарии
 
 
