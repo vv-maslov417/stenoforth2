@@ -1,7 +1,7 @@
 \ stenoforth32
 
-m: aDO  OVER + SWAP ?DO ;     \ ????? ( BOUND ?DO )
-m: I+  ( n -- )  R@ + RP@ ! ; \ ????? - ?????? ????? ???
+m: aDO  OVER + SWAP ?DO ;     \ макрос ( BOUND ?DO )
+m: I+  ( n -- )  R@ + RP@ ! ; \ макрос - увеличение счетчика цикла
 
 : >=  @P=A? A=GE sA=sbA -A NIP ;
 : <=  @P=A? A=LE sA=sbA -A NIP ;
@@ -35,11 +35,11 @@ m: I+  ( n -- )  R@ + RP@ ! ; \ ????? - ?????? ????? ???
 : 1-c!    ( c-addr --) @bA-- DROP ;
 : -!      ( n addr -- ) D=@P -D @A+D $ 4 A=@P $ 8 Pa ;
 
-\ ???? ? ??? n ????
+\ убрать со стека n байтов
 : SPDROP ( p*n n -- )
   P+A DROP
 ;
-\ ???????? n ???? ? ??? ? ??????
+\ переместить n байтов со стека в память
 : SPMOVE ( p*n addr n -- p*n )
   $ 4 B=aP D=A D+@P
   L1: $ -4 Da C=@B @D=C $ 4 Ba $ 4 A-#
@@ -49,3 +49,22 @@ m: I+  ( n -- )  R@ + RP@ ! ; \ ????? - ?????? ????? ???
 : SP>MEM CELLS { a n } a n SPMOVE n SPDROP a n ;
 
 : s. DEPTH .SN CR ;
+
+m: 2\21    SWAP ;
+m: 2%1     OVER ;
+m: 2\212   TUCK ;
+m: 3\231    ROT ;
+m: 3\312   -ROT ;
+m: 4%12   2OVER ;
+m: 4\3412 2SWAP ;
+
+
+
+\EOF
+\ повторение исполнения слова n раз
+I: nrep ( n -- )
+   STATE @ 0=
+   IF   ' { xt } 0 DO xt EXECUTE LOOP
+   ELSE 0 LIT, ` DO PARSE-NAME EVALUATE ` LOOP
+   THEN
+;

@@ -5,8 +5,13 @@
 
 \ local naming
 
-CREATE lcode 0x100000 ALLOT lcode VALUE dpl
-CREATE ldate 0x100000 ALLOT ldate VALUE ldhere
+\ the areas below are addressed literally from compiled code,
+\ so their sizes are the session limits for local data and local code
+0x10000 CONSTANT lenldate \ local variables data area (64K)
+0x20000 CONSTANT lenlcode \ local words code area (128K)
+
+CREATE lcode lenlcode ALLOT lcode VALUE dpl
+CREATE ldate lenldate ALLOT ldate VALUE ldhere
 VARIABLE XHERE  VARIABLE xdpl
 
 0x400 CONSTANT lenlvoc
@@ -23,9 +28,12 @@ udata ' udata 5 + @ DUP VALUE udhere - VALUE basa
 m: usn! [ 0x8789 W, udhere , ] ;
 m: usn@ [ 0x878B W, udhere , ] ;
 m: adr@ [ 0xC78B W, udhere 0xC081 W, , ] ;  \ mov eax edi  add eax udhere
+m: fldq [ 0x87DD W, udhere , ] ;   \ fld qword [edi+udhere]
+m: fstpq [ 0x9FDD W, udhere , ] ;  \ fstp qword [edi+udhere]
 
 \ -- c-addr u
-: lvoc   alvoc lenlvoc ;  lvoc ERASE 1 lhere !
+\ the first byte of the buffer stays zero: it is a marker of the record start
+: lvoc   alvoc 1+ lenlvoc 1- ;  0 alvoc C!  alvoc 1+ lhere !  \ the dictionary is empty
 
 \ c-addr u -- axtloc \ here u is 1 or 2 characters less than the original name with a type suffix of 1 or 2 characters
 : lname, { a u | axt -- axtloc }
@@ -36,15 +44,49 @@ m: adr@ [ 0xC78B W, udhere 0xC081 W, , ] ;  \ mov eax edi  add eax udhere
 : L{  dpl xdpl ! DP @ XHERE ! dpl DP ! ;
 : }L  dpl DP @ xdpl @ - + TO dpl XHERE @ DP ! ;
 
-: init-lvoc  lvoc ERASE  alvoc lhere ! ;
+: init-lvoc  0 alvoc C!  alvoc 1+ lhere ! ;
+
+\ u -- \ control of the local areas before the next name record is created
+: ?lmem ( u -- )
+  DUP lhere @ + 8 + alvoc lenlvoc + > ABORT" lvoc overflow: too many local names"
+  DROP
+  ldhere 2 CELLS + ldate lenldate + > ABORT" ldate overflow: too many local variables"
+  dpl 64 + lcode lenlcode + > ABORT" lcode overflow: too much local code" ;
 
 \ c-addr u --
-: headl  lname, dpl SWAP ! lhere @ 7 + lhere ! ;
+: headl  DUP ?lmem  lname, dpl SWAP ! lhere @ 7 + lhere ! ;
+
+\ the record is: name 0 xt:4 typ code
+\ code = length of the read code, bit 7 is set when the name has no write entry;
+\ the write entry starts right after the read code, so its offset = code length
+0 VALUE wxt
+0 VALUE ltyp
+0 VALUE lwdel
+0 VALUE lrlen
+0 VALUE lwoff
+: wdelta, ( -- )  wxt axtloc @ @ - axtloc @ 4 + C! ;
+: nodelta, ( -- )  dpl axtloc @ @ - 0x80 OR axtloc @ 4 + C! ;
+\ the read code of the types below has no relative call, so it may be copied
+\ into the definition being compiled ( types 4,5,6,8,9 call DATA>FLOAT,
+\ FLOAT>DATA32, EVALUATE, xts and must stay in place )
+: inlinable? ( typ -- fl )  DUP 4 < IF DROP TRUE ELSE 10 13 WITHIN THEN ;
+
+\ types 0,1,3,4,10 keep the address of their storage in the record and are
+\ compiled as a literal address plus the access word. The compiler then sees an
+\ ordinary variable and optimizes it in the same way as a global one
+\ ( for example "a a *" becomes "IMUL [addr]" )
+: l@, ( typ -- )  CASE  1 OF ['] @  COMPILE, ENDOF
+                        3 OF ['] 2@ COMPILE, ENDOF
+                        4 OF ['] F@ COMPILE, ENDOF  ENDCASE ;
+: lpre!, ( typ -- )  CASE  ENDCASE ;
+: l!, ( typ -- )  CASE  1 OF ['] !  COMPILE, ENDOF
+                        3 OF ['] 2! COMPILE, ENDOF
+                        4 OF ['] F! COMPILE, ENDOF  ENDCASE ;
 
 \ c-addr u s  -- c-addr u
 m: nf1-exit \ -ROT 2DUP + 1- C@ -ROT 2SWAP <> IF NOTFOUND EXIT THEN
 a u + 1- C@ s <>  IF a u NOTFOUND EXIT THEN a u
-a u 1- SFIND IF CR a u 1- TYPE SPACE ." <-- this name already exists" CR CR KEY DROP BYE 2DROP THEN 2DROP
+a u 1- SFIND IF CR a u 1- TYPE SPACE S" <-- this name already exists" TYPE CR CR KEY DROP BYE 2DROP THEN 2DROP
 a u + 1- C@
 CASE
 ')' OF   0 ENDOF \ variable-addres  4 or 8 bytes
@@ -65,7 +107,7 @@ lhere @ u + 5 + DUP dtyp ! C! 0 lhere @ u + 6 + C!
 
 \ c-addr u ss -- c-addr u
 m: nf2-exit a u a u + 2- W@ s <> IF NOTFOUND EXIT THEN
-a u 2- SFIND IF a u 1- CR TYPE ." <-- this name already exists" CR CR 2DROP THEN 2DROP
+a u 2- SFIND IF a u 1- CR TYPE S" <-- this name already exists" TYPE CR CR 2DROP THEN 2DROP
 a u + 2- W@
 CASE
 '!d' OF  3 ENDOF \ value-data fix-point 64 bits
@@ -75,18 +117,22 @@ lhere @ u + 4 + DUP dtyp ! C! 0 lhere @ u + 5 + C!
 
 : +: : ;          \ extending the scope of the dictionary of previous definitions to the next definition
 : : init-lvoc : ; \ erase dictionary of previous definitions by next definition via ':'
+: lempty?  lhere @ alvoc 1+ = ; \ the local dictionary has no names
 
-: NOTFOUND ( a u -- ) '(' { a u s } nf1-exit 1- headl L{ ;
+: NOTFOUND ( a u -- ) '(' { a u s } nf1-exit 1- headl nodelta, L{ ;
 : ) ( -- )  RET, }L ; IMMEDIATE \ name(  ) code
 
 \ recursion for local word
-: recloc ( -- )  g| axtloc @ @ c@r |g ; IMMEDIATE
+: recloc ( -- )  axtloc @ @ 0xE8 C, DP @ 4 + - , ; IMMEDIATE
 
-: NOTFOUND ( a u -- ) '"' { a u s } nf1-exit 1- headl L{ load-text 1- DLIT, RET, }L ;            \ name"  " string
-: NOTFOUND ( a u -- ) '[' { a u s } nf1-exit 1- headl L{ load-text  DLIT, ` EVALUATE RET, }L ; \ name[  ] macros
+\ the text of the names below is built inside the definition ( load-text emits a jump
+\ over the data ), the record keeps the address of the text and its length; the access
+\ is compiled at the place of use, so there is no extra call into lcode
+: NOTFOUND ( a u -- ) '"' { a u s } nf1-exit 1- headl L{ load-text 1- DLIT, RET, }L nodelta, ;            \ name"  " string
+: NOTFOUND ( a u -- ) '[' { a u s } nf1-exit 1- headl L{ load-text  DLIT, ` EVALUATE RET, }L nodelta, ; \ name[  ] macros
 
 \ creating an anonymous function
-: NOTFOUND ( a u -- ) '{' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` xts RET, }L ;      \ name{  function modifier text }
+: NOTFOUND ( a u -- ) '{' { a u s } nf1-exit 1- headl L{ LOAD-TEXT ` xts RET, }L nodelta, ;      \ name{  function modifier text }
 : x) ( -- )  RET, }L axtloc @ @ LIT, ; IMMEDIATE           \ name( ... x) xt gives out ( name is not used further)
 
 \ search dictionary definition
@@ -130,42 +176,42 @@ USER st-wr  0 st-wr !
   lvoc     \ a u av uv
   2OVER    \ a u av uv a u
   lsearch  \ a u a' u fl
-  0= lhere @ 1 = OR IF 2DROP NOTFOUND EXIT THEN \ a u a' u
+  0= lempty? OR IF 2DROP NOTFOUND EXIT THEN \ a u a' u
   2SWAP    \  a' u a u
   NIP      \  a' u u
   NIP      \  a' u
-  + 1+ DUP 5 + C@ { typ }
-  @ st-wr @
-  IF
-  typ  1 = IF 12 ELSE   \  1
-  typ  2 = IF 13 ELSE   \  4
-  typ  3 = IF 20 ELSE   \  2
-  typ  4 = IF 25 ELSE   \  3
-  typ  5 = IF 13 ELSE   \  5
-  typ 12 = IF 14 ELSE   \ 12
-  0 THEN THEN THEN THEN THEN THEN
-  +
-  THEN
+  + 1+ DUP 5 + C@ TO ltyp  DUP 4 + C@ TO lwdel \ addr typ code info
+  lwdel 0x7F AND TO lrlen
+  lwdel 0xC0 AND IF 0 ELSE lrlen THEN TO lwoff   \ 0x40 - direct address, 0x80 - no write entry
+  @                                              \ code entry or storage address
+  st-wr @ IF lwoff + THEN
   locxt @ 0<>
   IF   0 locxt ! LIT,
-  ELSE typ 1 =
-       IF DP @ st-wr @
-          IF   12   \ 12
-          ELSE 11   \ 11
-          THEN
-          MOVE DP @ st-wr @
-          IF   12   \ 12
-          ELSE 11   \ 11
-          THEN + DP !
-       ELSE COMPILE,
-       THEN
+  ELSE lwdel 0x40 AND
+            IF   st-wr @ IF ltyp lpre!, THEN
+                 LIT,                            \ literal address: the compiler optimizes
+                 st-wr @ IF ltyp l!, ELSE ltyp l@, THEN \ the access like a global variable
+            ELSE st-wr @
+                 IF   ltyp 1 =          \ the write code is copied as is ( 12 bytes )
+                      IF   DP @ lwoff MOVE  DP @ lwoff + DP !
+                      ELSE COMPILE,
+                      THEN
+                 ELSE                   \ the read code is copied without the final RET,
+                                        \ so reading a local variable has no CALL
+                      ltyp inlinable?
+                      IF   DP @ lrlen 1- MOVE  DP @ lrlen 1- + DP !
+                      ELSE COMPILE,
+                      THEN
+                 THEN
+            THEN
   THEN 0 st-wr !
 ;
 
 \ variables are single threaded
 : NOTFOUND ( a u --  ) \ 2variable variable    "name)"
   ')' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere
-   L{ ldhere LIT, RET, ldhere 2 CELLS + TO ldhere }L
+  ldhere axtloc @ !  0x40 axtloc @ 4 + C!  \ the record keeps the address of the storage
+  ldhere 2 CELLS + TO ldhere
 ;
 \ : NOTFOUND ( a u --  ) \ 2variable variable    "name)"
 \   ')' { a u s } nf1-exit 1- headl \ lcode ALIGNED TO lcode
@@ -178,54 +224,64 @@ USER st-wr  0 st-wr !
 \ I: esv i| sml pa |i 0 TO sml ;
 
 : NOTFOUND ( a u --  ) \ value   "name\"
-  '\' { a u s } nf1-exit  1- headl  ldhere ALIGNED TO ldhere ldhere LIT, ` ! \ ` sv! svv \ smloc 4 + TO smloc
-  L{  ldhere LIT, ` @ RET, ldhere LIT, ` ! RET, ldhere 1 CELLS + TO ldhere }L
+  '\' { a u s } nf1-exit  1- headl  ldhere ALIGNED TO ldhere
+  ldhere axtloc @ !  0x40 axtloc @ 4 + C!
+  ldhere LIT, ` !                    \ initialisation store, the same code as "value !"
+  ldhere 1 CELLS + TO ldhere
 ;
 : NOTFOUND ( a u --  ) \ 2value  "name!d"
-  '!d' { a u s } nf2-exit 2- headl ldhere ALIGNED TO ldhere ldhere LIT, ` 2!
-  L{ ldhere LIT, ` 2@ RET, ldhere LIT, ` 2! RET, ldhere 2 CELLS + TO ldhere }L
+  '!d' { a u s } nf2-exit 2- headl ldhere ALIGNED TO ldhere
+  ldhere axtloc @ !  0x40 axtloc @ 4 + C!
+  ldhere LIT, ` 2!
+  ldhere 2 CELLS + TO ldhere
 ;
 : NOTFOUND ( a u --  ) \ fvalue  "name$"
-  '$' { a u s } nf1-exit 1- headl ` FLOAT>DATA ldhere ALIGNED TO ldhere ldhere LIT, ` 2! ( 4 ltyp !)
-  L{ ldhere LIT, ` 2@ ` DATA>FLOAT RET, ` FLOAT>DATA ldhere LIT, ` 2! RET, ldhere 2 CELLS + TO ldhere }L
+  '$' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere
+  ldhere DUP axtloc @ !  0x40 axtloc @ 4 + C!
+  LIT, ` F!                          \ the initialisation store: native double
+  ldhere 2 CELLS + TO ldhere
 ;
 \ variables multithreaded
 : NOTFOUND ( a u --  ) \ value   "name%"
   '%' { a u s } nf1-exit 1- headl ` usn! ` DROP \ 2 ltyp !
-  L{ ` DUP  ` usn@ RET,
+  L{ ` DUP  ` usn@ RET, DP @ TO wxt
      ` usn! ` DROP RET,
-     udhere 1 CELLS + TO udhere }L
+     udhere 1 CELLS + TO udhere }L wdelta,
 ;
-: NOTFOUND ( a u --  ) \ value   "name;"
-  ';' { a u s } nf1-exit 1- headl  ` FLOAT>DATA32 ` usn! ` DROP \ 5 ltyp !
-  L{ ` DUP ` usn@ ` DATA>FLOAT32  RET,
-     ` FLOAT>DATA32 ` usn! ` DROP RET,
-     udhere 1 CELLS + TO udhere }L
+: NOTFOUND ( a u --  ) \ fvalue  "name;"  64-bit float in task area (fld/fstp qword)
+  ';' { a u s } nf1-exit 1- headl ` fstpq
+  L{ ` fldq RET, DP @ TO wxt
+     ` fstpq RET,
+     udhere 2 CELLS + TO udhere }L wdelta,
 ;
 \ arrays are single threaded
 : NOTFOUND ( a u --  ) \ [ 20 ] arr]
   ']' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere
-  L{ ldhere LIT, RET, ldhere + TO ldhere }L
+  ldhere axtloc @ !  0x40 axtloc @ 4 + C!
+  ldhere + TO ldhere
 ;
 \ arrays multithreaded
 : NOTFOUND ( a u --  ) \ [ 20 ] arr}
   '}' { a u s } nf1-exit 1- headl
   L{ ` DUP ` adr@ RET,
-  udhere + TO udhere }L
+  udhere + TO udhere }L nodelta,
 ;
 
 \ vectors
 : NOTFOUND ( a u --  ) \ vector "name^"
   '^' { a u s } nf1-exit 1- headl ldhere ALIGNED TO ldhere ldhere LIT, ` !
-  L{ ldhere LIT, ` @ ` EXECUTE RET, ldhere LIT, ` ! RET, 1 CELLS ldhere + TO ldhere }L
+  L{ ldhere LIT, ` @ ` EXECUTE RET, DP @ TO wxt ldhere LIT, ` ! RET, 1 CELLS ldhere + TO ldhere }L wdelta,
 ;
 \ execution from the forth or if not there, then from the local dictionary
 : NOTFOUND ( c-addr u -- ) { a u | [ 16 ] arr }
  a u + 1- C@ '`' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
  a u 1- SFIND IF EXECUTE              \ search in current global dictionary
               ELSE lvoc 2SWAP lsearch \ search in local dictionary
-                   IF + 1+ @ EXECUTE
-                   ELSE TYPE SPACE ." not found " CR
+                   IF + 1+ DUP 4 + C@ 0x40 AND
+                      IF   DROP a u 1- NOTFOUND \ direct address: compile the usual access
+                      ELSE @ EXECUTE            \ code entry: string/macro/modifier/local word
+                      THEN
+                   ELSE TYPE SPACE S" not found " TYPE CR
                    THEN
               THEN
 ;

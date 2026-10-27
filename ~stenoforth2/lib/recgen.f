@@ -2,7 +2,7 @@ m: rec: 0 WARNING ! : NOTFOUND u\ a\
    spos[ a + C@ ] spos?[ spos = ] ;
 m: gen: 0= IF a u NOTFOUND EXIT THEN ;
 
-\ ??????.?????? ???????? name' ?? ??
+
 rec: a C@ ''' <> a u + 1- C@ ''' = AND
 gen: [ 16 ] ar] lvoc a u 1- lsearch 2DROP 7 + C@ typ\
      a ar u 1- MOVE '`' ar u + 1- C! ar u EVALUATE ar 16 ERASE
@@ -27,5 +27,12 @@ gen:  1 spos '0' - 0 ?DO ` DROP LOOP ` LOOP ;
 
 \ : tst t1| .... |2t ;
 
+\ cтроковые литералы в форме "....."
+\ rec: a 1+ '"' PARSE u + NIP '"' 0 spos?
+\ gen: STATE @ IF SLIT, THEN ;
+
+\ exs
+\ "a b  c   d " TYPE CR
+\ : s1 "  12 345 67  " ; s1 TYPE
 
 : recgen ;

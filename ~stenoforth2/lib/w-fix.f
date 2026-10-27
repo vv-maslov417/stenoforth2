@@ -128,6 +128,7 @@ SYNONYM recurse               RECURSE
 SYNONYM latest                LATEST
 SYNONYM last                  LAST
 SYNONYM last-cfa              LAST-CFA
+SYNONYM last-non              LAST-NON
 SYNONYM literal               LITERAL
 SYNONYM 2literal              2LITERAL
 SYNONYM fliteral              FLITERAL
@@ -174,7 +175,7 @@ SYNONYM abort"                ABORT"
 SYNONYM nextword              NextWord
 SYNONYM wordbyaddr            WordByAddr
 SYNONYM parse-name            PARSE-NAME
-SYNONYM parse                 PARSE
+SYNONYM parse                PARSE
 
 SYNONYM forth                 FORTH
 SYNONYM vocabulary            VOCABULARY
@@ -209,6 +210,8 @@ SYNONYM resume                RESUME
 SYNONYM pause                 PAUSE
 
 SYNONYM >in                   >IN
+SYNONYM refill                REFILL
+SYNONYM /string               /STRING
 \ SYNONYM x>in                  X>IN
 \ SYNONYM xdp                   XDP
 SYNONYM source                SOURCE
@@ -228,5 +231,7 @@ SYNONYM randomize             RANDOMIZE
 SYNONYM choose                CHOOSE
 SYNONYM i:                    I:
 SYNONYM export                EXPORT
+SYNONYM _compile,             _COMPILE,
+SYNONYM ?comp                 ?COMP
 \ SYNONYM //                    \
 \ SYNONYM ///                   \EOF

@@ -14,7 +14,7 @@ REQUIRE 0SQRT        ~stenoforth2-1\assm\mp-assm.f       \ встроенный 
 REQUIRE IDN          ~stenoforth2-1\assm\sp-assm.f       \ встроенный трехпроходный ассемблер с метками и коротким синтаксисом для инструкций
 REQUIRE F.           lib\include\float2.f                \ вещественные числа
 REQUIRE instructions ~stenoforth2-1\lib\instructions.f   \ часто используемые инструкции процессора, параметризуемые со стека данных
-REQUIRE sd.          ~stenoforth2-1\lib\nloc25.f         \ статические локальные: переменные, слова, макросы, строки и модификаторы
+REQUIRE sd.          ~stenoforth2-1\lib\nloc25ds.f       \ статические локальные: переменные, слова, макросы, строки и модификаторы
 REQUIRE 1-!          ~stenoforth2-1\lib\man-ip.f         \ расширения базового словаря FORTH
 REQUIRE pusto        ~stenoforth2-1\lib\staxy4.f         \ прямое задание манипуляций параметрами на стеке параметров - "стексы"
 REQUIRE sseet        ~stenoforth2-1\lib\seetl.f          \ измеритель времени исполнения слова при разовом и циклическом его исполнении
@@ -32,8 +32,8 @@ REQUIRE syndop       ~stenoforth2-1\lib\dopsyn.f         \ доп. синони�
 REQUIRE t>T          ~stenoforth2-1\lib\dopassm.f        \ сохранение регистров в памяти и восстановление их из памяти
 REQUIRE |a           ~stenoforth2-1\lib\short-asm.f      \ часто используемые инструкции процессора, параметризуемые со стека данных и из их имён
 REQUIRE VARIANTS     ~stenoforth2-1\lib\gps.f            \ генератор перестановок символов в строках
-REQUIRE in           ~stenoforth2-1\lib\stat-loc.f       \ статичские локальные переменные в общем пространстве кода, многопоточные
-REQUIRE valuen       ~stenoforth2-1\lib\cfixo.f          \ сжатая форма стат. лок. переменные в общем пространстве кода
+REQUIRE in           ~stenoforth2-1\lib\stat-loc.f       \ статичские локальные переменные
+REQUIRE valuen       ~stenoforth2-1\lib\cfixo.f          \ сжатая форма стат. лок. переменных в общем пространстве кода
 REQUIRE skip-next    ~stenoforth2-1\lib\dop-words.f      \ анти-комментарии
 
 

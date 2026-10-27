@@ -48,7 +48,7 @@ m: s1>C [ s1 >CS ] C=@ ; m: P=p [ p1 >CS ] A=# ;
 rec: '_' a c@ = a 1+ u 1- number? nip nip and u 1 > and u 4 < and
 gen: STATE @ 0= IF HERE hered\ THEN a 1+ u 1- number? 2drop n1\
      n1 n1 2- 4 * sman1 STATE @ 0= IF RET, hered execute THEN ;
-(
+\EOF
 : uc>rg 0x758B W, C, ;
 : rg>dc 0x7589 W, C, ;
 : dpdd  0x6D8D W, C, ;
@@ -67,4 +67,3 @@ gen: 0 spos '0' - m\ 2 spos '0' - n\  n n m + 2- 4 * n 2- 4 * sman ;
                 THEN
                 a 2+ u 2- aDO  I C@ '`' <> IF I 1 EVALUATE
                 ELSE I 1+ 1 NUMBER? 2DROP LIT, 1 I+ THEN  LOOP ` |zf ;
-)

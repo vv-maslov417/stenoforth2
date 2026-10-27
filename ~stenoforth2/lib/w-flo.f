@@ -15,6 +15,7 @@ MODULE: fpoint
 : @       F@      ;
 : !       F!      ;
 : <       F<      ;
+: >       FOVER FOVER F< F= OR 0= ;
 : 0<      F0<     ;
 : =       F=      ;
 : 0=      F0=     ;
@@ -48,13 +49,18 @@ MODULE: fpoint
 : >s      F>DS    ;
 : >f      DS>F    ;
 : d>f     D>F     ;
+: or      OR      ;
+: and     AND     ;
+: xor     XOR     ;
+: true    TRUE    ;
+: false   FALSE   ;
 I: to   ` FTO     ;
 : 2drop   FDROP FDROP ;
 EXPORT
 m: f|  {{ fpoint ;
 m: |f  }} ;
 ;MODULE
-
+\EOF
 \ операции над комплексными числами
 MODULE: complex
 m: arg i2$ r2$ i1$ r1$ ;

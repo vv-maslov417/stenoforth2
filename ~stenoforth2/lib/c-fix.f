@@ -34,9 +34,9 @@ m: |s }} ;
 ;MODULE
 
 \ : NOTFOUND u\ a\ a C@ '[' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-\ ` s| a 1+ u 1- aDO I 1 EVALUATE LOOP ` |s ;
-: NOTFOUND u\ a\ a C@ '[' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-` s| a 1+ u 1- aDO I C@ ''' <> IF I 1 EVALUATE ELSE I 1+ 1 NUMBER? 2DROP LIT, 1 I+ THEN LOOP ` |s ;
+\  ` s| a 1+ u 1- aDO I 1 EVALUATE LOOP ` |s ;
+ : NOTFOUND u\ a\ a C@ '[' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
+ ` s| a 1+ u 1- aDO I C@ ''' <> IF I 1 EVALUATE ELSE I 1+ 1 NUMBER? 2DROP LIT, 1 I+ THEN LOOP ` |s ;
 
 MODULE: valuenames
 m: 1  \ ; m: 2 ¡\ ; m: 3 ¢\ ; m: 4 £\ ; m: 5 ¤\ ; m: 6 ¥\ ; m: 7 ñ\ ; m: 8 ¦\ ; m: 9 §\ ;

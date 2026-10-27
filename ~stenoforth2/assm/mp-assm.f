@@ -40,7 +40,7 @@ I: $ HEX NextWord NUMBER? DROP D>S >CS DECIMAL ;  \ decimal
 : SM, ?CS 0= IF  CS> C, THEN ;
 : ?P 5 = IF 0x40 ELSE 0x00 THEN ;
 : ?X 4 = IF 0x24 C, THEN ;
-: RRM  3 LSHIFT OR ;     
+: RRM  3 LSHIFT OR ;
 : RRM! RRM C, ;
 : RRL! SWAP RRM C, ;
 : RRML! RRM OR C, ;
@@ -490,7 +490,7 @@ I: JMP  XN CASE 3 OF RELJ0 ENDOF 2 OF RELJ1 ENDOF 1 OF RELJ2 ENDOF 0 OF RELJ2 EN
 I: JR    4 0xFF RO   ; I: J@R   4 0xFF @RO  ; I: J@RR  4 0xFF @RRO ;
 
 \ команды установки байта по условию   SETcc
-: ROS   0x0F C, CS> TO R1 C, 0xC0 R1 OR C, ; 
+: ROS   0x0F C, CS> TO R1 C, 0xC0 R1 OR C, ;
 : @ROS  0x0F C, CS> TO R1 C, R1 C, ;
 
 

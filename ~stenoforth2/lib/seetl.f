@@ -10,7 +10,7 @@ xt ^A
 DAC=TSCP DUP A=D -> t2 A=C DUP -> pr2
 t2 t1 D- -> tics
 ." pr: " pr1 . pr2 . CR
-tics 10. D* 36. D/ -> ns
+tics 10. D* 44. D/ -> ns
 ns      1000. D/ DROP -> mcs
 mcs     1000 / -> ms
 ." T1 = "
@@ -24,7 +24,7 @@ xt ^A
 DAC=TSCP DUP A=D -> t2 A=C DUP -> pr2
 t2 t1 D- -> tics
 ." pr: " pr1 . pr2 . CR
-tics 10. D* 36. D/  -> ns
+tics 10. D* 44. D/  -> ns
 ns      1000. D/ DROP -> mcs
 mcs     1000 / -> ms
 ." Tc = "

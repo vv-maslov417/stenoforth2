@@ -4,7 +4,7 @@
 : NOTFOUND u\ a\
 1 a + C@ '\' <> 0 a + C@ '1' '5' 1+ WITHIN 0= OR IF  a u NOTFOUND EXIT THEN  STATE @ 0= IF HERE here\ THEN
 0 b\ 0 e\ [ 17 ] SE] [ 17 ] 1TE] [ 17 ] 2TE] 0 3TE\ [ 17 ] 4TE] [ 17 ] 5TE]
-a=b[  0xC38B W,    ]  a=c[  0xC18B W,    ]  a=d[  0xC28B W,    ]  a=s[  0xC68B W,    ]  p+[   0x6D8D W, C, ]
+ a=b[ 0xC38B W,    ]   a=c[ 0xC18B W,    ]   a=d[ 0xC28B W,    ]   a=s[ 0xC68B W,    ]    p+[ 0x6D8D W, C, ]
 a=@p[ 0x458B W, C, ]  b=@p[ 0x5D8B W, C, ]  c=@p[ 0x4D8B W, C, ]  d=@p[ 0x558B W, C, ]  s=@p[ 0x758B W, C, ]
 @p=a[ 0x4589 W, C, ]  @p=b[ 0x5D89 W, C, ]  @p=c[ 0x4D89 W, C, ]  @p=d[ 0x5589 W, C, ]  @p=s[ 0x7589 W, C, ]
 u 2- emax\   a C@ '0' - bmax\
@@ -23,9 +23,9 @@ CASE
 ENDCASE )
 CE=TE(  @T DUP IF 16 SWAP 4 * - @p=a` ELSE DROP THEN )
 emax 0=
-IF   bmax 1 17 WITHIN IF bmax 1- 4 * a=@p` THEN \ ????? DROP
+IF   bmax 1 17 WITHIN IF bmax 1- 4 * a=@p` THEN \ много DROP
 ELSE bmax 1 =
-     IF   emax 2 17 WITHIN IF emax 1- -4 * -4 DO I @p=a` -4 +LOOP THEN \ ????? DUP
+     IF   emax 2 17 WITHIN IF emax 1- -4 * -4 DO I @p=a` -4 +LOOP THEN \ много DUP
      ELSE emax 1 >
           IF 1 -> b
              BEGIN  1 -> e

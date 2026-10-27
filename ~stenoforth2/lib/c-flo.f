@@ -67,6 +67,9 @@ m: ^ F** ;
 m: . F. ;
 m: : -> ;
 m: ; EXIT ;
+m: & AND ;
+m: | OR ;
+m: ^ XOR ;
 m: 1 ƒ ; m: 2 „ ; m: 3 … ; m: 4 ð ; m: 5 † ; m: 6 ‡ ; m: 7 ˆ ; m: 8 ‰ ; m: 9 Š ;
 EXPORT
 m: fs| {{ fsynonyms ;

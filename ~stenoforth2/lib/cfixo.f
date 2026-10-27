@@ -25,19 +25,18 @@ m: w C! ;                           m: W WHILE ;
 m: x DROP ;                         m: X EXECUTE ;
 m: y $ -4 @P=A A^A $ -4 Pa ;        m: Y $ -4 @P=A $ 1 A=# $ -4 Pa ;
 m: z 0<> ;                          m: Z 0= ;
-m: 1 Â  ; m: 2 Â¡ ; m: 3 Â¢ ; m: 4 Â£ ; m: 5 Â¤ ; m: 6 Â¥ ; m: 7 Ã± ; m: 8 Â¦ ; m: 9 Â§ ;
+m: 1   ; m: 2 ¡ ; m: 3 ¢ ; m: 4 £ ; m: 5 ¤ ; m: 6 ¥ ; m: 7 ñ ; m: 8 ¦ ; m: 9 § ;
 EXPORT
 m: sfp| {{ syn-fixp ;
 m: |sfp }} ;
 ;MODULE
 
-\ : NOTFOUND u\ a\ a C@ '/' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
-\  ` sfp| a 1+ u 1- aDO I 1 EVALUATE LOOP ` |sfp ;
+
 : NOTFOUND u\ a\ a C@ '/' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN
   ` sfp| a 1+ u 1- aDO I C@ ''' <> IF I 1 EVALUATE ELSE I 1+ 1 NUMBER? 2DROP LIT, 1 I+ THEN LOOP ` |sfp ;
 
 MODULE: valuen
-m: 1 _Â  ; m: 2 _Â¡ ; m: 3 _Â¢ ; m: 4 _Â£ ; m: 5 _Â¤ ; m: 6 _Â¥ ; m: 7 _Ã± ; m: 8 _Â¦ ; m: 9 _Â§ ;
+m: 1 _  ; m: 2 _¡ ; m: 3 _¢ ; m: 4 _£ ; m: 5 _¤ ; m: 6 _¥ ; m: 7 _ñ ; m: 8 _¦ ; m: 9 _§ ;
 EXPORT
 m: vsn| {{ valuen ;
 m: |vsn }} ;

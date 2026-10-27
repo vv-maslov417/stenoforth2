@@ -37,9 +37,19 @@
     dup 0 = if 2drop 0 exit then
     2dup 2>r over + swap 0 -rot 2r> variants 2drop 2drop
 ;
+\ strings "ccccc" " cc cc "
+rec: '"' 0 spos?
+gen: '"' u 1- spos? u 2 > and
+     if   a 1+ u 2-
+     else a 1+ u '"' parse nip +
+     then state @ if slit, then
+;
 
-\eof
-0 to notype
-s" 1111444466666666" 2DUP VARIANTS .( variants: ) . type cr cr
 
-: t1 s" 11114444666666" VARIANTS drop ; seet t1
+\EOF
+\ 0 to notype
+\ s" 1111444466666666" 2DUP VARIANTS .( variants: ) . type cr cr
+
+\ : t1 s" 11114444666666" VARIANTS drop ; seet t1
+
+" 123 456 789 '0' "

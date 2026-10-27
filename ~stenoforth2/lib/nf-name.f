@@ -1,10 +1,10 @@
 \ stenoforth32
 
-\ ????????? ???? 's','ss','sss','ssss' [s-??? ascii char] ? ??????? ??
+\ Преобразователь лексем 's','ss','sss','ssss' [s-любой ascii char] в одинарное число
 : NOTFOUND { a u } \ -- n
-  a C@ [CHAR] ' = a u + 1- C@ [CHAR] ' = AND u 3 6 1+ WITHIN AND 0= \ ?????????
+  a C@ [CHAR] ' = a u + 1- C@ [CHAR] ' = AND u 3 6 1+ WITHIN AND 0= \ распознаватель
   IF a u NOTFOUND EXIT THEN
-  0 a 1+ a u + 2- DO 8 LSHIFT I C@ + -1 +LOOP STATE @ IF LIT, THEN  \ ???????
+  0 a 1+ a u + 2- DO 8 LSHIFT I C@ + -1 +LOOP STATE @ IF LIT, THEN  \ генератор
 ;
 
 : LOAD-LEX \ a u --
@@ -58,7 +58,8 @@
   5 ALLOT DP @ >R
   BEGIN
        REFILL DROP
-       0xD PARSE OVER C@ 0xF9 = \  ???????????? ???? '?'
+       0xD PARSE OVER C@ 0xF9 =
+\ неклавиатурный символ '∙' писать ТОЛЬКО после перевода строки ( cr )
           IF   2DROP 1
           ELSE LOAD-LEX 0xA C, 0xD C, 0
           THEN
@@ -66,27 +67,28 @@
   DP @ R@ 5 - DP ! 0xE9 C, DUP R@ - ,
   DUP DP ! R@ SWAP R> - 1-
 ;
-\ ?????????? ???? ??? ????
+\ Многострочные строки для печати
 : LOAD-TXT  load-txt DLIT, ;
 \ ( "name" "text" -- )
-: txt: : LOAD-TXT POSTPONE ; ;
+: txt:  : LOAD-TXT POSTPONE ; ;
 : text: : LOAD-TXT POSTPONE ; ;
 
-\ ?????-???? ?????????? - ??????? ???????? ???? \ .....
+\ Слова-строки многострочные - допускают комментарии вида \ .....
 : T:   ( name "text" -- ) : LOAD-TEXT POSTPONE ; ;
 : t:   ( name "text" -- ) : LOAD-STR  POSTPONE ; ;
-\ ????? ??? ????????? ???????? - ?????????? ????
 
-\ ?????? ?????????? - ??????? ???????? ???? \ .....
+\ Макросы многострочные - допускают комментарии вида \ .....
 : M:  : IMMEDIATE LOAD-TEXT POSTPONE EVALUATE POSTPONE ; ;
 : m:  : IMMEDIATE LOAD-STR  POSTPONE EVALUATE POSTPONE ; ;
+
+\ Текст без изменения форматирования - многострочные строки
 : tx: : IMMEDIATE LOAD-TXT  POSTPONE EVALUATE POSTPONE ; ;
 
-\ ???????
+\ формирование кода из строки в динамической памяти с выдачей xt
 : xts ( a u -- xt )
   DP @ >R 1024 ALLOCATE THROW DUP >R DP !
   TRUE STATE ! EVALUATE RET, FALSE STATE !
   R@ DP @ R> - RESIZE THROW  R> DP !
 ;
-\ ????????? ???-??????? C: Name .... ;
+\ определение кода с именем в дин. памяти C: Name .... ;
 : C: : IMMEDIATE LOAD-TEXT ` xts POSTPONE ; ;
