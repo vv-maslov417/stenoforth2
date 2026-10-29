@@ -1512,21 +1512,6 @@ OPS  LOK ??? RPZ REP  HLT CMC F6. F6.  CLC STC CLI STI  CLD STD FE. FF.  \ F
 : DIS-DD  CR .S" DD " @+ H.>S ;
 : DIS-DS  CR .S" STRING " 0x22 EMIT>S COUNT 2DUP >S + 0x22 EMIT>S ;
 
-: FIND-REST-END ( xt -- addr | 0)
-    DUP NextNFA DUP
-    IF
-      NIP
-      NAME>C 1- \ Skip CFA field
-    ELSE
-      DROP
-      DP @ - ABS 100 > IF 0 EXIT THEN \ no applicable end found
-      DP @ 1-
-    THEN
-
-    BEGIN \ Skip alignment
-      DUP C@ 0= WHILE 1-
-    REPEAT ;
-
 ( wid ) SET-CURRENT
 
 : INST  ( ADR -- ADR' )
@@ -1576,84 +1561,69 @@ OPS  LOK ??? RPZ REP  HLT CMC F6. F6.  CLC STC CLI STI  CLD STD FE. FF.  \ F
 
 0 VALUE SHOW-NEXT?      \ DEFAULT TO NOT SHOWING NEXT INSTRUCTIONS
 
+\ ---- КОНЕЦ ПОИСКА СЛОВА ---- \
+\ Раньше SEE останавливался на первом RET, поэтому слова с несколькими RET
+\ (встроенный ассемблер, расширения для работы с плавающей точкой или макросы)
+\ дизассемблировались только частично.
+\   Теперь реальный конец тела слова берётся из словаря: слово
+\ заканчивается прямо перед следующим заголовком. Заголовок распознаётся по структуре:
+\ [cfa][флаги][длина][имя][ссылка][выравнивание], где cfa указывает на тело слова.
 
-TRUE VALUE SEE-KET-FL
-
-VARIABLE  COUNT-LINE
-
-0 VALUE CNT-INST
-: REST-AREA ( addr1 addr2 -- )
-0 TO CNT-INST
-\ if addr2 = 0 continue till RET instruction
-                2DUP DROP >R
-               \ 2DUP - ABS 1+
-               \ ."  ("
-               \ BASE @ >R DECIMAL . R> BASE !  ." bytes)"
-                20    COUNT-LINE !
-                0 TO MAX_REFERENCE
-                SWAP DUP TO NEXT-INST
-                BEGIN
-                        \ We do not look for JMP's because there may be
-                         \ a jump in a forth word
-                        CR
-                        OVER 0= IF ( NEXT-INST C@ 0xC3 <> )
-                                     NEXT-INST    C@ 0xC3 = DUP IF KEY DROP THEN
-                                     NEXT-INST 1+ C@ 0x55 =
-                                     NEXT-INST 1+ C@ 0x33 = OR
-                                     NEXT-INST 1+ C@ 0xAF = OR
-                                     AND 0= \ **** end
-                                ELSE 2DUP < INVERT
-                                THEN
-                WHILE   INST CNT-INST 1+ TO CNT-INST
-                        COUNT-LINE @ 1- DUP 0=  SEE-KET-FL AND
-                           IF 9 EMIT ( ." \ Press <enter> | q | any" )  KEY UPC
-                            DUP   0xD = IF 2DROP 1  ELSE
-                              DUP [CHAR] Q = SWAP 0x1B =
-                              OR IF DROP 2DROP CR EXIT THEN
-                                DROP 20 THEN
-                           THEN
-                        COUNT-LINE !
-                REPEAT ." END-CODE " CR
-                2DUP NIP
-                ." ( " BASE @ DECIMAL  SWAP R> - ABS . BASE !  ." bytes, "
-                 2DROP
-               \ ."              ("
-                BASE @ DECIMAL CNT-INST . BASE !  ." instructions )" CR
-                ;
-
-: REST ( addr -- )
-    DUP HERE U> 0=  HERE 1- AND REST-AREA
+\ ( p -- d | 0 )  p - supposed header start, d - its body address
+: ?HDR  ( p -- d | 0 )
+  { p \ d n q }
+  p DP @ U> IF 0 EXIT THEN
+  p @ -> d
+  d 0= IF 0 EXIT THEN
+  p 4 + C@ 7 > IF 0 EXIT THEN             \ flags
+  p 5 + C@ -> n                           \ name length
+  n 1 < n 31 > OR IF 0 EXIT THEN
+  d p - 10 n + < IF 0 EXIT THEN           \ header size is 10+n .. 10+n+16
+  d p - 10 n + 16 + > IF 0 EXIT THEN
+  p 6 + n + @ -> q                        \ link to the previous word
+  q IF q p U> IF 0 EXIT THEN THEN
+  n 0 DO p 6 + I + C@ 0x20 U> 0= IF 0 UNLOOP EXIT THEN LOOP
+  d
 ;
-I: (SEE) ( CFA --)
-DUP FIND-REST-END ['] REST-AREA CATCH DROP ;
 
-\ : SEE       ( "name" -- )
-\    ' DUP WordByAddr CR CR ." CODE " TYPE ` (SEE)
-  \  DUP FIND-REST-END ['] REST-AREA CATCH DROP
-\ ;
+\ ( xt -- addr | 0 )  last byte of the body, 0 if unknown
+: WORD-END ( xt -- addr | 0 )
+  DUP DP @ U> IF DROP 0 EXIT THEN
+  DUP
+  BEGIN DUP DP @ U> 0=
+  WHILE
+    DUP ?HDR DUP IF DROP 1-
+         BEGIN 2DUP U< OVER C@ 0= AND WHILE 1- REPEAT
+         NIP EXIT
+      THEN
+    DROP 1+
+  REPEAT
+  DROP
+  DP @ OVER U> IF DP @ 1- ELSE DROP 0 EXIT THEN
+  BEGIN 2DUP U< OVER C@ 0= AND WHILE 1- REPEAT
+  NIP
+;
 
-\ : see       ( "name" -- )
-\     ' DUP WordByAddr CR CR ." CODE " TYPE ` (SEE)
-\   \  DUP FIND-REST-END ['] REST-AREA CATCH DROP
-\ ;
-: SEE ' dup 0 | a\ A\ n\ |
+: SEE ' dup 0 0 | a\ A\ n\ e\ |
   cr A wordbyaddr type cr
+  A WORD-END -> e          \ end of the body, 0 - unknown
+  e A < IF 0 -> e THEN
   begin
-   A INST -> A n 1+ -> n  cr
-   A w@ 0x89C3 <> A w@ 0x8BC3 <> and A w@ 0xC3C3 <> and A w@ 0xE8C3 <> and A c@ 0xC3 = and
-     if
-        A INST  cr
-     decimal   A a - 1+ . ." bytes, " n 1+ . ." instructions"
-        drop    cr exit
-     else
-        A w@ 0x00 = A c@ 0x55 =      \ +++  \ A c@ 0x55 =
-        A c@ 0xAF = or or            \ +++  \ or
-        if
-        A a - . ." bytes, " n . ." instructions"
-        cr exit then
-     then
-  again
+    A INST -> A  n 1+ -> n  cr
+    e IF                    \ known end: disassemble up to it
+        A e >
+      ELSE                  \ unknown end: old heuristic
+        A w@ 0x89C3 <> A w@ 0x8BC3 <> and A w@ 0xC3C3 <> and A w@ 0xE8C3 <> and
+        A c@ 0xC3 = and
+        IF   A INST -> A  n 1+ -> n  cr TRUE
+        ELSE A w@ 0x00 = A c@ 0x55 = A c@ 0xAF = or or
+        THEN
+      THEN
+  until
+  e IF e 1+ -> A THEN
+  decimal A a - . ." bytes, " n . ." instructions" cr
 ;
+(
 : auc dup | a\ A\ |
   begin A DIS-OP -> A
     A c@ 0xC3 = if a A a - 1+  exit
@@ -1662,7 +1632,6 @@ DUP FIND-REST-END ['] REST-AREA CATCH DROP ;
     then
   again
 ;
-
 \ j*t -- " see "
 : .d decimal . hex ;
 : pairs-chars u\ a\ 0 dpo\ here bfo\ u 2* allot
@@ -1692,6 +1661,7 @@ DUP FIND-REST-END ['] REST-AREA CATCH DROP ;
      then
   again decimal
 ;
+)
 PREVIOUS
 
 ( warn base )
