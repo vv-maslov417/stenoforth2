@@ -1,7 +1,7 @@
 \ stenoforth32
 
 \ t  - register eax
-\ á  - offset @P
+\ c  - offset @P
 \ p  - reg ebp
 \ x  - reg esp
 \ 1  - reg ecx

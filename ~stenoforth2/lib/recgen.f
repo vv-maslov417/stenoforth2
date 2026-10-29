@@ -27,7 +27,7 @@ gen:  1 spos '0' - 0 ?DO ` DROP LOOP ` LOOP ;
 
 \ : tst t1| .... |2t ;
 
-\ c�ப��� ���ࠫ� � �ଥ "....."
+\ cтроковые литералы в форме "....."
 \ rec: a 1+ '"' PARSE u + NIP '"' 0 spos?
 \ gen: STATE @ IF SLIT, THEN ;
 

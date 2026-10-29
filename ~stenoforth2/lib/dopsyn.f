@@ -1,6 +1,6 @@
 : SYNONYM see SEE ;
 
-\ c�ப��� ���ࠫ� � �ଥ "....."
+\ cтроковые литералы в форме "....."
 \ rec: a 1+ '"' PARSE u + 3\13 '"' 0 spos?
 \ gen: state @ if slit, then ;
 

@@ -37,33 +37,3 @@ m: p>P [ p >CS ] P=@ ; m: p>X [ p >CS ] X=@ ;
 m: a1>A [ a1 >CS ] A=@ ; m: b1>B [ b1 >CS ] B=@ ; m: c1>C [ c1 >CS ] C=@ ;
 m: d1>D [ d1 >CS ] D=@ ; m: s1>S [ s1 >CS ] S=@ ; m: t1>T [ t1 >CS ] T=@ ;
 m: s1>C [ s1 >CS ] C=@ ; m: P=p [ p1 >CS ] A=# ;
-\eof
-\ stack local variables
-: uc>rg 0x758B W, C, ;
-: rg>da 0x3589 W,  , ;
-: dpad  0xBD   C,  , ;
-
-: sman1 si1\ 1703792 so1\ 1 ?DO si1 uc>rg si1 4 - -> si1 so1 rg>da so1 4 - -> so1 LOOP so1 4 + dpad ;
-
-rec: '_' a c@ = a 1+ u 1- number? nip nip and u 1 > and u 4 < and
-gen: STATE @ 0= IF HERE hered\ THEN a 1+ u 1- number? 2drop n1\
-     n1 n1 2- 4 * sman1 STATE @ 0= IF RET, hered execute THEN ;
-\EOF
-: uc>rg 0x758B W, C, ;
-: rg>dc 0x7589 W, C, ;
-: dpdd  0x6D8D W, C, ;
-: rg>da 0x3589 W,  , ;
-: dpad  0xBD   C,  , ;
-
-\ m/n m - ?? ?????? ???? ??? n - ?? ?????? ?????? ????
-: sman  si\ so\ 1 ?do si uc>rg si 4 - -> si so rg>dc so 4 - -> so loop so 4 + dpdd ;
-rec: 0 spos '1' '9' 1+ within '/' 1 spos? and 2 spos '1' '9' 1+ within and u 3 = and
-gen: 0 spos '0' - m\ 2 spos '0' - n\  n n m + 2- 4 * n 2- 4 * sman ;
-
-: NOTFOUND u\ a\ a C@ '/' = a 1+ C@ '0' - 1 9 1+ WITHIN AND u 2 > AND 0= IF a u NOTFOUND EXIT THEN
-          ` zf| S0 @ SP@ - a 1+ C@ '0' - 4 * <
-                IF ." depth incorrect" EXIT
-                ELSE SP@ a 1+ C@ '0' - 1- 4 * + TO agrn
-                THEN
-                a 2+ u 2- aDO  I C@ '`' <> IF I 1 EVALUATE
-                ELSE I 1+ 1 NUMBER? 2DROP LIT, 1 I+ THEN  LOOP ` |zf ;
