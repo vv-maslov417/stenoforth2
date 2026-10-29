@@ -68,3 +68,15 @@ m: |mvs }} ;
   ` mvs| a 1+ a 1+ u + 2- DO I 1 EVALUATE -1 +LOOP ` |mvs ;
 
 m: |%1 %1 ; m: |%2 %12 ; m: |%3 %123 ; m: |%4 %1234 ; m: |%5 %12345 ; m: |%6 %123456 ; m: |%7 %1234567 ; m: |%8 %12345678 ; m: |%9 %123456789 ;
+
+MODULE: mvaluenames1
+m: 1  _ ; m: 2 ¡_ ; m: 3 ¢_ ; m: 4 £_ ; m: 5 ¤_ ; m: 6 ¥_ ; m: 7 ñ_ ; m: 8 ¦_ ; m: 9 §_ ;
+EXPORT
+m: mvs1| {{ mvaluenames1 ;
+m: |mvs1 }} ;
+;MODULE
+
+: NOTFOUND u\ a\ a C@ '_' = u 1 > AND 0= IF a u NOTFOUND EXIT THEN  \  _1234
+  ` mvs1| a 1+ a 1+ u + 2- DO I 1 EVALUATE -1 +LOOP ` |mvs1 ;
+
+m: |_1 _1 ; m: |_2 _12 ; m: |_3 _123 ; m: |_4 _1234 ; m: |_5 _12345 ; m: |_6 _123456 ; m: |_7 _1234567 ; m: |_8 _12345678 ; m: |_9 _123456789 ;

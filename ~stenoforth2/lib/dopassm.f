@@ -37,7 +37,7 @@ m: p>P [ p >CS ] P=@ ; m: p>X [ p >CS ] X=@ ;
 m: a1>A [ a1 >CS ] A=@ ; m: b1>B [ b1 >CS ] B=@ ; m: c1>C [ c1 >CS ] C=@ ;
 m: d1>D [ d1 >CS ] D=@ ; m: s1>S [ s1 >CS ] S=@ ; m: t1>T [ t1 >CS ] T=@ ;
 m: s1>C [ s1 >CS ] C=@ ; m: P=p [ p1 >CS ] A=# ;
-
+\eof
 \ stack local variables
 : uc>rg 0x758B W, C, ;
 : rg>da 0x3589 W,  , ;
