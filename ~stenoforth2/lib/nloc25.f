@@ -148,6 +148,7 @@ a u 2- SFIND IF a u 1- CR TYPE S" <-- this name already exists" TYPE CR CR 2DROP
 a u + 2- W@
 CASE
 '!d' OF  3 ENDOF \ данные значения, с фиксированной точкой, 64 бита
+'!m' OF 14 ENDOF \ данные значения, многопоточные, с фиксированной точкой, 64 бита
 ENDCASE
 lhere @ u + 4 + DUP dtyp ! C! 0 lhere @ u + 5 + C!
 ;
@@ -204,8 +205,17 @@ USER st-wr  0 st-wr !
   st-wr @ IF lwoff + THEN
   locxt @ 0<>
   IF   0 locxt !
-       ltyp 13 = IF ladr, ELSE LIT, THEN      \ l' name -- адрес ячейки
-  ELSE ltyp 13 =
+       ltyp 13 = ltyp 14 = OR
+       IF   ladr,                             \ l' name -- адрес ячейки или пары ячеек
+       ELSE LIT,
+       THEN
+  ELSE ltyp 14 =
+            IF   ladr,                        \ адрес пары ячеек в области задачи
+                 st-wr @
+                 IF   ['] 2! COMPILE,         \ запись двух ячеек по адресу
+                 ELSE ['] 2@ COMPILE,         \ чтение двух ячеек по адресу
+                 THEN
+            ELSE ltyp 13 =
             IF   st-wr @
                  IF   ladr,  ['] ! COMPILE, \ адрес ячейки, затем запись
                  ELSE l@t,                  \ одна команда: значение в EAX
@@ -223,7 +233,7 @@ USER st-wr  0 st-wr !
                       ELSE _COMPILE,
                       THEN
                  THEN
-            THEN THEN
+            THEN THEN THEN
   THEN 0 st-wr ! ;
 
 \ переменные однопоточные
@@ -267,6 +277,10 @@ USER st-wr  0 st-wr !
   ` fstpq RET,                          \ вход по записи
   udhere 2 CELLS + TO udhere
   <body wdelta, ;
+: NOTFOUND ( a u --  ) \ 2value в области задачи   "name!m"  64-битное фиксированное, две ячейки
+  '!m' { a u s } nf2-exit 2-  udhere lxt !  headl  0x40 axtloc @ 4 + C!
+  udhere ladr, ` 2!                   \ запись при инициализации, та же, что у "-> name!m"
+  udhere 2 CELLS + TO udhere ;
 
 \ массивы однопоточные
 : NOTFOUND ( a u --  ) \ [ 20 ] arr]

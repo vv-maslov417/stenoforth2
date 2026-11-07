@@ -390,6 +390,7 @@ I: L5 lab5 @ xln5 count5 count+ ; I: L5: DP @ lab5 ! ; I: L6 lab6 @ xln6 count6 
 I: L7 lab7 @ xln7 count7 count+ ; I: L7: DP @ lab7 ! ; I: L8 lab8 @ xln8 count8 count+ ; I: L8: DP @ lab8 ! ;
 : CTL0 count1 0! count2 0! count3 0! count4 0! count5 0! count6 0! count7 0! count8 0! 0 TO $LABEL ; \ обнуление счетчиков числа ссылок на метки
 
+
 : [begin]
   >IN @ TO X>IN  DP @ TO XDP  SOURCE XSOURCE $!
   SOURCE-ID FILE-POSITION DROP XFP 2! CURSTR @ XCURSTR !

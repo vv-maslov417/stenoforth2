@@ -1,4 +1,4 @@
-\ stenoforth32
+\ stenoforth32 первичный файл
 
 \ staxy     1...5-->0...16      1\ ... 5\1234512345123451
 : NOTFOUND u\ a\
@@ -23,9 +23,9 @@ CASE
 ENDCASE )
 CE=TE(  @T DUP IF 16 SWAP 4 * - @p=a` ELSE DROP THEN )
 emax 0=
-IF   bmax 1 17 WITHIN IF bmax 1- 4 * a=@p` THEN \ ����� DROP
+IF   bmax 1 17 WITHIN IF bmax 1- 4 * a=@p` THEN \ много DROP
 ELSE bmax 1 =
-     IF   emax 2 17 WITHIN IF emax 1- -4 * -4 DO I @p=a` -4 +LOOP THEN \ ����� DUP
+     IF   emax 2 17 WITHIN IF emax 1- -4 * -4 DO I @p=a` -4 +LOOP THEN \ много DUP
      ELSE emax 1 >
           IF 1 -> b
              BEGIN  1 -> e

@@ -27,7 +27,7 @@ m: w C! ;                           m: W WHILE ;
 m: x DROP ;                         m: X EXECUTE ;
 m: y $ -4 @P=A A^A $ -4 Pa ;        m: Y $ -4 @P=A $ 1 A=# $ -4 Pa ;
 m: z 0<> ;                          m: Z 0= ;
-m: 1   ; m: 2 ¡ ; m: 3 ¢ ; m: 4 £ ; m: 5 ¤ ; m: 6 ¥ ; m: 7 ñ ; m: 8 ¦ ; m: 9 § ;
+m: 1 Ð° ; m: 2 Ð± ; m: 3 Ð² ; m: 4 Ð³ ; m: 5 Ð´ ; m: 6 Ðµ ; m: 7 Ñ‘ ; m: 8 Ð¶ ; m: 9 Ð· ;
 EXPORT
 m: s| {{ syn-fixpoint ;
 m: |s }} ;
@@ -39,7 +39,7 @@ m: |s }} ;
  ` s| a 1+ u 1- aDO I C@ ''' <> IF I 1 EVALUATE ELSE I 1+ 1 NUMBER? 2DROP LIT, 1 I+ THEN LOOP ` |s ;
 
 MODULE: valuenames
-m: 1  \ ; m: 2 ¡\ ; m: 3 ¢\ ; m: 4 £\ ; m: 5 ¤\ ; m: 6 ¥\ ; m: 7 ñ\ ; m: 8 ¦\ ; m: 9 §\ ;
+m: 1 Ð°\ ; m: 2 Ð±\ ; m: 3 Ð²\ ; m: 4 Ð³\ ; m: 5 Ð´\ ; m: 6 Ðµ\ ; m: 7 Ñ‘\ ; m: 8 Ð¶\ ; m: 9 Ð·\ ;
 EXPORT
 m: vs| {{ valuenames ;
 m: |vs }} ;
@@ -58,7 +58,7 @@ m: |71 |7 0 \8 ; m: |72 |7 0. \89 ;
 m: |81 |8 0 \9 ;
 
 MODULE: mvaluenames
-m: 1  % ; m: 2 ¡% ; m: 3 ¢% ; m: 4 £% ; m: 5 ¤% ; m: 6 ¥% ; m: 7 ñ% ; m: 8 ¦% ; m: 9 §% ;
+m: 1 Ð°% ; m: 2 Ð±% ; m: 3 Ð²% ; m: 4 Ð³% ; m: 5 Ð´% ; m: 6 Ðµ% ; m: 7 Ñ‘% ; m: 8 Ð¶% ; m: 9 Ð·% ;
 EXPORT
 m: mvs| {{ mvaluenames ;
 m: |mvs }} ;
@@ -70,7 +70,7 @@ m: |mvs }} ;
 m: |%1 %1 ; m: |%2 %12 ; m: |%3 %123 ; m: |%4 %1234 ; m: |%5 %12345 ; m: |%6 %123456 ; m: |%7 %1234567 ; m: |%8 %12345678 ; m: |%9 %123456789 ;
 
 MODULE: mvaluenames1
-m: 1  _ ; m: 2 ¡_ ; m: 3 ¢_ ; m: 4 £_ ; m: 5 ¤_ ; m: 6 ¥_ ; m: 7 ñ_ ; m: 8 ¦_ ; m: 9 §_ ;
+m: 1 Ð°_ ; m: 2 Ð±_ ; m: 3 Ð²_ ; m: 4 Ð³_ ; m: 5 Ð´_ ; m: 6 Ðµ_ ; m: 7 Ñ‘_ ; m: 8 Ð¶_ ; m: 9 Ð·_ ;
 EXPORT
 m: mvs1| {{ mvaluenames1 ;
 m: |mvs1 }} ;

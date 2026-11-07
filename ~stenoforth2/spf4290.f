@@ -3,8 +3,10 @@
 0 WARNING !
 
 REQUIRE CASE         lib\ext\case.f                      \ конструкция выбора по целому
+
 REQUIRE {            lib\ext\locals.f                    \ локальные переменные SPF
 REQUIRE NUMBER?      ~mak\lib\fpcnum.f                   \ преобразование строк в числа
+REQUIRE {.           ~stenoforth2-1\lib\loc-stack-ii.f   \
 REQUIRE LIKE         ~pinka\lib\like.f                   \ выделение по маске
 REQUIRE $!           ~mak\place.f                        \ утилиты для многопроходной компиляции
 REQUIRE CHOOSE       lib\ext\rnd.f                       \ случайный выбор
@@ -12,6 +14,7 @@ REQUIRE STACK        ~stenoforth2-1\lib\cstack.f         \ стеки CS( исп
 REQUIRE M:           ~stenoforth2-1\lib\nf-name.f        \ макросы, слова-строки
 REQUIRE 0SQRT        ~stenoforth2-1\assm\mp-assm.f       \ встроенный постфиксный ассемблер( с зачатками плав.точки)
 REQUIRE IDN          ~stenoforth2-1\assm\sp-assm.f       \ встроенный трехпроходный ассемблер с метками и коротким синтаксисом для инструкций
+REQUIRE MEMIDX       ~stenoforth2-1\assm\mem-tmpl.f      \ шаблоны disp[base][index*scale] без записи слов в словарь
 REQUIRE F.           lib\include\float2.f                \ вещественные числа
 REQUIRE instructions ~stenoforth2-1\lib\instructions.f   \ часто используемые инструкции процессора, параметризуемые со стека данных
 REQUIRE sd.          ~stenoforth2-1\lib\nloc25.f         \ статические локальные: переменные, слова, макросы, строки и модификаторы
@@ -33,7 +36,11 @@ REQUIRE t>T          ~stenoforth2-1\lib\dopassm.f        \ сохранение 
 REQUIRE |a           ~stenoforth2-1\lib\short-asm.f      \ часто используемые инструкции процессора, параметризуемые со стека данных и из их имён
 REQUIRE VARIANTS     ~stenoforth2-1\lib\gps.f            \ генератор перестановок символов в строкахREQUIRE skip-next    ~stenoforth2-1\lib\dop-words.f      \ анти-комментарии
 
+REQUIRE NA-COUNT+   ~stenoforth2-1\assm\labels-named.f   \ произвольные имена меток для постфиксного ассемблера
 
+REQUIRE (DP-T) ~stenoforth2-1\lib\thread-dp.f            \ указатель словаря, свой у каждого потока
+
+REQUIRE pusto8 ~stenoforth2-1\lib\staxy8.f               \ "стексы" максимум на 8 параметров на стеке
 
 S" f:\spf429\devel\~stenoforth2-1\bin\spf486.exe" SAVE
 
