@@ -6,7 +6,6 @@ REQUIRE CASE         lib\ext\case.f                      \ конструкци�
 
 REQUIRE {            lib\ext\locals.f                    \ локальные переменные SPF
 REQUIRE NUMBER?      ~mak\lib\fpcnum.f                   \ преобразование строк в числа
-REQUIRE {.           ~stenoforth2-1\lib\loc-stack-ii.f   \
 REQUIRE LIKE         ~pinka\lib\like.f                   \ выделение по маске
 REQUIRE $!           ~mak\place.f                        \ утилиты для многопроходной компиляции
 REQUIRE CHOOSE       lib\ext\rnd.f                       \ случайный выбор
