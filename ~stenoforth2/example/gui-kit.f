@@ -6,7 +6,7 @@
 \  Рабочий файл содержит только:
 \      REQUIRE WINDOW gui-kit.f     \ подгрузка библиотеки (если её нет в образе)
 \      ... описание формы ...
-\      END
+\      FORM-END
 \      HIDE-CONSOLE SHOW имя        \ показать и войти в цикл сообщений
 \
 \  ОБЩЕЕ ПРАВИЛО СИНТАКСИСА
@@ -49,7 +49,7 @@
 \    GROUPBOX ( a u ) "имя" x y w h          рамка с заголовком (текст - заголовок)
 \    LISTBOX       "имя" x y w h "обработчик"     список
 \    COMBO         "имя" x y w h "обработчик"     выпадающий список
-\    END                                     конец описания формы
+\    FORM-END                                     конец описания формы
 \    SHOW          "имя"                     показать форму, цикл сообщений
 \
 \  ЯКОРЯ  (слово ставится ПЕРЕД строкой компонента, действует на неё одну)
@@ -85,6 +85,56 @@
 \    QUIT-APP         - закрыть форму и выйти
 \    HIDE-CONSOLE     - убрать консольное окно (у exe с GUI-подсистемой нет)
 \
+\  КАК ЧИТАТЬ СОСТОЯНИЕ
+\    Состояние нигде не кэшируется: каждое слово-значение посылает контролу
+\    SendMessageW и отдаёт то, что он хранит сейчас. Читать можно в любой
+\    момент, в том числе в обработчике - после DispatchMessageW контрол уже
+\    обновил своё состояние.
+\    Начало всегда одно: имя @ - HWND компонента, дальше слово по типу.
+\
+\      что нужно                слово                 возврат
+\      позиция ползунка         HWND POS@             n
+\      выставить позицию        n HWND POS!           -
+\      сменить диапазон         min max HWND RANGE!   -
+\      флажок / переключатель   HWND STATE@           0/1
+\      выставить состояние      n HWND STATE!         -
+\      текст поля ввода         HWND TEXT@            a u (копия в AOBUF)
+\      записать текст           a u HWND TEXT!        -
+\      выбранная строка         HWND SEL@             n, -1 = нет выбора
+\      текст выбранной строки   HWND SELTEXT@         a u
+\      число строк              HWND LCOUNT@          n
+\      выбрать строку           n HWND SEL!            -
+\
+\    Кто именно прислал событие, видно в обработчике: EV-ID, EV-HWND,
+\    EV-NOTE, EV-SB (см. ОБРАБОТЧИКИ) - удобно, когда один обработчик
+\    висит на нескольких ползунках.
+\
+\    ПРИМЕР (по мотивам gui-ini.f): позиция ползунка и выбор в списке
+\        : SHOWV ( -- )
+\          svol @ POS@       >NUMSTR  val1 @ TEXT!
+\          list1 @ SELTEXT@           val2 @ TEXT!
+\        ;
+\
+\    ОГОВОРКИ
+\      1) SHOW и SHOW-DIALOG не возвращают управление, пока окно не закрыто
+\         (общий цикл PUMP). "Опросить всё после показа" нельзя - код опроса
+\         должен быть в обработчике.
+\      2) TEXT@ и SELTEXT@ кладут результат в общий буфер AOBUF: он валиден
+\         только до следующего вызова любого из них. Нужно два текста сразу -
+\         скопируйте первый.
+\      3) Опрос из другого потока идёт через SendMessageW, а он ждёт поток
+\         окна: если тот занят обработчиком, чтение подвиснет. Правильнее
+\         опрашивать в обработчике и складывать снимок в переменные, а
+\         другой поток пусть читает переменные.
+\
+\  ИМЕНА
+\    Глобальные (словарные) имена - не менее 4 символов.
+\    Локальные ({ ... }) - не более 3 символов.
+\    Правило гарантирует, что глобальное имя не совпадёт с локальным,
+\    у которого есть модификатор-суффикс: \ % _ $ ; !d !m [ ( "
+\    Исключение - слово " (открывающая кавычка): это не имя, а разделитель
+\    текста, поэтому оно односимвольное.
+\
 \  ДИАЛОГИ
 \    имя @ SHOW-DIALOG    - показать модально: владелец заблокирован, пока
 \                           диалог не закрыт (крестиком или из обработчика)
@@ -103,11 +153,19 @@
 \
 \  ОБРАБОТЧИКИ
 \    Обычные форт-слова; имя ищется в момент события, поэтому их можно
-\    объявлять где угодно - обычно после END. Вызываются не из оконной
-\    процедуры, а из цикла сообщений (вложенный вызов форта в этой сборке
-\    ненадёжен). События: нажатие кнопки/флажка/переключателя/пункта меню
-\    (WM_COMMAND) и перемещение ползунка (WM_HSCROLL/WM_VSCROLL), причём
-\    id ползунка определяется по lParam.
+\    объявлять где угодно - обычно после FORM-END. Вызываются не из оконной
+\    процедуры, а из цикла сообщений PUMP (вложенный вызов форта в этой
+\    сборке ненадёжен), сразу после DispatchMessageW.
+\    Событие целиком запоминается, поэтому в обработчике видно, что пришло:
+\      EV-ID    ( -- id )    id источника, тот же, что у компонента
+\      EV-MSG   ( -- msg )   WM_COMMAND, WM_HSCROLL или WM_VSCROLL
+\      EV-NOTE  ( -- code )  для WM_COMMAND: код уведомления (BN_CLICKED=0,
+\                            LBN_SELCHANGE=1, EN_CHANGE=5 и т.п.), иначе 0
+\      EV-SB    ( -- code )  для прокрутки: SB_LINEUP..SB_THUMBTRACK,
+\                            SB_ENDSCROLL; иначе 0
+\      EV-HWND  ( -- hwnd )  окно-источник (0 у пункта меню и акселератора)
+\    Ошибка в обработчике (THROW/ABORT) приложение не убивает: код
+\    печатается в консоль, цикл сообщений продолжается.
 \
 \  КОДИРОВКИ
 \    Исходник может быть в UTF-8, cp1251 или cp866 - строки для WinAPI
@@ -215,6 +273,23 @@ WINAPI: GetConsoleWindow        KERNEL32.DLL
 0x0114 CONSTANT WM_HSCROLL
 0x0115 CONSTANT WM_VSCROLL
 
+\ коды прокрутки (LOWORD wParam у WM_HSCROLL/WM_VSCROLL)
+0 CONSTANT SB_LINEUP
+1 CONSTANT SB_LINEDOWN
+2 CONSTANT SB_PAGEUP
+3 CONSTANT SB_PAGEDOWN
+4 CONSTANT SB_THUMBPOSITION
+5 CONSTANT SB_THUMBTRACK
+6 CONSTANT SB_TOP
+7 CONSTANT SB_BOTTOM
+8 CONSTANT SB_ENDSCROLL
+
+\ коды уведомлений (HIWORD wParam у WM_COMMAND)
+0 CONSTANT BN_CLICKED
+1 CONSTANT LBN_SELCHANGE
+1 CONSTANT CBN_SELCHANGE
+5 CONSTANT EN_CHANGE
+
 0x00000007 CONSTANT BS_GROUPBOX
 0x00200000 CONSTANT WS_VSCROLL
 0x00000001 CONSTANT LBS_NOTIFY
@@ -273,7 +348,7 @@ CONSTANT /MSG
 \ -------------------------------------------------------------- буферы
 CREATE WBUF   8 1024 * ALLOT        \ кольцо под UTF-16 строки
 VARIABLE WIDX
-CREATE WTB    512 2 * ALLOT         \ UTF-16 текст окна
+CREATE WTBUF    512 2 * ALLOT         \ UTF-16 текст окна
 CREATE AOBUF  1024 ALLOT            \ UTF-8 результат
 CREATE MSGBUF /MSG ALLOT
 CREATE WNDCLS /WNDCLASSEXW ALLOT
@@ -292,18 +367,45 @@ VARIABLE FORM          \ текущая форма (HWND)
 VARIABLE ACCKEY        \ код клавиши текущего пункта
 VARIABLE CLASSED?      \ класс окна уже зарегистрирован
 VARIABLE TOP-CTX       \ следующее окно создавать поверх всех
-VARIABLE PENDING       \ отложенная команда (id), выполняется в цикле сообщений
+\ --------------------------------------------------- отложенные события
+\ Одно событие: id источника, само сообщение и сырые wParam/lParam.
+\ Заполняется в оконной процедуре, разбирается в PUMP.
+\ evId = -1 - заявка на пересчёт раскладки (WM_SIZE), а не событие.
+0
+  CELL -- evId
+  CELL -- evMsg
+  CELL -- evParam
+  CELL -- evData
+CONSTANT /EVENT
+
+CREATE EVREC  /EVENT ALLOT        \ событие, ждущее обработки (evId=0 - пусто)
+CREATE CEVREC /EVENT ALLOT        \ копия для текущего обработчика
+
+: EVENT-CLEAR ( -- )  0 EVREC evId ! ;
+
+\ что именно пришло - доступно только внутри обработчика
+: EV-ID   ( -- id )    CEVREC evId   @ ;
+: EV-MSG  ( -- msg )   CEVREC evMsg  @ ;
+: EV-HWND ( -- hwnd )  CEVREC evData @ ;
+: EV-NOTE ( -- code )
+  CEVREC evMsg @ WM_COMMAND =
+  IF CEVREC evParam @ 16 RSHIFT ELSE 0 THEN
+;
+: EV-SB ( -- code )
+  CEVREC evMsg @ WM_COMMAND =
+  IF 0 ELSE CEVREC evParam @ COMMAND-ID AND THEN
+;
 
 \ ------------------------------------------------------- обработчики
 64 CONSTANT MAXH
-VARIABLE NH
+VARIABLE HCOUNT
 VARIABLE NEXT-ID
 \ ------------------------------------------- раскладка при изменении размера
 \ Якоря хранятся в свойствах самого окна-компонента (SetPropW), поэтому
 \ таблиц, индексируемых по id, не нужно.
 VARIABLE LASTH                    \ HWND последнего созданного компонента
-VARIABLE PMX VARIABLE PMY         \ отложенный якорь для следующего компонента
-VARIABLE CXC VARIABLE CYC         \ клиентская часть при последней раскладке
+VARIABLE PNDX VARIABLE PNDY         \ отложенный якорь для следующего компонента
+VARIABLE CLIX VARIABLE CLIY         \ клиентская часть при последней раскладке
 VARIABLE NEWW VARIABLE NEWH       \ размер клиента из lParam сообщения WM_SIZE
 VARIABLE SIZEN VARIABLE SIZINGN   \ счётчики сообщений (для диагностики)
 VARIABLE RMARGIN  0 RMARGIN !     \ расширение краёв для захвата мышью, px
@@ -318,7 +420,7 @@ CREATE HLEN  MAXH CELLS ALLOT
 
 \ -------------------------------------------------- UTF-8 <-> UTF-16
 \ Кодировка строк в исходнике заранее неизвестна: редакторы сохраняют
-\ UTF-8, cp1251 или cp866. Порядок определения в >W:
+\ UTF-8, cp1251 или cp866. Порядок определения в >WIDE:
 \   1) строгий UTF-8 (MB_ERR_INVALID_CHARS), 2) если байты похожи на
 \   cp866 - cp866, иначе cp1251. Можно задать жёстко: SRC-CP !
 \   (65001 - UTF-8, 1251, 866, 0 - автоопределение).
@@ -341,10 +443,10 @@ VARIABLE CP-HI  VARIABLE CP-LO
     SWAP 1+ SWAP 1-
   AGAIN
 ;
-: >W { a u \ slot dst n w cp }
-  WIDX @ TO slot
-  slot 1+ 7 AND WIDX !
-  WBUF slot 1024 * + TO dst
+: >WIDE { a u \ sl dst n w cp }
+  WIDX @ TO sl
+  sl 1+ 7 AND WIDX !
+  WBUF sl 1024 * + TO dst
   u 0= IF 0 dst ! dst EXIT THEN
   u 511 MIN TO n
   SRC-CP @
@@ -368,17 +470,17 @@ VARIABLE CP-HI  VARIABLE CP-LO
 
 \ Обратное преобразование: Unicode -> кодировка исходника, чтобы результаты
 \ TEXT@ можно было склеивать с литералами из исходника.
-: W>TEXT { waddr n }
-  0 0 1024 AOBUF n waddr 0 SRC-CODE WideCharToMultiByte
+: W>TEXT { wa n }
+  0 0 1024 AOBUF n wa 0 SRC-CODE WideCharToMultiByte
   AOBUF SWAP
 ;
 : TEXT@ { h \ n }
-  255 WTB h GetWindowTextW TO n
-  WTB n W>TEXT
+  255 WTBUF h GetWindowTextW TO n
+  WTBUF n W>TEXT
 ;
 
 : TEXT! { a u h }
-  a u >W h SetWindowTextW DROP
+  a u >WIDE h SetWindowTextW DROP
 ;
 
 \ ------------------------------------------------------- имена/строки
@@ -387,10 +489,10 @@ VARIABLE CP-HI  VARIABLE CP-LO
 
 \ Число в описании: литерал, имя переменной или имя слова, выдающего число
 \ (CONSTANT, VALUE, ": имя ... ;"). Переменная указывается БЕЗ @:
-\     VARIABLE WW 520 WW !        "Демо" WINDOW main WW HH
-\     520 CONSTANT CW             "Метка" TEXT l1 CW 40 120 18
+\     VARIABLE WINW 520 WINW !        "Демо" WINDOW main WINW HH
+\     520 CONSTANT CLIW             "Метка" TEXT l1 CLIW 40 120 18
 \ Адрес переменной отличается от значений координат по величине.
-: NUM ( "n" | "name" -- n )
+: >NUM ( "n" | "name" -- n )
   { \ a u xt }
   TOKEN TO u TO a
   a u NUMBER?
@@ -423,18 +525,18 @@ VARIABLE CP-HI  VARIABLE CP-LO
 : NEW-ID ( -- id ) NEXT-ID @ DUP 1+ NEXT-ID ! ;
 
 : DEF-HANDLER { a u id \ p }
-  NH @ MAXH < 0= IF EXIT THEN
-  id  HIDS  NH @ CELLS + !
+  HCOUNT @ MAXH < 0= IF EXIT THEN
+  id  HIDS  HCOUNT @ CELLS + !
   a u COPY-NAME TO p
-  p   HADDR NH @ CELLS + !
-  u   HLEN  NH @ CELLS + !
-  NH 1+!
+  p   HADDR HCOUNT @ CELLS + !
+  u   HLEN  HCOUNT @ CELLS + !
+  HCOUNT 1+!
 ;
 
 : HANDLER-XT ( id -- xt | 0 )
   { id \ i res }
   0 TO res
-  NH @ 0 ?DO
+  HCOUNT @ 0 ?DO
     res 0= IF
       id HIDS I CELLS + @ =
       IF
@@ -474,10 +576,10 @@ VARIABLE CP-HI  VARIABLE CP-LO
   HTCLIENT
 ;
 \ ---------------------------------------------------- оконная процедура
-: (WND-PROC) { lp wp msg hwnd \ id xt }
+: (WND-PROC) { lp wp msg hw \ id xt }
   msg WM_NCHITTEST =
   IF
-    lp wp msg hwnd DefWindowProcW
+    lp wp msg hw DefWindowProcW
     DUP HTCLIENT =
     IF DROP lp HIT-EDGE EXIT THEN
     EXIT
@@ -489,32 +591,35 @@ VARIABLE CP-HI  VARIABLE CP-LO
     SIZEN 1+!
     lp COMMAND-ID AND NEWW !                        \ lParam: ширина (lo) и
     lp 65536 / NEWH !                               \ высота (hi) клиента
-    -1 PENDING !                                    \ пересчитать раскладку
-    0 0 0 GetCurrentThreadId PostThreadMessageA DROP
-    lp wp msg hwnd DefWindowProcW EXIT              \ отдать системе как обычно
+    -1 EVREC evId !                                    \ пересчитать раскладку
+    lp wp msg hw DefWindowProcW EXIT              \ отдать системе как обычно
   THEN
   msg WM_COMMAND =
   IF
     \ Обработчик НЕ вызываем здесь: вложенный вызов форта из оконной
     \ процедуры в этой сборке ненадёжен. Запоминаем id, а вызывает его
     \ цикл сообщений (слово PUMP), уже в обычном контексте.
-    wp COMMAND-ID AND PENDING !
-    0 0 0 GetCurrentThreadId PostThreadMessageA DROP   \ разбудить цикл
+    wp COMMAND-ID AND EVREC evId !
+    msg               EVREC evMsg !
+    wp                EVREC evParam !
+    lp                EVREC evData !
     0 EXIT
   THEN
   msg WM_HSCROLL = msg WM_VSCROLL = OR
   IF
     \ lParam - окно ползунка: находим его id и обрабатываем как команду
-    lp GetDlgCtrlID PENDING !
-    0 0 0 GetCurrentThreadId PostThreadMessageA DROP
+    lp GetDlgCtrlID EVREC evId !
+    msg              EVREC evMsg !
+    wp               EVREC evParam !
+    lp               EVREC evData !
     0 EXIT
   THEN
   msg WM_DESTROY =
   IF
-    0 WM_QUIT GetCurrentThreadId PostThreadMessageA DROP
+    0 0 WM_QUIT GetCurrentThreadId PostThreadMessageA DROP
     0 EXIT
   THEN
-  lp wp msg hwnd DefWindowProcW
+  lp wp msg hw DefWindowProcW
 ;
 ' (WND-PROC) WNDPROC: WND-PROC
 
@@ -530,21 +635,21 @@ VARIABLE CP-HI  VARIABLE CP-LO
   0                       WNDCLS wcHCursor !
   BRUSH-WHITE             WNDCLS wcHbrBackground !
   0                       WNDCLS wcLpszMenuName !
-  S" GuiKitForm" >W       WNDCLS wcLpszClassName !
+  S" GuiKitForm" >WIDE       WNDCLS wcLpszClassName !
   0                       WNDCLS wcHIconSm !
   WNDCLS RegisterClassExW 0= ABORT" RegisterClassExW failed"
   TRUE CLASSED? !
 ;
 
 \ ---------------------------------------------------- создание компонент
-: MKCTRL { ca cu ex style x y w h id \ wc wt hc }
-  ca cu >W TO wc
-  TXTBUF TXTLEN @ >W TO wt
-  0 0 GetModuleHandleA id PARENT @ h w y x style wt wc ex
+: MKCTRL { ca cu ex st x y w h id \ wc wt hc }
+  ca cu >WIDE TO wc
+  TXTBUF TXTLEN @ >WIDE TO wt
+  0 0 GetModuleHandleA id PARENT @ h w y x st wt wc ex
   CreateWindowExW TO hc
   hc LASTH !
-  PMX @ PMY @ 16 * +  21 NEGATE hc SetWindowLongW DROP   \ якорь строкой выше
-  0 PMX !  0 PMY !
+  PNDX @ PNDY @ 16 * +  21 NEGATE hc SetWindowLongW DROP   \ якорь строкой выше
+  0 PNDX !  0 PNDY !
   hc
 ;
 
@@ -563,22 +668,22 @@ VARIABLE CP-HI  VARIABLE CP-LO
 \   STRETCH   - и ширина, и высота
 \   MOVE-R    - правый край держится за окном
 \   MOVE-B    - нижний край держится за окном
-: STRETCH-W ( -- ) 1 PMX ! ;
-: STRETCH-H ( -- ) 1 PMY ! ;
-: STRETCH   ( -- ) 1 PMX ! 1 PMY ! ;
-: MOVE-R    ( -- ) 2 PMX ! ;
-: MOVE-B    ( -- ) 2 PMY ! ;
+: STRETCH-W ( -- ) 1 PNDX ! ;
+: STRETCH-H ( -- ) 1 PNDY ! ;
+: STRETCH   ( -- ) 1 PNDX ! 1 PNDY ! ;
+: MOVE-R    ( -- ) 2 PNDX ! ;
+: MOVE-B    ( -- ) 2 PNDY ! ;
 \ --------------------------------------------- пересчёт раскладки по WM_SIZE
 : CLIENT-W ( -- n ) RECTB FORM @ GetClientRect DROP RECTB 8  + @ ;
 : CLIENT-H ( -- n ) RECTB FORM @ GetClientRect DROP RECTB 12 + @ ;
 
 : RELAYOUT ( -- )                 \ применить якоря к новому размеру клиента
   { \ dx dy ch x y w hh mx my mm }
-  NEWW @ CXC @ - TO dx
-  NEWH @ CYC @ - TO dy
+  NEWW @ CLIX @ - TO dx
+  NEWH @ CLIY @ - TO dy
   dx 0= dy 0= AND IF EXIT THEN
-  NEWW @ CXC !
-  NEWH @ CYC !
+  NEWW @ CLIX !
+  NEWH @ CLIY !
   GW_CHILD FORM @ GetWindow TO ch
   BEGIN
     ch 0= IF EXIT THEN
@@ -623,43 +728,43 @@ VARIABLE CP-HI  VARIABLE CP-LO
 ;
 
 : WINDOW ( a u "name" w h -- )
-  { ta tu \ w h hwnd }
+  { ta tu \ w h hw }
   TOKEN >NAM
-  NUM TO w
-  NUM TO h
+  >NUM TO w
+  >NUM TO h
   ta tu >TXT
   REGISTER-CLASS
   0 0 GetModuleHandleA 0 0
   h w 100 100
   WS_OVERLAPPEDWINDOW
-  TXTBUF TXTLEN @ >W
-  S" GuiKitForm" >W
+  TXTBUF TXTLEN @ >WIDE
+  S" GuiKitForm" >WIDE
   TOP-CTX @ IF WS_EX_TOPMOST ELSE 0 THEN
   CreateWindowExW
   FALSE TOP-CTX !
   DUP 0= ABORT" CreateWindowExW failed"
-  DUP TO hwnd
+  DUP TO hw
   DUP PARENT ! DUP FORM !
   DEF-CTRL
 ;
 
 : DIALOG ( a u "name" w h -- )      \ модальное окно поверх владельца
-  { ta tu \ w h hwnd }
+  { ta tu \ w h hw }
   TOKEN >NAM
-  NUM TO w
-  NUM TO h
+  >NUM TO w
+  >NUM TO h
   ta tu >TXT
   REGISTER-CLASS
   0 0 GetModuleHandleA 0 FORM @
   h w 100 100
   WS_POPUP WS_CAPTION OR WS_SYSMENU OR
-  TXTBUF TXTLEN @ >W
-  S" GuiKitForm" >W
+  TXTBUF TXTLEN @ >WIDE
+  S" GuiKitForm" >WIDE
   TOP-CTX @ IF WS_EX_TOPMOST ELSE 0 THEN
   CreateWindowExW
   FALSE TOP-CTX !
   DUP 0= ABORT" CreateWindowExW failed"
-  DUP TO hwnd
+  DUP TO hw
   DUP PARENT !
   DEF-CTRL
 ;
@@ -668,7 +773,7 @@ VARIABLE CP-HI  VARIABLE CP-LO
   0 MDEPTH !                      \ новое верхнее меню - чистый стек
   MBAR @ 0= IF CreateMenu MBAR ! THEN
   CreatePopupMenu CUR-MENU !
-  TXTBUF TXTLEN @ >W
+  TXTBUF TXTLEN @ >WIDE
   CUR-MENU @ MF_POPUP MBAR @
   AppendMenuW DROP
 ;
@@ -677,7 +782,7 @@ VARIABLE CP-HI  VARIABLE CP-LO
   { a u \ m }
   a u >TXT
   CreatePopupMenu TO m
-  TXTBUF TXTLEN @ >W m MF_POPUP CUR-MENU @ AppendMenuW DROP
+  TXTBUF TXTLEN @ >WIDE m MF_POPUP CUR-MENU @ AppendMenuW DROP
   MDEPTH @ 8 < IF
     CUR-MENU @ MENUSTK MDEPTH @ CELLS + !
     MDEPTH 1+!
@@ -704,7 +809,7 @@ VARIABLE CP-HI  VARIABLE CP-LO
   ta tu >TXT
   TOKEN PARSE-ACCEL
   NEW-ID TO id
-  TXTBUF TXTLEN @ >W id MF_STRING CUR-MENU @ AppendMenuW DROP
+  TXTBUF TXTLEN @ >WIDE id MF_STRING CUR-MENU @ AppendMenuW DROP
   ACCKEY @ IF ACCKEY @ id ACCEL-ADD THEN
   TOKEN id DEF-HANDLER
 ;
@@ -712,7 +817,7 @@ VARIABLE CP-HI  VARIABLE CP-LO
 : TEXT ( a u "name" x y w h -- )
   { ta tu \ x y w h id }
   TOKEN >NAM
-  NUM TO x  NUM TO y  NUM TO w  NUM TO h
+  >NUM TO x  >NUM TO y  >NUM TO w  >NUM TO h
   ta tu >TXT
   NEW-ID TO id
   S" STATIC" 0 WS_CHILD WS_VISIBLE OR SS_LEFT OR x y w h id MKCTRL DEF-CTRL
@@ -721,7 +826,7 @@ VARIABLE CP-HI  VARIABLE CP-LO
 : EDIT ( "name" x y w h -- )
   { \ x y w h id }
   TOKEN >NAM
-  NUM TO x  NUM TO y  NUM TO w  NUM TO h
+  >NUM TO x  >NUM TO y  >NUM TO w  >NUM TO h
   0 TXTLEN !
   NEW-ID TO id
   S" EDIT" WS_EX_CLIENTEDGE
@@ -732,7 +837,7 @@ VARIABLE CP-HI  VARIABLE CP-LO
 : BUTTON ( a u "name" x y w h "handler" -- )
   { ta tu \ x y w h id }
   TOKEN >NAM
-  NUM TO x  NUM TO y  NUM TO w  NUM TO h
+  >NUM TO x  >NUM TO y  >NUM TO w  >NUM TO h
   ta tu >TXT
   NEW-ID TO id
   S" BUTTON" 0 WS_CHILD WS_VISIBLE OR BS_PUSHBUTTON OR x y w h id MKCTRL DEF-CTRL
@@ -765,7 +870,7 @@ VARIABLE CP-HI  VARIABLE CP-LO
 : CHECK ( a u "name" x y w h "handler" -- )
   { ta tu \ x y w h id }
   TOKEN >NAM
-  NUM TO x  NUM TO y  NUM TO w  NUM TO h
+  >NUM TO x  >NUM TO y  >NUM TO w  >NUM TO h
   ta tu >TXT
   NEW-ID TO id
   S" BUTTON" 0 WS_CHILD WS_VISIBLE OR BS_AUTOCHECKBOX OR x y w h id MKCTRL DEF-CTRL
@@ -775,7 +880,7 @@ VARIABLE CP-HI  VARIABLE CP-LO
 : RADIO ( a u "name" x y w h "group" "handler" -- )
   { ta tu \ x y w h id st }
   TOKEN >NAM
-  NUM TO x  NUM TO y  NUM TO w  NUM TO h
+  >NUM TO x  >NUM TO y  >NUM TO w  >NUM TO h
   ta tu >TXT
   NEW-ID TO id
   WS_CHILD WS_VISIBLE OR BS_AUTORADIOBUTTON OR TO st
@@ -787,8 +892,8 @@ VARIABLE CP-HI  VARIABLE CP-LO
 : SLIDER ( "name" x y w h min max "H|V" "handler" -- )
   { \ x y w h mn mx id st hw }
   TOKEN >NAM
-  NUM TO x  NUM TO y  NUM TO w  NUM TO h
-  NUM TO mn  NUM TO mx
+  >NUM TO x  >NUM TO y  >NUM TO w  >NUM TO h
+  >NUM TO mn  >NUM TO mx
   0 TXTLEN !
   TOKEN-CH 86 = IF TBS_VERT ELSE TBS_HORZ THEN TO st
   NEW-ID TO id
@@ -819,7 +924,7 @@ CREATE CBUFS 512 ALLOT
 
 : ITEM+ ( a u hwnd -- )
   { a u h \ w }
-  a u >W TO w
+  a u >WIDE TO w
   h KIND@ 1 =
   IF w 0 CB_ADDSTRING h SendMessageW DROP
   ELSE w 0 LB_ADDSTRING h SendMessageW DROP
@@ -865,7 +970,7 @@ CREATE CBUFS 512 ALLOT
 : GROUPBOX ( a u "name" x y w h -- )
   { ta tu \ x y w h id }
   TOKEN >NAM
-  NUM TO x  NUM TO y  NUM TO w  NUM TO h
+  >NUM TO x  >NUM TO y  >NUM TO w  >NUM TO h
   ta tu >TXT
   NEW-ID TO id
   S" BUTTON" 0 WS_CHILD WS_VISIBLE OR BS_GROUPBOX OR x y w h id MKCTRL DEF-CTRL
@@ -874,7 +979,7 @@ CREATE CBUFS 512 ALLOT
 : LISTBOX ( "name" x y w h "handler" -- )
   { \ x y w h id }
   TOKEN >NAM
-  NUM TO x  NUM TO y  NUM TO w  NUM TO h
+  >NUM TO x  >NUM TO y  >NUM TO w  >NUM TO h
   0 TXTLEN !
   NEW-ID TO id
   2 id KIND!
@@ -888,7 +993,7 @@ CREATE CBUFS 512 ALLOT
 : COMBO ( "name" x y w h "handler" -- )
   { \ x y w h id }
   TOKEN >NAM
-  NUM TO x  NUM TO y  NUM TO w  NUM TO h
+  >NUM TO x  >NUM TO y  >NUM TO w  >NUM TO h
   0 TXTLEN !
   NEW-ID TO id
   1 id KIND!
@@ -898,10 +1003,10 @@ CREATE CBUFS 512 ALLOT
   x y w h id MKCTRL DEF-CTRL
   TOKEN id DEF-HANDLER
 ;
-: END ( -- )
+: FORM-END ( -- )
   MBAR @ IF MBAR @ FORM @ SetMenu DROP FORM @ DrawMenuBar DROP THEN
   NACC @ IF NACC @ ACCBUF CreateAcceleratorTableW HACCEL ! THEN
-  CLIENT-W CXC !  CLIENT-H CYC !
+  CLIENT-W CLIX !  CLIENT-H CLIY !
 ;
 
 \ ---------------------------------------------------------------- вывод
@@ -924,14 +1029,21 @@ CREATE CBUFS 512 ALLOT
     MSGBUF TranslateMessage DROP
     MSGBUF DispatchMessageW DROP
   THEN
-  PENDING @
+  EVREC evId @
   IF
-    PENDING @ 0 PENDING !
-    DUP -1 =
+    EVREC evId @ -1 =
     IF
-      DROP RELAYOUT
+      EVENT-CLEAR RELAYOUT
     ELSE
-      HANDLER-XT DUP IF EXECUTE ELSE DROP THEN
+      EVREC CEVREC /EVENT CMOVE     \ копия: вложенные события не портят запись
+      EVENT-CLEAR
+      CEVREC evId @ HANDLER-XT
+      DUP IF
+        CATCH                       \ ошибка в обработчике не убивает приложение
+        IF
+          CR ." gui-kit: обработчик id " EV-ID . ." завершился с кодом " . CR
+        THEN
+      ELSE DROP THEN
     THEN
   THEN
   TRUE
@@ -946,16 +1058,16 @@ CREATE CBUFS 512 ALLOT
 ;
 
 : SHOW-DIALOG ( hwnd -- )         \ показать модально, ждать закрытия
-  { h \ owner }
-  FORM @ TO owner
-  owner 0 EnableWindow DROP
+  { h \ own }
+  FORM @ TO own
+  own 0 EnableWindow DROP
   SW_SHOW h ShowWindow DROP
   h UpdateWindow DROP
   BEGIN
     h IsWindow 0=
-    IF owner TRUE EnableWindow DROP FORM @ PARENT ! EXIT THEN
+    IF own TRUE EnableWindow DROP FORM @ PARENT ! EXIT THEN
     PUMP 0=
-    IF owner TRUE EnableWindow DROP FORM @ PARENT ! EXIT THEN
+    IF own TRUE EnableWindow DROP FORM @ PARENT ! EXIT THEN
   AGAIN
 ;
 : QUIT-APP ( -- ) FORM @ DestroyWindow DROP ;
@@ -969,7 +1081,7 @@ WINAPI: GetSaveFileNameW       COMDLG32.DLL
 
 CREATE FMBUF 2048 ALLOT          \ фильтр в UTF-16: пары через 0, два 0 на конце
 CREATE FWBUF 1040 ALLOT          \ выбранный путь в UTF-16 (520 символов)
-CREATE OFN   88 ALLOT            \ OPENFILENAMEW (x86): 23 поля, 88 байт
+CREATE OFNBUF   88 ALLOT            \ OPENFILENAMEW (x86): 23 поля, 88 байт
 
 0x00080000 CONSTANT OFN-EXPLORER
 0x00000800 CONSTANT OFN-PATHMUSTEXIST
@@ -994,7 +1106,7 @@ CREATE OFN   88 ALLOT            \ OPENFILENAMEW (x86): 23 поля, 88 байт
 ;
 : >FILTER ( a u -- )
   { a u \ d n }
-  a u >W TO d
+  a u >WIDE TO d
   d W-LEN TO n
   d n PIPE>NUL
   d FMBUF n 1+ 2* CMOVE
@@ -1002,33 +1114,33 @@ CREATE OFN   88 ALLOT            \ OPENFILENAMEW (x86): 23 поля, 88 байт
 ;
 : OFN-INIT ( flags -- )
   { fl }
-  OFN 88 0 FILL
-  88      OFN !
-  FORM @  OFN 4  + !            \ hwndOwner
-  0       OFN 8  + !            \ hInstance
-  FMBUF   OFN 12 + !            \ lpstrFilter
-  0       OFN 16 + !            \ lpstrCustomFilter
-  0       OFN 20 + !            \ nMaxCustFilter
-  1       OFN 24 + !            \ nFilterIndex
-  FWBUF   OFN 28 + !            \ lpstrFile
-  520     OFN 32 + !            \ nMaxFile
-  fl      OFN 52 + !            \ Flags
+  OFNBUF 88 0 FILL
+  88      OFNBUF !
+  FORM @  OFNBUF 4  + !            \ hwndOwner
+  0       OFNBUF 8  + !            \ hInstance
+  FMBUF   OFNBUF 12 + !            \ lpstrFilter
+  0       OFNBUF 16 + !            \ lpstrCustomFilter
+  0       OFNBUF 20 + !            \ nMaxCustFilter
+  1       OFNBUF 24 + !            \ nFilterIndex
+  FWBUF   OFNBUF 28 + !            \ lpstrFile
+  520     OFNBUF 32 + !            \ nMaxFile
+  fl      OFNBUF 52 + !            \ Flags
 ;
 : FILE-NAME! { a u }            \ имя файла, предложенное в диалоге
-  a u >W DUP W-LEN 1+ 2* FWBUF SWAP CMOVE
+  a u >WIDE DUP W-LEN 1+ 2* FWBUF SWAP CMOVE
 ;
 : OPEN-FILE { a u }
   a u >FILTER
   OFN-EXPLORER OFN-PATHMUSTEXIST OR OFN-FILEMUSTEXIST OR
   OFN-HIDEREADONLY OR OFN-INIT
-  OFN GetOpenFileNameW
+  OFNBUF GetOpenFileNameW
   IF FWBUF DUP W-LEN W>TEXT TRUE ELSE 0 0 FALSE THEN
 ;
 : SAVE-FILE { a u }
   a u >FILTER
   OFN-EXPLORER OFN-PATHMUSTEXIST OR OFN-OVERWRITEPROMPT OR
   OFN-HIDEREADONLY OR OFN-INIT
-  OFN GetSaveFileNameW
+  OFNBUF GetSaveFileNameW
   IF FWBUF DUP W-LEN W>TEXT TRUE ELSE 0 0 FALSE THEN
 ;
 
@@ -1050,7 +1162,7 @@ CREATE INVBUF 512 ALLOT          \ значение в кодировке исх
 : >NUMSTR ( n -- a u ) 0 <# #S #> ;
 : >IFILE { a u }                \ путь -> IFBUF (UTF-16, с нулём)
   IFBUF 1040 0 FILL
-  a u >W DUP W-LEN 1+ 2* IFBUF SWAP CMOVE
+  a u >WIDE DUP W-LEN 1+ 2* IFBUF SWAP CMOVE
 ;
 : CLASS@ { h \ n } 64 CLSB h GetClassNameW TO n  CLSB n W>TEXT ;
 : CLS= { h a u \ ca cu i ok }    \ совпадает ли класс окна со строкой a u
@@ -1062,31 +1174,31 @@ CREATE INVBUF 512 ALLOT          \ значение в кодировке исх
 ;
 : BTN-KIND ( h -- n ) -16 SWAP GetWindowLongW 15 AND ;   \ 3-флажок, 9-переключатель
 
-: W-STR { a u valW }             \ записать строку
-  IFBUF valW a u >W S" form" >W WritePrivateProfileStringW DROP
+: W-STR { a u val }             \ записать строку
+  IFBUF val a u >WIDE S" form" >WIDE WritePrivateProfileStringW DROP
 ;
-: W-NUM { n a u }                \ записать число
-  IFBUF n >NUMSTR >W a u >W S" form" >W WritePrivateProfileStringW DROP
+: W->NUM { n a u }                \ записать число
+  IFBUF n >NUMSTR >WIDE a u >WIDE S" form" >WIDE WritePrivateProfileStringW DROP
 ;
 : SAVE-CTRL { ch np nl \ ca cu } \ np nl - имя компонента
   ch CLASS@ TO cu TO ca
-  ch S" Edit" CLS= IF np nl ch TEXT@ >W W-STR EXIT THEN
+  ch S" Edit" CLS= IF np nl ch TEXT@ >WIDE W-STR EXIT THEN
   ch S" Button" CLS= IF
     ch BTN-KIND DUP 3 = SWAP 9 = OR
-    IF ch STATE@ np nl W-NUM THEN
+    IF ch STATE@ np nl W->NUM THEN
     EXIT
   THEN
-  ch S" msctls_trackbar32" CLS= IF ch POS@ np nl W-NUM EXIT THEN
-  ch S" ListBox"  CLS= IF ch SEL@ np nl W-NUM EXIT THEN
-  ch S" ComboBox" CLS= IF ch SEL@ np nl W-NUM EXIT THEN
+  ch S" msctls_trackbar32" CLS= IF ch POS@ np nl W->NUM EXIT THEN
+  ch S" ListBox"  CLS= IF ch SEL@ np nl W->NUM EXIT THEN
+  ch S" ComboBox" CLS= IF ch SEL@ np nl W->NUM EXIT THEN
 ;
 : SAVE-INI { a u \ ch np nl }
   a u >IFILE
   RECTB FORM @ GetWindowRect DROP
-  RECTB 0  + @                    S" win-x" W-NUM
-  RECTB 4  + @                    S" win-y" W-NUM
-  RECTB 8  + @ RECTB 0  + @ -     S" win-w" W-NUM
-  RECTB 12 + @ RECTB 4  + @ -     S" win-h" W-NUM
+  RECTB 0  + @                    S" win-x" W->NUM
+  RECTB 4  + @                    S" win-y" W->NUM
+  RECTB 8  + @ RECTB 0  + @ -     S" win-w" W->NUM
+  RECTB 12 + @ RECTB 4  + @ -     S" win-h" W->NUM
   GW_CHILD FORM @ GetWindow TO ch
   BEGIN
     ch 0= IF EXIT THEN
@@ -1096,13 +1208,13 @@ CREATE INVBUF 512 ALLOT          \ значение в кодировке исх
     GW_HWNDNEXT ch GetWindow TO ch
   AGAIN
 ;
-: W>INV { waddr n }              \ UTF-16 -> INVBUF (свой буфер, не AOBUF)
-  0 0 512 INVBUF n waddr 0 SRC-CODE WideCharToMultiByte
+: W>INV { wa n }              \ UTF-16 -> INVBUF (свой буфер, не AOBUF)
+  0 0 512 INVBUF n wa 0 SRC-CODE WideCharToMultiByte
   INVBUF SWAP
 ;
 : R-KEY { a u \ k n }            \ прочитать значение ключа a u
-  a u >W TO k
-  IFBUF 1024 GBUF 0 0 >W k S" form" >W GetPrivateProfileStringW TO n
+  a u >WIDE TO k
+  IFBUF 1024 GBUF 0 0 >WIDE k S" form" >WIDE GetPrivateProfileStringW TO n
   GBUF n W>INV
 ;
 : LOAD-CTRL { ch np nl \ a u }
