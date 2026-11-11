@@ -4,6 +4,16 @@
 
 REQUIRE CASE         lib\ext\case.f                      \ конструкция выбора по целому
 
+\ storage.f подключается ДО locals.f: локальные { } строят свою запись через
+\ HERE/DP, а storage.f подменяет DP. thread-dp.f грузится позже и при
+\ определённом STORAGE-ID не патчит DP (иначе HERE и (MOUNT) расходятся).
+REQUIRE Included      ~pinka\lib\ext\requ.f
+REQUIRE REPLACE-WORD  lib\ext\patch.f
+REQUIRE NDROP         ~pinka\lib\ext\common.f
+REQUIRE BIND-NODE     ~pinka\samples\2006\lib\plain-list.f
+REQUIRE VOCS          ~pinka\spf\vocs.f
+REQUIRE STORAGE-ID    ~pinka\spf\storage.f
+
 REQUIRE {            lib\ext\locals.f                    \ локальные переменные SPF
 REQUIRE NUMBER?      ~mak\lib\fpcnum.f                   \ преобразование строк в числа
 REQUIRE LIKE         ~pinka\lib\like.f                   \ выделение по маске
@@ -33,14 +43,15 @@ REQUIRE SEE          ~stenoforth2-1\lib\disasm.f         \ доработанн�
 REQUIRE syndop       ~stenoforth2-1\lib\dopsyn.f         \ доп. синонимы
 REQUIRE t>T          ~stenoforth2-1\lib\dopassm.f        \ сохранение регистров в памяти и восстановление их из памяти
 REQUIRE |a           ~stenoforth2-1\lib\short-asm.f      \ часто используемые инструкции процессора, параметризуемые со стека данных и из их имён
-REQUIRE VARIANTS     ~stenoforth2-1\lib\gps.f            \ генератор перестановок символов в строкахREQUIRE skip-next    ~stenoforth2-1\lib\dop-words.f      \ анти-комментарии
+REQUIRE VARIANTS     ~stenoforth2-1\lib\gps.f            \ генератор перестановок символов в строках
+\ REQUIRE skip-next    ~stenoforth2-1\lib\dop-words.f      \ анти-комментарии
 
-REQUIRE NA-COUNT+   ~stenoforth2-1\assm\labels-named.f   \ произвольные имена меток для постфиксного ассемблера
+REQUIRE NA-COUNT+    ~stenoforth2-1\assm\labels-named.f   \ произвольные имена меток для постфиксного ассемблера
 
-REQUIRE (DP-T) ~stenoforth2-1\lib\thread-dp.f            \ указатель словаря, свой у каждого потока
+REQUIRE (DP-T)       ~stenoforth2-1\lib\thread-dp.f            \ указатель словаря, свой у каждого потока
 
-REQUIRE pusto8 ~stenoforth2-1\lib\staxy8.f               \ "стексы" максимум на 8 параметров на стеке
-
+REQUIRE pusto8       ~stenoforth2-1\lib\staxy8.f               \ "стексы" максимум на 8 параметров на стеке
+REQUIRE QUIT-APP     ~stenoforth2-1\example\gui-kit.f
 S" f:\spf429\devel\~stenoforth2-1\bin\spf486.exe" SAVE
 
 BYE

@@ -48,6 +48,19 @@ VARIABLE DP-RES
 : DP-NEW ( -- addr )
   IS-TEMP-WL IF GET-CURRENT 7 CELLS + ELSE DP-CELL THEN ;
 
+[DEFINED] STORAGE-ID [IF]
+
+\ storage.f уже подменяет DP на USER-переменную, и она своя у каждой задачи.
+\ Патчить DP кодом в этом случае нельзя: (MOUNT) пишет указатель словаря
+\ в ячейку storage.f, а DP-NEW возвращал бы другую ячейку - HERE разошёлся
+\ бы с DP, и создание записи локальных падало в SHEADER1 -> ",".
+: DICT! ( addr -- ) DP ! ;
+
+\ текущее значение указателя словаря потока
+: DICT@ ( -- addr ) DP @ ;
+
+[ELSE]
+
 ' DP CONSTANT OLD-DP                 \ адрес старого входа DP
 
 HERE DP-INIT !                       \ захват текущего HERE перед патчем
@@ -60,3 +73,5 @@ OLD-DP 5 + ' DP-NEW SWAP - OLD-DP 1+ !
 
 \ текущее значение указателя словаря потока
 : DICT@ ( -- addr ) DP-CELL @ ;
+
+[THEN]
