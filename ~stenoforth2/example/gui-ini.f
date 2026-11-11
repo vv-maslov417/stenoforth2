@@ -10,31 +10,31 @@
 REQUIRE WINDOW gui-kit.f
 
 "Состояние формы"            WINDOW main 560 360
-"Имя:"                       TEXT   l0  16 16 60 18
-STRETCH-W                             EDIT   ed  84 14 440 24
-"Звук включён"                CHECK  chk 16 52 200 24 on-chk
-                              SLIDER vol 16 86 400 30 0 100 H on-vol
-"Уровень:"                    TEXT   l1  16 124 60 18
-"-"                           TEXT   v1  84 124 60 18
-                              LISTBOX lb 16 154 300 110 on-lb
-"Сохранить"                   BUTTON bs 330 154 190 32 on-save
-"Загрузить"                   BUTTON bl 330 196 190 32 on-load
-END
+"Имя:"                       TEXT   lbl0  16 16 60 18
+STRETCH-W                             EDIT   edit1  84 14 440 24
+"Звук включён"                CHECK  chkb 16 52 200 24 on-chk
+                              SLIDER svol 16 86 400 30 0 100 H on-vol
+"Уровень:"                    TEXT   lbl1  16 124 60 18
+"-"                           TEXT   val1  84 124 60 18
+                              LISTBOX list1 16 154 300 110 on-lb
+"Сохранить"                   BUTTON bsave 330 154 190 32 on-save
+"Загрузить"                   BUTTON bload 330 196 190 32 on-load
+FORM-END
 
 \ ------------------------------------------------------------ обработчики
-: INI ( -- a u ) S" state.ini" ;
+: INIFILE ( -- a u ) S" state.ini" ;
 
-: SHOWV ( -- ) vol @ POS@ >NUMSTR v1 @ TEXT! ;
+: SHOWV ( -- ) svol @ POS@ >NUMSTR val1 @ TEXT! ;
 
-: on-save ( -- ) INI SAVE-INI ;
-: on-load ( -- ) INI LOAD-INI SHOWV ;
+: on-save ( -- ) INIFILE SAVE-INI ;
+: on-load ( -- ) INIFILE LOAD-INI SHOWV ;
 
 : on-vol ( -- ) SHOWV ;
 
 \ ---------------------------------------------------------------- запуск
-"первый"  lb @ ITEM+
-"второй"  lb @ ITEM+
-"третий"  lb @ ITEM+
+"первый"  list1 @ ITEM+
+"второй"  list1 @ ITEM+
+"третий"  list1 @ ITEM+
 SHOWV
 4 RESIZE-MARGIN
 HIDE-CONSOLE

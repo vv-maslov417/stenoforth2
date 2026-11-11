@@ -8,8 +8,8 @@
 \ REQUIRE WINDOW gui-kit.f
 
 "Вложенные меню"               WINDOW main 560 300
-"Выбрано:"                     TEXT   l0 16 16 80 18
-"-"                            TEXT   v0 100 16 430 18
+"Выбрано:"                     TEXT   lbl0 16 16 80 18
+"-"                            TEXT   val0 100 16 430 18
 "&Файл"                        MENU
 "&Новый"                       ITEM ^N on-new
 "&Открыть"                     ITEM ^O on-open
@@ -24,18 +24,18 @@
 "&Правка"                      MENU
 "&Копировать"                  ITEM ^C on-copy
 "В&ставить"                    ITEM ^V on-paste
-END
+FORM-END
 
 \ ------------------------------------------------------------ обработчики
-: SAY ( a u -- ) v0 @ TEXT! ;
+: SAY-OUT ( a u -- ) val0 @ TEXT! ;
 
-: on-new   ( -- ) S" Новый документ"       SAY ;
-: on-open  ( -- ) S" Открыть файл"         SAY ;
-: on-doc1  ( -- ) S" Недавний: документ 1" SAY ;
-: on-doc2  ( -- ) S" Недавний: документ 2" SAY ;
-: on-doc3  ( -- ) S" Вложенный пункт"      SAY ;
-: on-copy  ( -- ) S" Копировать"           SAY ;
-: on-paste ( -- ) S" Вставить"             SAY ;
+: on-new   ( -- ) S" Новый документ"       SAY-OUT ;
+: on-open  ( -- ) S" Открыть файл"         SAY-OUT ;
+: on-doc1  ( -- ) S" Недавний: документ 1" SAY-OUT ;
+: on-doc2  ( -- ) S" Недавний: документ 2" SAY-OUT ;
+: on-doc3  ( -- ) S" Вложенный пункт"      SAY-OUT ;
+: on-copy  ( -- ) S" Копировать"           SAY-OUT ;
+: on-paste ( -- ) S" Вставить"             SAY-OUT ;
 : on-quit  ( -- ) QUIT-APP ;
 
 \ ---------------------------------------------------------------- запуск

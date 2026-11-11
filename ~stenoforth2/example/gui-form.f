@@ -13,27 +13,27 @@ REQUIRE WINDOW gui-kit.f
 "&Справка"                     MENU
 "&О программе"                 ITEM - on-about
 "Имя:"                         TEXT lname 16 16 120 18
-                               EDIT ime   140 14 340 24
+                               EDIT ifld  140 14 340 24
 "Приветствие:"                 TEXT lout  16 56 120 18
                                EDIT otvet 140 54 340 24
-"Поздороваться"                BUTTON ok   16 96 160 30 on-ok
-"Выход"                        BUTTON bye 190 96 160 30 on-quit
-END
+"Поздороваться"                BUTTON okbt 16 96 160 30 on-ok
+"Выход"                        BUTTON bqit 190 96 160 30 on-quit
+FORM-END
 
 \ -------------------------------------------------------- обработчики
 CREATE GREET 256 ALLOT  VARIABLE GLEN
-: G+ { a u }  a GREET GLEN @ + u CMOVE  GLEN @ u + GLEN ! ;
+: GADD { a u }  a GREET GLEN @ + u CMOVE  GLEN @ u + GLEN ! ;
 
 : on-ok ( -- )
   0 GLEN !
-  S" Привет, " G+
-  ime @ TEXT@ G+
-  S" !" G+
+  S" Привет, "  GADD
+  ifld @ TEXT@  GADD
+  S" !"  GADD
   GREET GLEN @ otvet @ TEXT!
 ;
 
 : on-quit  ( -- ) QUIT-APP ;
-: on-about ( -- ) S" gui-kit: WINDOW MENU ITEM TEXT EDIT BUTTON END SHOW" otvet @ TEXT! ;
+: on-about ( -- ) S" gui-kit: WINDOW MENU ITEM TEXT EDIT BUTTON FORM-END SHOW" otvet @ TEXT! ;
 
 \ ------------------------------------------------------------ запуск
 HIDE-CONSOLE

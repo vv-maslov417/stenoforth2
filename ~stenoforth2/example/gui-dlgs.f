@@ -9,34 +9,34 @@
 REQUIRE WINDOW gui-kit.f
 
 "Файлы и диалоги"             WINDOW main 620 280
-"Путь:"                       TEXT l0 16 20 56 18
-STRETCH-W                     EDIT ed 84 16 510 24
-"Открыть..."                  BUTTON bo 16 60 170 32 on-open
-"Сохранить как..."            BUTTON bs 200 60 170 32 on-save
-"Модальное окно"              BUTTON bd 384 60 170 32 on-dialog
-END
+"Путь:"                       TEXT lbl0 16 20 56 18
+STRETCH-W                     EDIT edit1 84 16 510 24
+"Открыть..."                  BUTTON bopen 16 60 170 32 on-open
+"Сохранить как..."            BUTTON bsave 200 60 170 32 on-save
+"Модальное окно"              BUTTON bdlog 384 60 170 32 on-dialog
+FORM-END
 
 \ --------------------------------------------------------- модальное окно
-"Настройки"                    DIALOG dlg 380 220
-"Это модальное окно: главное"   TEXT m1 16 16 340 18
-"окно заблокировано, пока"      TEXT m2 16 36 340 18
-"диалог не закрыт."             TEXT m3 16 56 340 18
-"Закрыть"                      BUTTON okd 16 130 140 32 on-close
-END
+"Настройки"                    DIALOG dlgwin 380 220
+"Это модальное окно: главное"   TEXT msg1 16 16 340 18
+"окно заблокировано, пока"      TEXT msg2 16 36 340 18
+"диалог не закрыт."             TEXT msg3 16 56 340 18
+"Закрыть"                      BUTTON okbtn 16 130 140 32 on-close
+FORM-END
 
 \ ------------------------------------------------------------ обработчики
 : on-open ( -- )
   "Текстовые файлы|*.txt|Все файлы|*.*|" OPEN-FILE
-  IF ed @ TEXT! ELSE 2DROP THEN
+  IF edit1 @ TEXT! ELSE 2DROP THEN
 ;
 
 : on-save ( -- )
   "Текстовые файлы|*.txt|Все файлы|*.*|" SAVE-FILE
-  IF ed @ TEXT! ELSE 2DROP THEN
+  IF edit1 @ TEXT! ELSE 2DROP THEN
 ;
 
-: on-dialog ( -- ) dlg @ SHOW-DIALOG ;
-: on-close  ( -- ) dlg @ DestroyWindow DROP ;
+: on-dialog ( -- ) dlgwin @ SHOW-DIALOG ;
+: on-close  ( -- ) dlgwin @ DestroyWindow DROP ;
 
 \ ---------------------------------------------------------------- запуск
 4 RESIZE-MARGIN          \ края окна легче зацепить мышью

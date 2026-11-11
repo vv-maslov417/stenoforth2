@@ -11,27 +11,27 @@
 REQUIRE WINDOW gui-kit.f
 
 "Диагностика изменения размера"   WINDOW main 660 260
-"Сообщений WM_SIZE:"              TEXT l1 16 16 210 18
-"-"                               TEXT v1 230 16 90 18
-"Сообщений WM_SIZING:"            TEXT l2 16 40 210 18
-"-"                               TEXT v2 230 40 90 18
-"Клиент, ширина:"                 TEXT l3 16 64 210 18
-"-"                               TEXT v3 230 64 90 18
-"Клиент, высота:"                 TEXT l4 340 64 130 18
-"-"                               TEXT v4 480 64 90 18
-"Обновить"                        BUTTON b1 16 110 160 32 on-upd
-"Закрыть"                         BUTTON b2 190 110 160 32 on-quit
-END
+"Сообщений WM_SIZE:"              TEXT lbl1 16 16 210 18
+"-"                               TEXT val1 230 16 90 18
+"Сообщений WM_SIZING:"            TEXT lbl2 16 40 210 18
+"-"                               TEXT val2 230 40 90 18
+"Клиент, ширина:"                 TEXT lbl3 16 64 210 18
+"-"                               TEXT val3 230 64 90 18
+"Клиент, высота:"                 TEXT lbl4 340 64 130 18
+"-"                               TEXT val4 480 64 90 18
+"Обновить"                        BUTTON btn1 16 110 160 32 on-upd
+"Закрыть"                         BUTTON btn2 190 110 160 32 on-quit
+FORM-END
 
 \ ------------------------------------------------------------ обработчики
 : N>STR ( n -- a u ) 0 <# #S #> ;
 : SHOW-N { n h } n N>STR h TEXT! ;
 
 : on-upd ( -- )
-  SIZEN   @ v1 @ SHOW-N
-  SIZINGN @ v2 @ SHOW-N
-  CLIENT-W  v3 @ SHOW-N
-  CLIENT-H  v4 @ SHOW-N
+  SIZEN   @ val1 @ SHOW-N
+  SIZINGN @ val2 @ SHOW-N
+  CLIENT-W  val3 @ SHOW-N
+  CLIENT-H  val4 @ SHOW-N
 ;
 
 : on-quit ( -- ) QUIT-APP ;
